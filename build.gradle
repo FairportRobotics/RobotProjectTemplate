@@ -102,7 +102,7 @@ dependencies {
     def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
     annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
 
-    implementation "org.fairportrobotics.poe:potential-octo-eureka-library-java:2024.0.1"
+    implementation "org.fairportrobotics.poe:potential-octo-eureka-library-java:2024.+"
 }
 
 test {
