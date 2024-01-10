@@ -11,6 +11,8 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -33,36 +35,21 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
 
-    Logger logger = Logger.getInstance();
+    Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
 
-    // Set up data receivers & replay source
-    switch (Constants.AdvantageKitConstants.CURRENT_MODE) {
-        // Running on a real robot, log to a USB stick
-        case REAL:
-            logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
-            logger.addDataReceiver(new NT4Publisher());
-            break;
+if (isReal()) {
+    Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+    Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+    new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+} else {
+    setUseTiming(false); // Run as fast as possible
+    String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+    Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+    Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+}
 
-        // Running a physics simulator, log to local folder
-        case SIM:
-            logger.addDataReceiver(new WPILOGWriter(""));
-            logger.addDataReceiver(new NT4Publisher());
-            break;
-
-        // Replaying a log, set up replay source
-        case REPLAY:
-            setUseTiming(false); // Run as fast as possible
-            String logPath = LogFileUtil.findReplayLog();
-            logger.setReplaySource(new WPILOGReader(logPath));
-            logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
-            break;
-    }
-
-    // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
-    // Logger.getInstance().disableDeterministicTimestamps()
-
-    // Start AdvantageKit logger
-    logger.start();
+// Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
+Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
 
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
