@@ -155,7 +155,6 @@ gradle-app.setting
 # DO NOT REMOVE .classpath and .project
 .classpath
 .project
-.factorypath
 .settings/
 bin/
 
@@ -171,3 +170,9 @@ out/
 
 # Simulation GUI and other tools window save file
 *-window.json
+
+# Simulation data log directory
+logs/
+
+# Folder that has CTRE Phoenix Sim device config storage
+ctre_sim/
