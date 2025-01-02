@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2024.1.1"
+    id "edu.wpi.first.GradleRIO" version "2025.1.1"
 }
 
 java {
@@ -56,6 +56,10 @@ repositories {
         }
     }
     mavenLocal()
+
+    maven {url "https://maven.photonvision.org/repository/snapshots"}
+    maven {url "https://maven.photonvision.org/repository/internal"}
+
 }
 
 configurations.all {
@@ -104,7 +108,7 @@ dependencies {
     annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
 
     // POE Our library
-    implementation "org.fairportrobotics.poe:potential-octo-eureka-library-java:2024.+"
+    implementation "org.fairportrobotics.poe:potential-octo-eureka-library-java:2025.+"
 }
 
 test {
