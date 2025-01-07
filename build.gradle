@@ -33,44 +33,13 @@ deploy {
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree('src/main/deploy')
                     directory = '/home/lvuser/deploy'
+                    deleteOldFiles = false // Change to true to delete files on roboRIO that no
+                                           // longer exist in deploy directory of this project
                 }
             }
         }
     }
 }
-
-repositories {
-    maven {
-        url = uri("https://maven.pkg.github.com/Mechanical-Advantage/AdvantageKit")
-        credentials {
-            username = "Mechanical-Advantage-Bot"
-            password = "\u0067\u0068\u0070\u005f\u006e\u0056\u0051\u006a\u0055\u004f\u004c\u0061\u0079\u0066\u006e\u0078\u006e\u0037\u0051\u0049\u0054\u0042\u0032\u004c\u004a\u006d\u0055\u0070\u0073\u0031\u006d\u0037\u004c\u005a\u0030\u0076\u0062\u0070\u0063\u0051"
-        }
-    }
-
-    maven {
-        url = uri("https://maven.pkg.github.com/FairportRobotics/potential-octo-eureka")
-        credentials {
-            username = "tywilly"
-            password = "\u0067\u0068\u0070\u005F\u0057\u0051\u0069\u0074\u0037\u0038\u006F\u006E\u0037\u0074\u0051\u004E\u0052\u0039\u0032\u0046\u0069\u0062\u004C\u0030\u0075\u0063\u0035\u004F\u0054\u0045\u004D\u0041\u0039\u0033\u0031\u0072\u006B\u0061\u0056\u0078"
-        }
-    }
-    mavenLocal()
-
-    maven {url "https://maven.photonvision.org/repository/snapshots"}
-    maven {url "https://maven.photonvision.org/repository/internal"}
-
-}
-
-configurations.all {
-    exclude group: "edu.wpi.first.wpilibj"
-}
-
-task(checkAkitInstall, dependsOn: "classes", type: JavaExec) {
-    mainClass = "org.littletonrobotics.junction.CheckInstall"
-    classpath = sourceSets.main.runtimeClasspath
-}
-compileJava.finalizedBy checkAkitInstall
 
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 
@@ -78,11 +47,12 @@ def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 wpi.java.debugJni = false
 
 // Set this to true to enable desktop support.
-def includeDesktopSupport = false
+def includeDesktopSupport = true
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.
 dependencies {
+    annotationProcessor wpi.java.deps.wpilibAnnotations()
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
 
@@ -102,13 +72,6 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    // Advantage Kit
-    def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
-    annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
-
-    // POE Our library
-    implementation "org.fairportrobotics.poe:potential-octo-eureka-library-java:2025.+"
 }
 
 test {
