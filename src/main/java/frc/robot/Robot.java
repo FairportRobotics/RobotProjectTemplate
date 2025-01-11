@@ -36,6 +36,7 @@ public class Robot extends LoggedRobot {
    * initialization code.
    */
   @Override
+  @SuppressWarnings("resource") // Supresses warnings in method related to resources ("new PowerDistribution")
   public void robotInit() {
 
     Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
