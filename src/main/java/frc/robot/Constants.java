@@ -23,7 +23,9 @@ public final class Constants {
       REAL,
       REPLAY
     }
-
     public static final RobotType CURRENT_MODE = RobotType.REAL;
+  }
+  public static class MotorConstants{
+    public static final int MOTOR_ID = 0;
   }
 }

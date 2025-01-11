@@ -36,6 +36,7 @@ public class Robot extends LoggedRobot {
    * initialization code.
    */
   @Override
+  @SuppressWarnings("resource")
   public void robotInit() {
 
     Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
@@ -132,6 +133,7 @@ public class Robot extends LoggedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+    CommandScheduler.getInstance().schedule(new Command[]);
   }
 
   /** This function is called periodically during test mode. */

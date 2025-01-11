@@ -1,0 +1,2 @@
+Subsystems are lines of code that do simple, basic actions (pick up ball, lift ball, shoot ball).
+They should be independent of each other (part of one shouldn't function exactly same as a part of another one).
