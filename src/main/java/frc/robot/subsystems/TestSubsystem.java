@@ -1,16 +1,28 @@
 package frc.robot.subsystems;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.TalonFX;
-
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
 public class TestSubsystem extends SubsystemBase {
-    public final TalonFX motor = new TalonFX(Constants.MotorConstants.MOTOR_ID);
-    public TestSubsystem()
+    public final TalonSRX motor = new TalonSRX(17);
+    private boolean motorActivated;
+
+    /**
+     * Constructor of the Test Subsystem
+     * @param motorActivated is true when the motor should be on at that time, false otherwise.
+     */
+    public TestSubsystem(boolean motorActivated)
     {
-        TalonFXConfiguration motorConfig = new TalonFXConfiguration();
-        motorConfig.Slot0
+        this.motorActivated = motorActivated;
+    }
+
+    /**
+     * Runs the motor depending on if the motor should be running at that time during construction.
+     */
+    public void runMotor() {
+        if(motorActivated)
+            motor.set(ControlMode.PercentOutput, .1);
+        else
+            motor.set(ControlMode.PercentOutput, 0);
     }
 }

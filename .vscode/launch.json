@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Robot",
+      "request": "launch",
+      "mainClass": "frc.robot.Robot",
+      "projectName": "RobotInABoxTemplate"
+    },
+    {
+      "type": "java",
       "name": "Main",
       "request": "launch",
       "mainClass": "frc.robot.Main",
