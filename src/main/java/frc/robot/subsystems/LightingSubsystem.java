@@ -43,8 +43,8 @@ public class LightingSubsystem extends SubsystemBase {
     public void setColor(int red, int green, int blue, double brightness) 
     {
         _CANdle.clearAnimation(0);
-        _CANdle.setLEDs(r, g, b);
-        _CANdle.configBrightnessScalar(a);
+        _CANdle.setLEDs(red, green, blue);
+        _CANdle.configBrightnessScalar(brightness);
     }
 
     /**
