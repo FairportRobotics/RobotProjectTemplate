@@ -9,8 +9,8 @@ public class ElevatorLevelCommand extends Command {
     private boolean increaseLevel;
 
     /**
-     * Constructs the ElevatorLevelCommand
-     * @param elevatorSubsystem is the elevator subsystem
+     * Constructs the ElevatorLevelCommand.
+     * @param elevatorSubsystem is the elevator subsystem.
      * @param increaseLevel is true if the elevator should increase in level, false if the elevator should decrease in level.
      */
     public ElevatorLevelCommand(ElevatorSubsystem elevatorSubsystem, boolean increaseLevel)
