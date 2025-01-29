@@ -13,18 +13,10 @@ public class ElevatorSubsystem extends SubsystemBase {
      * Attempts to increase the level of the elevator.
      * @return true if the elevator can increase its level, false otherwise.
      */
-    public boolean increaseLevel()
+    public boolean changeLevel()
     {
         //TODO unimplemented method
-        throw new UnsupportedOperationException("Unimplemented method 'increaseLevel'");
+        throw new UnsupportedOperationException("Unimplemented method 'changeLevel'");
     }
 
-    /**
-     * Attempts to decrease the level of the elevator.
-     * @return true if the elevator can decrease its level, false otherwise.
-     */
-    public boolean decreaseLevel() {
-        //TODO unimplemented method
-        throw new UnsupportedOperationException("Unimplemented method 'decreaseLevel'");
-    }
 }
