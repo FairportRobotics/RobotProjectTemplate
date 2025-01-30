@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -25,5 +27,38 @@ public final class Constants {
     }
 
     public static final RobotType CURRENT_MODE = RobotType.REAL;
+  }
+
+  /**
+   * Stores the levels and their related information
+   */
+  public enum Levels
+  {
+    HOME,
+    ONE,
+    TWO,
+    THREE,
+    FOUR;
+    private DigitalInput digitalInput;
+    private Levels()
+    {
+      /*switch(this)
+      {
+        case HOME: digitalInput = new DigitalInput("HOME");
+        break;
+        case ONE: digitalInput = new DigitalInput("ONE");
+        break;
+        case TWO: digitalInput = new DigitalInput("TWO");
+        break;
+        case THREE: digitalInput = new DigitalInput("THREE");
+        break;
+        case FOUR: digitalInput = new DigitalInput("FOUR");
+      }*/
+    }
+
+    public boolean get()
+    {
+        return digitalInput.get();
+    }
   }
 }
