@@ -8,8 +8,9 @@ import frc.robot.subsystems.ElevatorSubsystem;
 public class ElevatorLevelCommand extends Command {
     private ElevatorSubsystem elevatorSubsystem;
     private boolean increaseLevelIfTrue;
-    private Constants.Levels setLevel;
-    private Constants.Levels[] levels = Constants.Levels.values();
+    private Constants.ElevatorLevels setLevel;
+    private Constants.ElevatorLevels[] levels = Constants.ElevatorLevels.values();
+    private static boolean sucessfullyChangedLevel = false;
 
     /**
      * Constructs the ElevatorLevelCommand, either increasing or decreasing the level of the elevator when executed.
@@ -28,7 +29,7 @@ public class ElevatorLevelCommand extends Command {
      * @param elevatorSubsystem is the elevator subsystem.
      * @param setLevel is the level the elevator should be set to.
      */
-    public ElevatorLevelCommand(ElevatorSubsystem elevatorSubsystem, Constants.Levels setLevel)
+    public ElevatorLevelCommand(ElevatorSubsystem elevatorSubsystem, Constants.ElevatorLevels setLevel)
     {
         this.elevatorSubsystem = elevatorSubsystem;
         this.setLevel = setLevel;
@@ -43,7 +44,7 @@ public class ElevatorLevelCommand extends Command {
                                 setLevel was set upon construction. */
             setElevatorLevel();
         else
-            changeElevatorLevel();
+            sucessfullyChangedLevel = changeElevatorLevel();
     }
 
     /**
@@ -55,18 +56,24 @@ public class ElevatorLevelCommand extends Command {
     }
 
     /**
-     * Changes the level of the elevator relative to the current level of the elevator by one level.
+     * Changes the level of the elevator relative to the target level of the elevator by one level.
      * Ensures that the change will not be out of the range of intended levels (Avoids going past FOUR or going into HOME).
+     * (A seprate button would be configured to set the elevator to HOME).
+     * @return true if the level was changed, false if the level was not changed.
      */
-    private void changeElevatorLevel()
+    private boolean changeElevatorLevel()
     {
-        int currentLevelIndex = elevatorSubsystem.getCurrentLevel().ordinal();
+        int currentLevelIndex = elevatorSubsystem.getTargetLevel().ordinal(); //Gets the enum index of the target level.
         if(increaseLevelIfTrue)
             if(currentLevelIndex + 1 < levels.length) //If increasing is not out of bounds.
-                elevatorSubsystem.setElevatorLevel(levels[currentLevelIndex + 1]);
+                return elevatorSubsystem.setElevatorLevel(levels[currentLevelIndex + 1]);
+            else
+                return false;
         else
             if(currentLevelIndex - 1 > 0) //If decreasing is not going into HOME or out of bounds.
-                elevatorSubsystem.setElevatorLevel(levels[elevatorSubsystem.getCurrentLevel().ordinal() - 1]);
+                return elevatorSubsystem.setElevatorLevel(levels[elevatorSubsystem.getTargetLevel().ordinal() - 1]);
+            else
+                return false;
     }
 
     @Override
@@ -74,5 +81,14 @@ public class ElevatorLevelCommand extends Command {
     {
         return true; /* This command should only be run once everytime this command is constructed
                         (This means using a button's onTrue instead of whileTrue in RobotContainer's configureBindings method). */
+    }
+
+    /**
+     * Gets if the level was successfully changed using increasing or decreasing last time.
+     * @return true if the level was successfully changed, false if the level was not successfully changed.
+     */
+    public static boolean getSucessfullyChangedLevel()
+    {
+        return sucessfullyChangedLevel;
     }
 }
