@@ -1,100 +1,95 @@
 package frc.robot.subsystems;
 
-import java.util.logging.Level;
-
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.Levels;
 
 public class ElevatorSubsystem extends SubsystemBase {
-    public static final Constants.Levels[] levels = Constants.Levels.values();
-    private static Constants.Levels currentLevel = Constants.Levels.HOME;
-    public TalonFX elevatorLeft = new TalonFX(0);
-    public TalonFX elevatorRight = new TalonFX(0);
-    public TalonFX elevatorMiddle = new TalonFX(0); // NOTE: Might not be used. Talk to Jordan.
-    public DigitalInput mainElevatorSwitch = new DigitalInput(0);
-    public DigitalInput middleElevatorSwitch = new DigitalInput(0); // NOTE: Might not be used. Talk to Jorbin.
+    public final TalonFX elevatorLeft = new TalonFX(Constants.ElevatorMotors.LEFT);
+    public final TalonFX elevatorRight = new TalonFX(Constants.ElevatorMotors.RIGHT);
+    public final TalonFX elevatorMiddle = new TalonFX(Constants.ElevatorMotors.MIDDLE); // NOTE: Might not be used. Talk to Jordan.
+    public final DigitalInput mainElevatorSwitch = new DigitalInput(Constants.ElevatorLimitSwitches.MAIN);
+    public final DigitalInput middleElevatorSwitch = new DigitalInput(Constants.ElevatorLimitSwitches.MIDDLE); // NOTE: Might not be used. Talk to Jordan.
 
-    public double CURENTPOS = 0;
-    public Constants.Levels level;
+    public double currentPosition = elevatorLeft.get();
+    public Constants.ElevatorLevels targetLevel;
 
+    /**
+     * Constructor for the ElevatorSubsystem.
+     * Initializes the subsystem.
+     */
     public ElevatorSubsystem() {
+        targetLevel = Constants.ElevatorLevels.HOME; // Setting the target level to HOME.
         // Initializing electronics
-
     }
 
     /**
-     * Sets the elevator at the set level.
-     * 
-     * @param level is a level the elevator should be set at.
+     * Sets the target level of the elevator.
+     * @param newLevel is the level the elevator is trying to reach.
+     * @return true after the target level was set.
      */
-    public void setElevatorLevel(Constants.Levels newLevel) {
-        // Figure out if the elevator should go up or down.
-        // Move elevator based upon previous condition until the corresponding limit
-        // switch is triggered.
-        // Update the current level.
-        level = newLevel;
+    public boolean setElevatorLevel(Constants.ElevatorLevels newLevel) {
+        targetLevel = newLevel;
+        return true;
     }
 
+    /**
+     * This method is called periodically by CommandScheduler and updates the current position of the elevator.
+     */
     @Override
     public void periodic() {
-        CURENTPOS = elevatorLeft.get();
-        if (level.equals(Levels.HOME) && !mainElevatorSwitch.get()) {
-            setMotors(-0.1);
-        } else if (level.equals(level.ONE) && CURENTPOS != level.getValue()) {
-            if (CURENTPOS > level.getValue())
+        //Updates the current position of the elevator.
+        currentPosition = elevatorLeft.get();
+        if (!isAtTargetLevel()) //If not at the right place.
+        {
+            double targetPosition = Constants.getEncoderValueForLevel(targetLevel);
+            //Move the elevator to the right place.
+            if (currentPosition > targetPosition)
                 setMotors(-0.1);
-
-            if (CURENTPOS < level.getValue())
+            else if (currentPosition < targetPosition)
                 setMotors(0.1);
-
-        } else if (level.equals(level.TWO) && CURENTPOS != level.getValue()) {
-            if (CURENTPOS > level.getValue())
-                setMotors(-0.1);
-
-            if (CURENTPOS < level.getValue())
-                setMotors(0.1);
-
-        } else if (level.equals(level.THREE) && CURENTPOS != level.getValue()) {
-            if (CURENTPOS > level.getValue())
-                setMotors(-0.1);
-
-            if (CURENTPOS < level.getValue())
-                setMotors(0.1);
-
-        } else if (level.equals(level.FOUR) && CURENTPOS != level.getValue()) {
-            if (CURENTPOS > level.getValue())
-                setMotors(-0.1);
-
-            if (CURENTPOS < level.getValue())
-                setMotors(0.1);
-
-        } else {
-            setMotors(0);
         }
-
+        else
+            //Else, stop the motors.
+            setMotors(0);
     }
 
+    /**
+     * Sets the motors' speed.
+     * @param number is the speed the motors should be set to.
+     */
     private void setMotors(double number) {
         elevatorLeft.set(number);
         elevatorRight.set(number);
         elevatorMiddle.set(number);
     }
-    private void checkPos(Constants.Levels ){
-        if (level.equals(level.FOUR) && CURENTPOS != level.getValue()) {
-            if (CURENTPOS > level.getValue())
-                setMotors(-0.1);
 
-            if (CURENTPOS < level.getValue())
-                setMotors(0.1);
-        }
+    /**
+     * Checks if the elevator is at the target level.
+     * @return true if the elevator is at the target level, otherwise false.
+     */
+    private boolean isAtTargetLevel(){
+        if(Constants.getLimitSwitchForLevel(targetLevel) != null) //Checks if a limit switch is assigned for the target level.
+            return Constants.getLimitSwitchForLevel(targetLevel).get(); //Returns true if the limit switch is pressed.
+        return Constants.getEncoderValueForLevel(targetLevel) == currentPosition; //Returns true if the elevator is at the correct position.
     }
 
-    public Constants.Levels getCurrentLevel() {
-        return currentLevel;
+    /**
+     * Gets the current position of the elevator.
+     * @return the current position of the elevator.
+     */
+    public double getCurrentLevel() {
+        return currentPosition;
+    }
+
+    /**
+     * Gets the target level of the elevator.
+     * The target level is the level the elevator is trying to reach.
+     * @return the target level of the elevator.
+     */
+    public Constants.ElevatorLevels getTargetLevel() {
+        return targetLevel;
     }
 }
