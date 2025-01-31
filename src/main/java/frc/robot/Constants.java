@@ -39,7 +39,7 @@ public final class Constants {
     TWO,
     THREE,
     FOUR;
-    private DigitalInput digitalInput;
+    private Double value;
     private Levels()
     {
       /*switch(this)
@@ -56,9 +56,9 @@ public final class Constants {
       }*/
     }
 
-    public boolean get()
+    public double getValue()
     {
-        return digitalInput.get();
+        return value;
     }
   }
 }
