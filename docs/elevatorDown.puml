@@ -10,5 +10,4 @@ driveCtrl -> DpadDownButton:
 DpadDownButton -> motorON:
 motorON -> elevatorDown:
 
-kk
 @enduml
