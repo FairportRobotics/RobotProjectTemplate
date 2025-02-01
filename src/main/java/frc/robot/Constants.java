@@ -17,13 +17,28 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
+  public static class ArmConstants{
+    public enum ArmPositions{
+      UP(1),
+      MIDDLE(2),
+      DOWN(3),
+      NONE(0);
+      double wa;
+      private ArmPositions(double value){
+        this.wa = value;
+        }
+      public double getValue(){
+        return wa;
+      }
+      }
+
   public static class AdvantageKitConstants{
     public enum RobotType{
       SIM,
       REAL,
       REPLAY
     }
-
     public static final RobotType CURRENT_MODE = RobotType.REAL;
+  }
   }
 }
