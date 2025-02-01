@@ -29,8 +29,8 @@ public class TestElevatorUpCommand extends Command
 
     /**
      * Get the next level of the elevator.
-     * @param elevatorLevels The current level of the elevator.
-     * @return The next level of the elevator.
+     * @param elevatorLevels the current level of the elevator.
+     * @return the next level of the elevator.
      */
     private ElevatorLevels getLevel(ElevatorLevels elevatorLevels) {
         return ElevatorLevels.values()[elevatorLevels.ordinal() + 1];
@@ -39,14 +39,14 @@ public class TestElevatorUpCommand extends Command
     /**
      * Check if the elevator is not at the top level.
      * @param currentLevel The current level of the elevator.
-     * @return True if the elevator is not at the top level.
+     * @return true if the elevator is not at the top level.
      */
     private boolean validToMoveUp(ElevatorLevels currentLevel) {
         return currentLevel != ElevatorLevels.FOUR;
     }
 
     /**
-     * This command is is finished upon initialization.
+     * This command is finished upon initialization.
      */
     @Override
     public boolean isFinished() {
