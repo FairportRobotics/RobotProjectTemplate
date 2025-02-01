@@ -29,36 +29,47 @@ public final class Constants {
     public static final RobotType CURRENT_MODE = RobotType.REAL;
   }
 
-  /**
-   * Stores the levels and their related information
-   */
-  public enum Levels
+  public enum ElevatorLevels
   {
     HOME,
     ONE,
     TWO,
     THREE,
     FOUR;
-    private DigitalInput digitalInput;
-    private Levels()
-    {
-      /*switch(this)
-      {
-        case HOME: digitalInput = new DigitalInput("HOME");
-        break;
-        case ONE: digitalInput = new DigitalInput("ONE");
-        break;
-        case TWO: digitalInput = new DigitalInput("TWO");
-        break;
-        case THREE: digitalInput = new DigitalInput("THREE");
-        break;
-        case FOUR: digitalInput = new DigitalInput("FOUR");
-      }*/
-    }
+  }
 
-    public boolean get()
-    {
-        return digitalInput.get();
+  public static DigitalInput getLimitSwitchForLevel(ElevatorLevels levels) {
+    switch (levels) {
+      case HOME: return new DigitalInput(0);
+      case ONE: return null;
+      case TWO: return null;
+      case THREE: return null;
+      case FOUR: return null;
+      default: throw new IllegalArgumentException("Unknown level: " + levels);
     }
+  }
+
+  public static double getEncoderValueForLevel(ElevatorLevels level)
+  {
+    switch(level)
+    {
+      case HOME: return 0.0;
+      case ONE: return 0.0;
+      case TWO: return 0.0;
+      case THREE: return 0.0;
+      case FOUR: return 0.0;
+      default: throw new IllegalArgumentException("Unknown level: " + level);
+    }
+  }
+
+  public static class ElevatorMotors {
+    public static final int LEFT = 0;
+    public static final int RIGHT = 0;
+    public static final int MIDDLE = 0;
+  }
+
+  public static class ElevatorLimitSwitches {
+    public static final int MAIN = 0;
+    public static final int MIDDLE = 0;
   }
 }
