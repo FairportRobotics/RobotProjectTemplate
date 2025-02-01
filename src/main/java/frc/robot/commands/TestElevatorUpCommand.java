@@ -19,12 +19,12 @@ public class TestElevatorUpCommand extends ElevatorGoToLevelCommand
 
     /**
      * Get the next level of the elevator.
-     * @param elevatorLevels the current level of the elevator.
+     * @param currentLevel the current level of the elevator.
      * @return the next level of the elevator.
      */
-    private static ElevatorLevels getLevel(ElevatorLevels elevatorLevels) {
-        if(validToMoveUp(elevatorLevels))
-            return ElevatorLevels.values()[elevatorLevels.ordinal() + 1];
+    private static ElevatorLevels getLevel(ElevatorLevels currentLevel) {
+        if(validToMoveUp(currentLevel))
+            return ElevatorLevels.values()[currentLevel.ordinal() + 1];
         return ElevatorLevels.NONE;
     }
 
