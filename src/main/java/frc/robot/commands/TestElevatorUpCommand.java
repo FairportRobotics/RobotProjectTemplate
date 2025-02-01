@@ -1,12 +1,9 @@
 package frc.robot.commands;
 
-import edu.wpi.first.util.function.BooleanConsumer;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.ElevatorLevels;
 import frc.robot.subsystems.ElevatorSubsystem;
 
-public class TestElevatorUpCommand extends Command
+public class TestElevatorUpCommand extends ElevatorGoToLevelCommand
 {
     /**
      * Creates a new ElevatorUpCommand.
@@ -17,14 +14,7 @@ public class TestElevatorUpCommand extends Command
      * @param elevatorSubsystem The elevator subsystem used by this command.
      */
     public TestElevatorUpCommand(ElevatorSubsystem elevatorSubsystem) {
-        addRequirements(elevatorSubsystem);
-        if(validToMoveUp(elevatorSubsystem.getLevel()))
-        {
-            BooleanConsumer consumer = command -> {
-                CommandScheduler.getInstance().schedule(new ElevatorGoToLevelCommand(elevatorSubsystem, getLevel(elevatorSubsystem.getLevel())));
-            };
-            this.finallyDo(consumer);
-        }
+        super(elevatorSubsystem, getLevel(elevatorSubsystem.getLevel()));
     }
 
     /**
@@ -32,8 +22,10 @@ public class TestElevatorUpCommand extends Command
      * @param elevatorLevels the current level of the elevator.
      * @return the next level of the elevator.
      */
-    private ElevatorLevels getLevel(ElevatorLevels elevatorLevels) {
-        return ElevatorLevels.values()[elevatorLevels.ordinal() + 1];
+    private static ElevatorLevels getLevel(ElevatorLevels elevatorLevels) {
+        if(validToMoveUp(elevatorLevels))
+            return ElevatorLevels.values()[elevatorLevels.ordinal() + 1];
+        return ElevatorLevels.NONE;
     }
 
     /**
@@ -41,15 +33,7 @@ public class TestElevatorUpCommand extends Command
      * @param currentLevel The current level of the elevator.
      * @return true if the elevator is not at the top level.
      */
-    private boolean validToMoveUp(ElevatorLevels currentLevel) {
-        return currentLevel != ElevatorLevels.FOUR;
-    }
-
-    /**
-     * This command is finished upon initialization.
-     */
-    @Override
-    public boolean isFinished() {
-        return true;
+    private static boolean validToMoveUp(ElevatorLevels currentLevel) {
+        return currentLevel != ElevatorLevels.MAX;
     }
 }

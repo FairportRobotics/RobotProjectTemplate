@@ -13,6 +13,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 public class ElevatorGoToLevelCommand extends Command {
 
     private ElevatorSubsystem elevatorSubsystem;
+    private ElevatorLevels elevatorLevel;
     private double requestPosRots = Double.MAX_VALUE;
 
     private StatusSignal<Angle> leftPosition;
@@ -25,6 +26,13 @@ public class ElevatorGoToLevelCommand extends Command {
     final PositionVoltage leftPositionRequest;
 
     public ElevatorGoToLevelCommand(ElevatorSubsystem elevatorSubsystem, ElevatorLevels elevatorLevel) {
+        this.elevatorLevel = elevatorLevel;
+        rightPositionRequest = new PositionVoltage(0).withSlot(0);
+        leftPositionRequest = new PositionVoltage(0).withSlot(0);
+
+        if(ElevatorLevels.NONE.equals(elevatorLevel))
+            return;
+
         this.elevatorSubsystem = elevatorSubsystem;
         addRequirements(elevatorSubsystem);
 
@@ -35,14 +43,14 @@ public class ElevatorGoToLevelCommand extends Command {
 
         leftPosError = elevatorSubsystem.elevatorLeftMotor.getClosedLoopError();
         rightPosError = elevatorSubsystem.elevatorRightMotor.getClosedLoopError();
-
-        rightPositionRequest = new PositionVoltage(0).withSlot(0);
-        leftPositionRequest = new PositionVoltage(0).withSlot(0);
     }
 
 
     @Override
     public void initialize() {
+        if(ElevatorLevels.NONE.equals(elevatorLevel))
+            return;
+
         setMotorNeutralMode(NeutralModeValue.Coast);
 
         //Moves both motors toward
@@ -52,13 +60,12 @@ public class ElevatorGoToLevelCommand extends Command {
                 .setControl(rightPositionRequest.withPosition(elevatorSubsystem.rightHomePos + requestPosRots));
     }
 
-    @Override
-    public void execute() {
-    }
-
 
     @Override
     public boolean isFinished() {
+        if(ElevatorLevels.NONE.equals(elevatorLevel))
+            return true;
+
         ErrorRefresh();
         if (requestPosRots <= 0) {
             return !elevatorSubsystem.bottomlimitSwitch.get();
