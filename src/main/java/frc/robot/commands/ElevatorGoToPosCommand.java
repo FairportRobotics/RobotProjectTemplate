@@ -3,20 +3,16 @@ package frc.robot.commands;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.google.flatbuffers.Constants;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.ElevatorLevels;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 public class ElevatorGoToPosCommand extends Command {
-
-    public enum ElevatorPosition {
-        kNone,
-        kHome,
-        kAMP,
-    }
 
     private ElevatorSubsystem _ElevatorSubsystem;
     private double requestPosRots = Double.MAX_VALUE;
@@ -30,15 +26,11 @@ public class ElevatorGoToPosCommand extends Command {
     final PositionVoltage rightPositionRequest;
     final PositionVoltage leftPositionRequest;
 
-    public ElevatorGoToPosCommand(ElevatorSubsystem ElevatorSubsystem, ElevatorPosition pos) {
+    public ElevatorGoToPosCommand(ElevatorSubsystem ElevatorSubsystem, ElevatorLevels pos) {
         _ElevatorSubsystem = ElevatorSubsystem;
         addRequirements(_ElevatorSubsystem);
 
-        if (pos == ElevatorPosition.kAMP) {
-            requestPosRots = 10.25;
-        } else {
-            requestPosRots = 0;
-        }
+        requestPosRots = getEncoderValueForLevel(pos);
 
         rightPosition = _ElevatorSubsystem.elevatorRightMotor.getPosition();
         leftPosition = _ElevatorSubsystem.elevatorLeftMotor.getPosition();
@@ -50,20 +42,6 @@ public class ElevatorGoToPosCommand extends Command {
         leftPositionRequest = new PositionVoltage(0).withSlot(0);
     }
 
-    public ElevatorGoToPosCommand(ElevatorSubsystem ElevatorSubsystem, double pos) {
-        _ElevatorSubsystem = ElevatorSubsystem;
-        addRequirements(_ElevatorSubsystem);
-        requestPosRots = pos;
-
-        rightPosition = _ElevatorSubsystem.elevatorRightMotor.getPosition();
-        leftPosition = _ElevatorSubsystem.elevatorLeftMotor.getPosition();
-
-        leftPosError = _ElevatorSubsystem.elevatorLeftMotor.getClosedLoopError();
-        rightPosError = _ElevatorSubsystem.elevatorRightMotor.getClosedLoopError();
-
-        rightPositionRequest = new PositionVoltage(0).withSlot(0);
-        leftPositionRequest = new PositionVoltage(0).withSlot(0);
-    }
 
     @Override
     public void initialize() {
@@ -93,8 +71,10 @@ public class ElevatorGoToPosCommand extends Command {
             SmartDashboard.putNumber("Ele Left Pos", leftPosition.getValueAsDouble());
             SmartDashboard.putNumber("Ele Right", rightPosition.getValueAsDouble());
 
-            return (Math.abs(leftPosition.getValueAsDouble() - (requestPosRots + _ElevatorSubsystem.leftHomePos)) <= 0.1 ||
-                    Math.abs(rightPosition.getValueAsDouble() - (requestPosRots + _ElevatorSubsystem.rightHomePos)) <= 0.1);
+            return (Math.abs(leftPosition.getValueAsDouble() - (requestPosRots + _ElevatorSubsystem.leftHomePos)) <= 0.1
+                    ||
+                    Math.abs(rightPosition.getValueAsDouble()
+                            - (requestPosRots + _ElevatorSubsystem.rightHomePos)) <= 0.1);
         }
 
         return false;
@@ -103,11 +83,28 @@ public class ElevatorGoToPosCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        //RobotContainer.noteAquired = false;
+        // RobotContainer.noteAquired = false;
         _ElevatorSubsystem.elevatorLeftMotor.stopMotor();
         _ElevatorSubsystem.elevatorRightMotor.stopMotor();
         _ElevatorSubsystem.elevatorLeftMotor.setNeutralMode(NeutralModeValue.Brake);
         _ElevatorSubsystem.elevatorRightMotor.setNeutralMode(NeutralModeValue.Brake);
+    }
+
+    public static double getEncoderValueForLevel(ElevatorLevels level) {
+        switch (level) {
+            case HOME:
+                return 0.0;
+            case ONE:
+                return 0.0;
+            case TWO:
+                return 0.0;
+            case THREE:
+                return 0.0;
+            case FOUR:
+                return 0.0;
+            default:
+                throw new IllegalArgumentException("Unknown level: " + level);
+        }
     }
 
 }

@@ -31,11 +31,14 @@ public final class Constants {
 
   public enum ElevatorLevels
   {
+    NONE,
     HOME,
+    CORAL,
     ONE,
     TWO,
     THREE,
-    FOUR;
+    FOUR,
+    MAX
   }
 
   public static DigitalInput getLimitSwitchForLevel(ElevatorLevels levels) {
@@ -49,18 +52,7 @@ public final class Constants {
     }
   }
 
-  public static double getEncoderValueForLevel(ElevatorLevels level)
-  {
-    switch(level)
-    {
-      case HOME: return 0.0;
-      case ONE: return 0.0;
-      case TWO: return 0.0;
-      case THREE: return 0.0;
-      case FOUR: return 0.0;
-      default: throw new IllegalArgumentException("Unknown level: " + level);
-    }
-  }
+  
 
   public static class ElevatorMotors {
     public static final int LEFT = 0;

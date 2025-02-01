@@ -17,7 +17,9 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ElevatorLevels;
 import frc.robot.commands.ElevatorAutoHomeCommand;
+import frc.robot.commands.ElevatorGoToPosCommand;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
@@ -28,6 +30,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     public TalonFX elevatorRightMotor = new TalonFX(Constants.ElevatorConstants.ELEVATOR_RIGHT_MOTOR_ID);
     //DigitalInput toplimitSwitch;
     public DigitalInput bottomlimitSwitch;
+
+    private ElevatorLevels level;
 
     StatusSignal<Angle> leftPos;
     StatusSignal<Angle> rightPos;
@@ -62,6 +66,15 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     }
 
+    public ElevatorLevels getLevel(){
+        return level;
+    }
+
+    public void setLevel(ElevatorLevels newLevel){
+        level = newLevel;
+        
+    }
+
     @Override
     public void periodic() {
         if(leftHomePos == Double.MAX_VALUE || rightHomePos == Double.MAX_VALUE){
@@ -85,7 +98,10 @@ public class ElevatorSubsystem extends SubsystemBase {
                 this.elevatorLeftMotor.setNeutralMode(NeutralModeValue.Brake);
                 this.elevatorRightMotor.setNeutralMode(NeutralModeValue.Brake);
             }
+
+            
         }
+        
 
         Logger.recordOutput("Elevator At Bottom", !bottomlimitSwitch.get());
 
