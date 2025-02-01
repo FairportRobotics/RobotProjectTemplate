@@ -36,28 +36,29 @@ public class ElevatorSubsystem extends SubsystemBase {
         //toplimitSwitch = new DigitalInput(8);
         bottomlimitSwitch = new DigitalInput(Constants.ElevatorConstants.ELEVATOR_BOTTOM_SWITCH_ID);
 
-        TalonFXConfiguration elevatorMotor1Config = new TalonFXConfiguration();
-        elevatorMotor1Config.Slot0.kP = 0.7;
-        elevatorMotor1Config.Slot0.kI = 0.5;
-        elevatorMotor1Config.Slot0.kD = 0.1;
-        elevatorMotor1Config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        TalonFXConfiguration elevatorMotor1Config = getDefaultTalonFXConfiguration();
         elevatorLeftMotor.getConfigurator().apply(elevatorMotor1Config);
         leftPos = elevatorLeftMotor.getPosition();
         leftPos.setUpdateFrequency(50);
         elevatorLeftMotor.optimizeBusUtilization();
         //elevatorMotor1Config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        TalonFXConfiguration elevatorMotor2Config = new TalonFXConfiguration();
-        elevatorMotor2Config.Slot0.kP = 0.7;
-        elevatorMotor2Config.Slot0.kI = 0.5;
-        elevatorMotor2Config.Slot0.kD = 0.1;
-        elevatorMotor2Config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        TalonFXConfiguration elevatorMotor2Config = getDefaultTalonFXConfiguration();
         elevatorRightMotor.getConfigurator().apply(elevatorMotor2Config);
         rightPos = elevatorRightMotor.getPosition();
         rightPos.setUpdateFrequency(50);
         elevatorRightMotor.optimizeBusUtilization();
         //elevatorMotor2Config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
+    }
+
+    private static TalonFXConfiguration getDefaultTalonFXConfiguration() {
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.Slot0.kP = 0.7;
+        config.Slot0.kI = 0.5;
+        config.Slot0.kD = 0.1;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        return config;
     }
 
     public ElevatorLevels getLevel(){
@@ -68,6 +69,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         level = newLevel;
     }
 
+    /**
+     * (This the initializer of the elevator subsystem when the robot is enabled)
+     * Moves the elevator down while the leftHomePos or rightHomePos are not set.
+     * When the bottom limit switch is pressed, leftHomePos and rightHomePos are initialized and the motors are stopped.
+     */
     @Override
     public void periodic() {
         if(leftHomePos == Double.MAX_VALUE || rightHomePos == Double.MAX_VALUE){
@@ -98,5 +104,4 @@ public class ElevatorSubsystem extends SubsystemBase {
         Logger.recordOutput("Elevator Left Pos", leftPos.refresh().getValue());
         Logger.recordOutput("Elevator Right Pos", rightPos.refresh().getValue());
     }
-
 }
