@@ -38,21 +38,19 @@ public final class Constants {
     TWO,
     THREE,
     FOUR,
-    MAX
+    MAX;
   }
 
-  public static DigitalInput getLimitSwitchForLevel(ElevatorLevels levels) {
-    switch (levels) {
-      case HOME: return new DigitalInput(0);
-      case ONE: return null;
-      case TWO: return null;
-      case THREE: return null;
-      case FOUR: return null;
-      default: throw new IllegalArgumentException("Unknown level: " + levels);
-    }
+  public static class ElevatorEncoderValues
+  {
+    public static final double HOME = 0;
+    public static final double CORAL = 0;
+    public static final double ONE = 0;
+    public static final double TWO = 0;
+    public static final double THREE = 0;
+    public static final double FOUR = 0;
+    public static final double MAX = 0;
   }
-
-  
 
   public static class ElevatorMotors {
     public static final int LEFT = 0;
