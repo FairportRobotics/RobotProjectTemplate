@@ -72,4 +72,11 @@ public final class Constants {
     public static final int MAIN = 0;
     public static final int MIDDLE = 0;
   }
+
+  public static class ElevatorConstants{
+    public static final int ELEVATOR_LEFT_MOTOR_ID = -99999; //ALL IDs ARE PLACEHOLDERS
+    public static final int ELEVATOR_RIGHT_MOTOR_ID = -999999;
+
+    public static final int ELEVATOR_BOTTOM_SWITCH_ID = -999999999;
+  }
 }

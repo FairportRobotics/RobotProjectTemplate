@@ -1,95 +1,96 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems;//lol "package" HA AH AHAHAHAGGGG *Cough noise *Cough noise*5 *Falls down stairs... - Lukas
 
+import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.ElevatorAutoHomeCommand;
 
 public class ElevatorSubsystem extends SubsystemBase {
-    public final TalonFX elevatorLeft = new TalonFX(Constants.ElevatorMotors.LEFT);
-    public final TalonFX elevatorRight = new TalonFX(Constants.ElevatorMotors.RIGHT);
-    public final TalonFX elevatorMiddle = new TalonFX(Constants.ElevatorMotors.MIDDLE); // NOTE: Might not be used. Talk to Jordan.
-    public final DigitalInput mainElevatorSwitch = new DigitalInput(Constants.ElevatorLimitSwitches.MAIN);
-    public final DigitalInput middleElevatorSwitch = new DigitalInput(Constants.ElevatorLimitSwitches.MIDDLE); // NOTE: Might not be used. Talk to Jordan.
 
-    public double currentPosition = elevatorLeft.get();
-    public Constants.ElevatorLevels targetLevel;
+    public double rightHomePos = Double.MAX_VALUE;
+    public double leftHomePos = Double.MAX_VALUE;
 
-    /**
-     * Constructor for the ElevatorSubsystem.
-     * Initializes the subsystem.
-     */
+    public TalonFX elevatorLeftMotor = new TalonFX(Constants.ElevatorConstants.ELEVATOR_LEFT_MOTOR_ID);
+    public TalonFX elevatorRightMotor = new TalonFX(Constants.ElevatorConstants.ELEVATOR_RIGHT_MOTOR_ID);
+    //DigitalInput toplimitSwitch;
+    public DigitalInput bottomlimitSwitch;
+
+    StatusSignal<Angle> leftPos;
+    StatusSignal<Angle> rightPos;
+
+    ElevatorAutoHomeCommand autoHomeCommand;
+
     public ElevatorSubsystem() {
-        targetLevel = Constants.ElevatorLevels.HOME; // Setting the target level to HOME.
-        // Initializing electronics
+        //toplimitSwitch = new DigitalInput(8);
+        bottomlimitSwitch = new DigitalInput(Constants.ElevatorConstants.ELEVATOR_BOTTOM_SWITCH_ID);
+
+        TalonFXConfiguration elevatorMotor1Config = new TalonFXConfiguration();
+        elevatorMotor1Config.Slot0.kP = 0.7;
+        elevatorMotor1Config.Slot0.kI = 0.5;
+        elevatorMotor1Config.Slot0.kD = 0.1;
+        elevatorMotor1Config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        elevatorLeftMotor.getConfigurator().apply(elevatorMotor1Config);
+        leftPos = elevatorLeftMotor.getPosition();
+        leftPos.setUpdateFrequency(50);
+        elevatorLeftMotor.optimizeBusUtilization();
+        //elevatorMotor1Config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+        TalonFXConfiguration elevatorMotor2Config = new TalonFXConfiguration();
+        elevatorMotor2Config.Slot0.kP = 0.7;
+        elevatorMotor2Config.Slot0.kI = 0.5;
+        elevatorMotor2Config.Slot0.kD = 0.1;
+        elevatorMotor2Config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        elevatorRightMotor.getConfigurator().apply(elevatorMotor2Config);
+        rightPos = elevatorRightMotor.getPosition();
+        rightPos.setUpdateFrequency(50);
+        elevatorRightMotor.optimizeBusUtilization();
+        //elevatorMotor2Config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
     }
 
-    /**
-     * Sets the target level of the elevator.
-     * @param newLevel is the level the elevator is trying to reach.
-     * @return true after the target level was set.
-     */
-    public boolean setElevatorLevel(Constants.ElevatorLevels newLevel) {
-        targetLevel = newLevel;
-        return true;
-    }
-
-    /**
-     * This method is called periodically by CommandScheduler and updates the current position of the elevator.
-     */
     @Override
     public void periodic() {
-        //Updates the current position of the elevator.
-        currentPosition = elevatorLeft.get();
-        if (!isAtTargetLevel()) //If not at the right place.
-        {
-            double targetPosition = Constants.getEncoderValueForLevel(targetLevel);
-            //Move the elevator to the right place.
-            if (currentPosition > targetPosition)
-                setMotors(-0.1);
-            else if (currentPosition < targetPosition)
-                setMotors(0.1);
+        if(leftHomePos == Double.MAX_VALUE || rightHomePos == Double.MAX_VALUE){
+            
+            this.elevatorLeftMotor.set(-0.1);
+            this.elevatorRightMotor.set(-0.1);
+            
+            if (!this.bottomlimitSwitch.get()) {
+                this.elevatorLeftMotor.set(0.0);
+                this.elevatorRightMotor.set(0.0);
+    
+                StatusSignal<Angle> leftPos = elevatorLeftMotor.getPosition();
+                StatusSignal<Angle> rightPos = elevatorRightMotor.getPosition();
+
+                leftPos.waitForUpdate(1.0);
+                rightPos.waitForUpdate(1.0);
+        
+                leftHomePos = leftPos.getValueAsDouble();
+                rightHomePos = rightPos.getValueAsDouble();
+
+                this.elevatorLeftMotor.setNeutralMode(NeutralModeValue.Brake);
+                this.elevatorRightMotor.setNeutralMode(NeutralModeValue.Brake);
+            }
         }
-        else
-            //Else, stop the motors.
-            setMotors(0);
+
+        Logger.recordOutput("Elevator At Bottom", !bottomlimitSwitch.get());
+
+        Logger.recordOutput("Elevator Left Pos", leftPos.refresh().getValue());
+        Logger.recordOutput("Elevator Right Pos", rightPos.refresh().getValue());
     }
 
-    /**
-     * Sets the motors' speed.
-     * @param number is the speed the motors should be set to.
-     */
-    private void setMotors(double number) {
-        elevatorLeft.set(number);
-        elevatorRight.set(number);
-        elevatorMiddle.set(number);
-    }
-
-    /**
-     * Checks if the elevator is at the target level.
-     * @return true if the elevator is at the target level, otherwise false.
-     */
-    private boolean isAtTargetLevel(){
-        if(Constants.getLimitSwitchForLevel(targetLevel) != null) //Checks if a limit switch is assigned for the target level.
-            return Constants.getLimitSwitchForLevel(targetLevel).get(); //Returns true if the limit switch is pressed.
-        return Constants.getEncoderValueForLevel(targetLevel) == currentPosition; //Returns true if the elevator is at the correct position.
-    }
-
-    /**
-     * Gets the current position of the elevator.
-     * @return the current position of the elevator.
-     */
-    public double getCurrentLevel() {
-        return currentPosition;
-    }
-
-    /**
-     * Gets the target level of the elevator.
-     * The target level is the level the elevator is trying to reach.
-     * @return the target level of the elevator.
-     */
-    public Constants.ElevatorLevels getTargetLevel() {
-        return targetLevel;
-    }
 }
