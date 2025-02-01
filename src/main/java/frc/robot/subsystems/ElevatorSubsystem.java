@@ -37,6 +37,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         bottomlimitSwitch = new DigitalInput(Constants.ElevatorConstants.ELEVATOR_BOTTOM_SWITCH_ID);
 
         TalonFXConfiguration elevatorMotor1Config = getDefaultTalonFXConfiguration();
+        elevatorMotor1Config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         elevatorLeftMotor.getConfigurator().apply(elevatorMotor1Config);
         leftPos = elevatorLeftMotor.getPosition();
         leftPos.setUpdateFrequency(50);
@@ -44,6 +45,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         //elevatorMotor1Config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         TalonFXConfiguration elevatorMotor2Config = getDefaultTalonFXConfiguration();
+        elevatorMotor2Config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         elevatorRightMotor.getConfigurator().apply(elevatorMotor2Config);
         rightPos = elevatorRightMotor.getPosition();
         rightPos.setUpdateFrequency(50);
@@ -57,7 +59,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         config.Slot0.kP = 0.7;
         config.Slot0.kI = 0.5;
         config.Slot0.kD = 0.1;
-        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         return config;
     }
 
