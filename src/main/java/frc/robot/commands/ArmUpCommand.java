@@ -20,9 +20,9 @@ public class ArmUpCommand extends Command {
   private final ArmSubsystem m_subsystem;
   private ArmPositions pos;
   /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
+   * Creates a new ArmUpCommand.
+   *  ArmUpCommand brings the arm up 1 position if the current position is not greater than or equal to the UP positon
+   * @param subsystem The ArmSubsystem. It subs the system... of the arm. I think.
    */
   public ArmUpCommand(ArmSubsystem subsystem) {
     m_subsystem = subsystem;
@@ -41,6 +41,7 @@ public class ArmUpCommand extends Command {
   public void initialize() {
 
     m_subsystem.m_controller.setReference(pos.getValue(), ControlType.kPosition);
+    m_subsystem.setPos(pos);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -20,9 +20,11 @@ public class SetArmPosCommand extends Command {
   private final ArmSubsystem m_subsystem;
   private ArmPositions pos;
   /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
+   * Creates a new SetArmPosCommand.
+   * This command sets the arm positon to the passed in position.
+   * 
+   * @param subsystem The ArmSubsystem. This is needed. Because. Just because.
+   * @param newPos The requested position of the arm. You can find what diffrent positions there are in Constants.java
    */
   public SetArmPosCommand(ArmSubsystem subsystem, ArmPositions newPos) {
     m_subsystem = subsystem;
@@ -38,6 +40,7 @@ public class SetArmPosCommand extends Command {
   @Override
   public void initialize() {
     m_subsystem.m_controller.setReference(pos.getValue(), ControlType.kPosition);
+    m_subsystem.setPos(pos);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

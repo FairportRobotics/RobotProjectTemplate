@@ -77,9 +77,25 @@ public class ArmSubsystem extends SubsystemBase {
       Logger.recordOutput("Arm Position: ", armYMotor.getEncoder().getPosition());
 
   }
+  /**
+   * Get the value of the curent set position for the arm.
+   *
+   * @return an ArmPositions object that is curently set in the Subsystem. So you can know what position the arm is curently set to. It's kinda usefull.
+   */
   public ArmPositions getPos(){
     return pos;
   }
+
+  /**
+   * Set the value of the arm position.
+   *
+   *@param newPos New ArmPositions object to go to. This is important for keeping track of where the arm is. Maybe.
+   */
+  public void setPos(ArmPositions newPos){
+    
+  }
+
+
 
   @Override
   public void simulationPeriodic() {
