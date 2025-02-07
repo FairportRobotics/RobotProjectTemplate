@@ -29,7 +29,8 @@ public class HandSubsystem extends SubsystemBase {
   
   public SparkMax handMotor = new SparkMax(10, MotorType.kBrushless);
   public DigitalInput limitSwitch = new DigitalInput(1);
-  public SparkClosedLoopController m_controller = handMotor.getClosedLoopController();
+  // public SparkClosedLoopController m_controller = handMotor.getClosedLoopController();
+  private boolean hazPiece;
   /** Creates a new ExampleSubsystem. */
   public HandSubsystem() {
     
@@ -62,11 +63,8 @@ public class HandSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if(pos == ArmPositions.NONE){
-            
-            this.handMotor.set(0.1);
-            }
-      }
+    if(limit)
+
 
   }
   /**
