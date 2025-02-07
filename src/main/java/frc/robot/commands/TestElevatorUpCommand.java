@@ -16,7 +16,7 @@ public class TestElevatorUpCommand extends ElevatorGoToLevelCommand
 
     /**
      * Gets the next level of the elevator.
-     * @param currentLevel the current level of the elevator.
+     * @param currentLevel is the current level of the elevator.
      * @return the next level of the elevator, returns NONE if the level of the elevator cannot be increased.
      */
     private static ElevatorLevels getLevel(ElevatorLevels currentLevel) {
