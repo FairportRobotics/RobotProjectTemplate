@@ -6,11 +6,8 @@ import frc.robot.subsystems.ElevatorSubsystem;
 public class TestElevatorUpCommand extends ElevatorGoToLevelCommand
 {
     /**
-     * Creates a new ElevatorUpCommand.
-     * Decorates itself with a new ElevatorGoToLevelCommand if moving the elevator is valid.
-     * The execution of the ElevatorGoToLevelCommand would be scheduled after the execution of this command's end method
-     * (and hopefully effectively replacing the ElevatorUpCommand with the ElevatorGoToLevelCommand to the intended level in
-     * CommandScheduler).
+     * Creates a new TestElevatorUpCommand.
+     * Attempts to move the elevator up one level if possible.
      * @param elevatorSubsystem The elevator subsystem used by this command.
      */
     public TestElevatorUpCommand(ElevatorSubsystem elevatorSubsystem) {
@@ -18,9 +15,9 @@ public class TestElevatorUpCommand extends ElevatorGoToLevelCommand
     }
 
     /**
-     * Get the next level of the elevator.
+     * Gets the next level of the elevator.
      * @param currentLevel the current level of the elevator.
-     * @return the next level of the elevator.
+     * @return the next level of the elevator, returns NONE if the level of the elevator cannot be increased.
      */
     private static ElevatorLevels getLevel(ElevatorLevels currentLevel) {
         if(validToMoveUp(currentLevel))
@@ -29,9 +26,9 @@ public class TestElevatorUpCommand extends ElevatorGoToLevelCommand
     }
 
     /**
-     * Check if the elevator is not at the top level.
+     * Checks if the elevator is not at the top level.
      * @param currentLevel The current level of the elevator.
-     * @return true if the elevator is not at the top level.
+     * @return true if the elevator is not at the top level, false otherwise.
      */
     private static boolean validToMoveUp(ElevatorLevels currentLevel) {
         return currentLevel != ElevatorLevels.MAX;
