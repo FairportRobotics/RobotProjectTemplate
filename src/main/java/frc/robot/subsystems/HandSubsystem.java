@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.security.DigestInputStream;
+import java.util.logging.Handler;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -23,16 +24,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants.ArmPositions;
 
 
-public class ArmSubsystem extends SubsystemBase {
+public class HandSubsystem extends SubsystemBase {
 
   
-  public SparkMax armYMotor = new SparkMax(0, MotorType.kBrushless);
-  public DigitalInput limitSwitch = new DigitalInput(0);
-  public double absPos;
-  public ArmPositions pos = ArmPositions.NONE;
-  public SparkClosedLoopController m_controller = armYMotor.getClosedLoopController();
+  public SparkMax handMotor = new SparkMax(10, MotorType.kBrushless);
+  public DigitalInput limitSwitch = new DigitalInput(1);
+  public SparkClosedLoopController m_controller = handMotor.getClosedLoopController();
   /** Creates a new ExampleSubsystem. */
-  public ArmSubsystem() {
+  public HandSubsystem() {
     
   }
 
@@ -65,16 +64,9 @@ public class ArmSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     if(pos == ArmPositions.NONE){
             
-            this.armYMotor.set(0.1);
-            if (!this.limitSwitch.get()) {
-                this.armYMotor.set(0.0);
-                pos = ArmPositions.UP;
-                armYMotor.getEncoder().setPosition(0);
-                absPos = armYMotor.getEncoder().getPosition();
+            this.handMotor.set(0.1);
             }
       }
-      Logger.recordOutput("Elevator At Top: ", !limitSwitch.get());
-      Logger.recordOutput("Arm Position: ", armYMotor.getEncoder().getPosition());
 
   }
   /**

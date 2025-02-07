@@ -6,7 +6,7 @@ package frc.robot.commands;
 
 
 import frc.robot.Constants.ArmConstants.ArmPositions;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.HandSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -15,17 +15,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
  
 /** An example command that uses an example subsystem. */
-public class ArmDownCommand extends Command {
+public class intakeCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ArmSubsystem m_subsystem;
-  private ArmPositions pos;
+  private final HandSubsystem = m_subsystem;
   /**
-   * Creates a new ArmDownCommand.
-   *  ArmDownCommand brings the arm down 1 position if the current position is not less than or equal to the DOWN positon
+   * Creates a new IntakeCommand.
+   *  IntakeCommand spins the motor in the hand inwards allowing the hand to intake coral
    * 
    * @param subsystem The ArmSubsystem. You know... the thing... that does... the thing...
    */
-  public ArmDownCommand(ArmSubsystem subsystem) {
+  public IntakeCommand(HandSubsystem subsystem) {
     m_subsystem = subsystem;
     pos = m_subsystem.getPos();
     if (pos.ordinal() < ArmPositions.DOWN.ordinal()) {
