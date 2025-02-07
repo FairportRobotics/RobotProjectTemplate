@@ -38,11 +38,11 @@ public class ElevatorGoToLevelCommand extends Command {
 
         requestPosRots = getEncoderValueForLevel(elevatorLevel);
 
-        rightPosition = elevatorSubsystem.elevatorRightMotor.getPosition();
-        leftPosition = elevatorSubsystem.elevatorLeftMotor.getPosition();
+        rightPosition = elevatorSubsystem.getRightMotor().getPosition();
+        leftPosition = elevatorSubsystem.getLeftMotor().getPosition();
 
-        leftPosError = elevatorSubsystem.elevatorLeftMotor.getClosedLoopError();
-        rightPosError = elevatorSubsystem.elevatorRightMotor.getClosedLoopError();
+        leftPosError = elevatorSubsystem.getLeftMotor().getClosedLoopError();
+        rightPosError = elevatorSubsystem.getRightMotor().getClosedLoopError();
     }
 
 
@@ -54,10 +54,10 @@ public class ElevatorGoToLevelCommand extends Command {
         setMotorNeutralMode(NeutralModeValue.Coast);
 
         //Moves both motors toward
-        elevatorSubsystem.elevatorLeftMotor
-                .setControl(leftPositionRequest.withPosition(elevatorSubsystem.leftHomePos + requestPosRots));
-        elevatorSubsystem.elevatorRightMotor
-                .setControl(rightPositionRequest.withPosition(elevatorSubsystem.rightHomePos + requestPosRots));
+        elevatorSubsystem.getLeftMotor()
+                .setControl(leftPositionRequest.withPosition(elevatorSubsystem.getLeftHomePos() + requestPosRots));
+        elevatorSubsystem.getRightMotor()
+                .setControl(rightPositionRequest.withPosition(elevatorSubsystem.getRightHomePos() + requestPosRots));
     }
 
 
@@ -65,19 +65,18 @@ public class ElevatorGoToLevelCommand extends Command {
     public boolean isFinished() {
         if(ElevatorLevels.NONE.equals(elevatorLevel))
             return true;
-
         ErrorRefresh();
         if (requestPosRots <= 0) {
-            return !elevatorSubsystem.bottomlimitSwitch.get();
+            return !elevatorSubsystem.getBottomLimitSwitchAsBoolean();
         } else if (leftPosition.hasUpdated() && rightPosition.hasUpdated()) {
 
             SmartDashboard.putNumber("Ele Left Pos", leftPosition.getValueAsDouble());
             SmartDashboard.putNumber("Ele Right", rightPosition.getValueAsDouble());
 
-            return (Math.abs(leftPosition.getValueAsDouble() - (requestPosRots + elevatorSubsystem.leftHomePos)) <= 0.1
+            return (Math.abs(leftPosition.getValueAsDouble() - (requestPosRots + elevatorSubsystem.getLeftHomePos())) <= 0.1
                     ||
                     Math.abs(rightPosition.getValueAsDouble()
-                            - (requestPosRots + elevatorSubsystem.rightHomePos)) <= 0.1);
+                            - (requestPosRots + elevatorSubsystem.getRightHomePos())) <= 0.1);
         }
         return false;
     }
@@ -122,16 +121,16 @@ public class ElevatorGoToLevelCommand extends Command {
      * Stops the elevator motors.
      */
     private void stopMotors() {
-        elevatorSubsystem.elevatorLeftMotor.stopMotor();
-        elevatorSubsystem.elevatorRightMotor.stopMotor();
+        elevatorSubsystem.getLeftMotor().stopMotor();
+        elevatorSubsystem.getRightMotor().stopMotor();
     }
 
     /**
      * Sets the neutral mode of the elevator motors to brake.
      */
     private void setMotorNeutralMode(NeutralModeValue modeValue) {
-        elevatorSubsystem.elevatorLeftMotor.setNeutralMode(modeValue);
-        elevatorSubsystem.elevatorRightMotor.setNeutralMode(modeValue);
+        elevatorSubsystem.getLeftMotor().setNeutralMode(modeValue);
+        elevatorSubsystem.getRightMotor().setNeutralMode(modeValue);
     }
 
     /**

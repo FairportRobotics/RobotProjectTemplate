@@ -17,18 +17,18 @@ import frc.robot.commands.ElevatorAutoHomeCommand;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
-    public double rightHomePos = Double.MAX_VALUE;
-    public double leftHomePos = Double.MAX_VALUE;
+    private double leftHomePos = Double.MAX_VALUE;
+    private double rightHomePos = Double.MAX_VALUE;
 
-    public TalonFX elevatorLeftMotor = new TalonFX(Constants.ElevatorConstants.ELEVATOR_LEFT_MOTOR_ID);
-    public TalonFX elevatorRightMotor = new TalonFX(Constants.ElevatorConstants.ELEVATOR_RIGHT_MOTOR_ID);
+    private TalonFX elevatorLeftMotor = new TalonFX(Constants.ElevatorConstants.ELEVATOR_LEFT_MOTOR_ID);
+    private TalonFX elevatorRightMotor = new TalonFX(Constants.ElevatorConstants.ELEVATOR_RIGHT_MOTOR_ID);
     //DigitalInput toplimitSwitch;
-    public DigitalInput bottomlimitSwitch;
+    private DigitalInput bottomlimitSwitch;
 
     private ElevatorLevels level;
 
-    StatusSignal<Angle> leftPos;
-    StatusSignal<Angle> rightPos;
+    private StatusSignal<Angle> leftPos;
+    private StatusSignal<Angle> rightPos;
 
     ElevatorAutoHomeCommand autoHomeCommand;
 
@@ -104,5 +104,72 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         Logger.recordOutput("Elevator Left Pos", leftPos.refresh().getValue());
         Logger.recordOutput("Elevator Right Pos", rightPos.refresh().getValue());
+    }
+
+    /**
+     * Gets the left motor of the elevator.
+     * @return the left motor of the elevator.
+     */
+    public TalonFX getLeftMotor(){
+        return elevatorLeftMotor;
+    }
+
+    /**
+     * Gets the right motor of the elevator.
+     * @return the right motor of the elevator.
+     */
+    public TalonFX getRightMotor(){
+        return elevatorRightMotor;
+    }
+
+    /**
+     * Sets the speed of the elevator motors.
+     * @param speed is the speed of the motors to be set to.
+     */
+    public void set(double speed)
+    {
+        elevatorLeftMotor.set(speed);
+        elevatorRightMotor.set(speed);
+    }
+
+    /**
+     * Gets the bottom limit switch of the elevator as a boolean.
+     * @return true if the bottom limit switch is pressed, false otherwise.
+     */
+    public boolean getBottomLimitSwitchAsBoolean()
+    {
+        return bottomlimitSwitch.get();
+    }
+
+    /**
+     * Gets the home position of the left motor.
+     * @return the the home position of the left motor.
+     */
+    public double getLeftHomePos(){
+        return leftHomePos;
+    }
+
+    /**
+     * Gets the home position of the right motor.
+     * @return the the home position of the right motor.
+     */
+    public double getRightHomePos(){
+        return rightHomePos;
+    }
+
+    /**
+     * Sets the home position of the left motor.
+     * @param pos is the position to set the home position to.
+     */
+    public void setLeftHomePos(double pos){
+        leftHomePos = pos;
+    }
+
+    /**
+     * Sets the home position of the right motor.
+     * @param pos is the position to set the home position to.
+     */
+    public void setRightHomePos(double pos){
+        rightHomePos = pos;
     }
 }

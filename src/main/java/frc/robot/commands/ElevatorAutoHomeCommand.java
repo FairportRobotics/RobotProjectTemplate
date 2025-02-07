@@ -24,8 +24,7 @@ public class ElevatorAutoHomeCommand extends Command{
      */
     @Override
     public void initialize() {
-        _ElevatorSubsystem.elevatorLeftMotor.set(-0.1);
-        _ElevatorSubsystem.elevatorRightMotor.set(-0.1);
+        _ElevatorSubsystem.set(-0.1);
     }
 
     /**
@@ -33,7 +32,7 @@ public class ElevatorAutoHomeCommand extends Command{
      */
     @Override
     public boolean isFinished() {
-        return !_ElevatorSubsystem.bottomlimitSwitch.get();
+        return !_ElevatorSubsystem.getBottomLimitSwitchAsBoolean();
     }
 
     /**
@@ -41,17 +40,16 @@ public class ElevatorAutoHomeCommand extends Command{
      */
     @Override
     public void end(boolean interrupted) {
-        _ElevatorSubsystem.elevatorLeftMotor.set(0.0);
-        _ElevatorSubsystem.elevatorRightMotor.set(0.0);
+        _ElevatorSubsystem.set(0.0);
 
-        StatusSignal<Angle> leftPos = _ElevatorSubsystem.elevatorLeftMotor.getPosition();
-        StatusSignal<Angle> rightPos = _ElevatorSubsystem.elevatorRightMotor.getPosition();
+        StatusSignal<Angle> leftPos = _ElevatorSubsystem.getLeftMotor().getPosition();
+        StatusSignal<Angle> rightPos = _ElevatorSubsystem.getRightMotor().getPosition();
 
         leftPos.waitForUpdate(1.0);
         rightPos.waitForUpdate(1.0);
 
-        _ElevatorSubsystem.leftHomePos = leftPos.getValueAsDouble();
-        _ElevatorSubsystem.rightHomePos = rightPos.getValueAsDouble();
+        _ElevatorSubsystem.setLeftHomePos(leftPos.getValueAsDouble());
+        _ElevatorSubsystem.setRightHomePos(rightPos.getValueAsDouble());
     }
 
 }

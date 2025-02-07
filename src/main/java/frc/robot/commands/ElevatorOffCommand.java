@@ -14,8 +14,7 @@ public class ElevatorOffCommand extends Command{
 
     @Override
     public void initialize() {
-        _ElevatorSubsystem.elevatorLeftMotor.set(0);
-        _ElevatorSubsystem.elevatorRightMotor.set(0);
+        _ElevatorSubsystem.set(0);
     }
 
     @Override
