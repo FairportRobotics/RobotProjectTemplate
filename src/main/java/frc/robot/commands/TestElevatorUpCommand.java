@@ -31,6 +31,6 @@ public class TestElevatorUpCommand extends ElevatorGoToLevelCommand
      * @return true if the elevator is not at the top level, false otherwise.
      */
     private static boolean validToMoveUp(ElevatorLevels currentLevel) {
-        return currentLevel != ElevatorLevels.MAX;
+        return currentLevel != ElevatorLevels.values()[ElevatorLevels.values().length - 1];
     }
 }
