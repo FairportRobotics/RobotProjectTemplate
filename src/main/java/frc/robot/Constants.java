@@ -48,6 +48,9 @@ public final class Constants {
       }
       }
 
+      public double intake = .5;
+      public double outake = -.5;
+      public double stop = 0;
   public static class AdvantageKitConstants{
     public enum RobotType{
       SIM,

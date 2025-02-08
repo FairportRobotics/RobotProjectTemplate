@@ -36,12 +36,13 @@ public class HandSubsystem extends SubsystemBase {
     
   }
 
+  public void setSpeed(double iShowSpeed){
+    this.handMotor.set(iShowSpeed);
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if(limitSwitch.)
-
 
   }
 

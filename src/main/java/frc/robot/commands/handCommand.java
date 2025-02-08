@@ -17,27 +17,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
  
 
-public class IntakeCommand extends Command{
+public class handCommand extends Command{
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 
     HandSubsystem _HandSubsystem;
-    double intakeSpeed;
-
+    double speed;
     VelocityVoltage intakeRequest;
 
-    public IntakeCommand(HandSubsystem intakeSubsystem, double intakeSpeed){
-        _HandSubsystem = intakeSubsystem;
-        this.intakeSpeed = intakeSpeed;
-
+    public handCommand(HandSubsystem handSubsystem, double intakeSpeed){
+        _HandSubsystem = handSubsystem;
+        speed = intakeSpeed;
         addRequirements(_HandSubsystem);
-
-        intakeRequest = new VelocityVoltage(0).withSlot(0);
     }
 
     @Override
     public void initialize() {
-        _HandSubsystem.intakeLeftMotor.setControl(intakeRequest.withVelocity(intakeSpeed));
-//        _IntakeSubsystem.intakeRightMotor.set(ControlMode.PercentOutput, intakeSpeed);
+      _HandSubsystem.setSpeed(speed);
     }
 
     @Override
@@ -47,6 +42,6 @@ public class IntakeCommand extends Command{
 
     @Override
     public void end(boolean interrupted) {
-        _HandSubsystem.intakeLeftMotor.stopMotor();
+        _HandSubsystem.setSpeed(0.0);
     }
 }
