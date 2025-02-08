@@ -13,12 +13,17 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
 
   
   public static class ArmConstants{
+
+    public static final int MotorYID = 0;
+    public static final int LimitID = 0;
     /**
    * The ArmPositions Enum is used to store positons for the arm. There are 4 values.
    * <ul>
@@ -56,5 +61,7 @@ public final class Constants {
     }
     public static final RobotType CURRENT_MODE = RobotType.REAL;
   }
+
+  
   }
 }

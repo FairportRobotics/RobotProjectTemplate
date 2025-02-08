@@ -11,6 +11,7 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
@@ -20,20 +21,23 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants.ArmPositions;
-
 
 public class ArmSubsystem extends SubsystemBase {
 
   
-  public SparkMax armYMotor = new SparkMax(0, MotorType.kBrushless);
-  public DigitalInput limitSwitch = new DigitalInput(0);
+  public SparkMax armYMotor; 
+  public DigitalInput limitSwitch; 
   public double absPos;
-  public ArmPositions pos = ArmPositions.NONE;
-  public SparkClosedLoopController m_controller = armYMotor.getClosedLoopController();
+  public ArmPositions pos; 
+  public SparkClosedLoopController m_controller; 
   /** Creates a new ExampleSubsystem. */
   public ArmSubsystem() {
-    
+    armYMotor = new SparkMax( Constants.ArmConstants.MotorYID , MotorType.kBrushless);
+    limitSwitch = new DigitalInput(Constants.ArmConstants.LimitID);
+    pos = ArmPositions.NONE;
+    m_controller = armYMotor.getClosedLoopController();
   }
 
   /**
@@ -50,16 +54,6 @@ public class ArmSubsystem extends SubsystemBase {
         });
   }
 
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
-  }
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -73,7 +67,7 @@ public class ArmSubsystem extends SubsystemBase {
                 absPos = armYMotor.getEncoder().getPosition();
             }
       }
-      Logger.recordOutput("Elevator At Top: ", !limitSwitch.get());
+      Logger.recordOutput("Arm at Home ", !limitSwitch.get());
       Logger.recordOutput("Arm Position: ", armYMotor.getEncoder().getPosition());
 
   }
@@ -92,7 +86,8 @@ public class ArmSubsystem extends SubsystemBase {
    *@param newPos New ArmPositions object to go to. This is important for keeping track of where the arm is. Maybe.
    */
   public void setPos(ArmPositions newPos){
-    
+    m_controller.setReference(newPos.getValue(), ControlType.kPosition);
+    pos = newPos;
   }
 
 

@@ -39,7 +39,6 @@ public class SetArmPosCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.m_controller.setReference(pos.getValue(), ControlType.kPosition);
     m_subsystem.setPos(pos);
   }
 
@@ -54,6 +53,9 @@ public class SetArmPosCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (m_subsystem.armYMotor.getEncoder().getPosition() == pos.getValue()) {
+      return true;
+    }
     return false;
   }
 }

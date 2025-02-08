@@ -28,7 +28,7 @@ public class ArmUpCommand extends Command {
     m_subsystem = subsystem;
     pos = m_subsystem.getPos();
     if (pos.ordinal() > ArmPositions.UP.ordinal()) {
-      pos = ArmPositions.values()[pos.ordinal() + 1];
+      pos = ArmPositions.values()[pos.ordinal()];
     }
 
 
@@ -55,6 +55,9 @@ public class ArmUpCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (m_subsystem.armYMotor.getEncoder().getPosition() == pos.getValue()) {
+      return true;
+    }
     return false;
   }
 }
