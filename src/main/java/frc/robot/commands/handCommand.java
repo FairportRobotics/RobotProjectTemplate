@@ -24,22 +24,30 @@ public class handCommand extends Command{
     double speed;
     VelocityVoltage intakeRequest;
 
+   /**
+   * Creates a new HandCommand.
+   *  HandCommand causees the neo in the hand to spin off the given value either intakeing or outakeing
+   * @param subsystem The HandSubsystem.
+   */
     public handCommand(HandSubsystem handSubsystem, double intakeSpeed){
         _HandSubsystem = handSubsystem;
         speed = intakeSpeed;
         addRequirements(_HandSubsystem);
     }
 
+    // Called when the command is initially scheduled.
     @Override
     public void initialize() {
       _HandSubsystem.setSpeed(speed);
     }
 
+    // Returns true when the command should end.
     @Override
     public boolean isFinished() {
         return true;
     }
 
+    //Ends the movement of the motor
     @Override
     public void end(boolean interrupted) {
         _HandSubsystem.setSpeed(0.0);
