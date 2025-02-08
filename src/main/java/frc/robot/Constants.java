@@ -43,12 +43,12 @@ public final class Constants {
   public static class ElevatorEncoderValues
   {
     public static final double HOME = 0;
-    public static final double CORAL = 2;
-    public static final double ONE = 4;
-    public static final double TWO = 6;
-    public static final double THREE = 8;
-    public static final double FOUR = 10;
-    public static final double MAX = 10.25;
+    public static final double CORAL = 0;
+    public static final double ONE = 0;
+    public static final double TWO = 0;
+    public static final double THREE = 0;
+    public static final double FOUR = 0;
+    public static final double MAX = 0;
   }
 
   public static class ElevatorMotors {
