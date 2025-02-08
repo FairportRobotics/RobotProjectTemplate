@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.revrobotics.spark.SparkBase.ControlType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
  
@@ -23,7 +24,7 @@ public class handCommand extends Command{
     HandSubsystem _HandSubsystem;
     double speed;
     VelocityVoltage intakeRequest;
-
+    public DigitalInput handLimitSwitch = new DigitalInput(1);
    /**
    * Creates a new HandCommand.
    *  HandCommand causees the neo in the hand to spin off the given value either intakeing or outakeing
@@ -44,7 +45,7 @@ public class handCommand extends Command{
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return true;
+    return handLimitSwitch.get();
     }
 
     //Ends the movement of the motor
