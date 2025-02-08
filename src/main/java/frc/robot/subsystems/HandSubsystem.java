@@ -36,56 +36,14 @@ public class HandSubsystem extends SubsystemBase {
     
   }
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
-  }
-
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
-  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if(limit)
+    if(limitSwitch.)
 
 
   }
-  /**
-   * Get the value of the curent set position for the arm.
-   *
-   * @return an ArmPositions object that is curently set in the Subsystem. So you can know what position the arm is curently set to. It's kinda usefull.
-   */
-  public ArmPositions getPos(){
-    return pos;
-  }
-
-  /**
-   * Set the value of the arm position.
-   *
-   *@param newPos New ArmPositions object to go to. This is important for keeping track of where the arm is. Maybe.
-   */
-  public void setPos(ArmPositions newPos){
-    
-  }
-
-
 
   @Override
   public void simulationPeriodic() {
