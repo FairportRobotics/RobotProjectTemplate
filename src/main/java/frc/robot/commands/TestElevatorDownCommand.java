@@ -11,7 +11,14 @@ public class TestElevatorDownCommand extends ElevatorGoToLevelCommand
      * @param elevatorSubsystem The elevator subsystem used by this command.
      */
     public TestElevatorDownCommand(ElevatorSubsystem elevatorSubsystem) {
-        super(elevatorSubsystem, getLevel(elevatorSubsystem.getLevel()));
+        super(elevatorSubsystem, getLevel(elevatorSubsystem.getGoToLevel()));
+    }
+
+    @Override
+    public void execute()
+    {
+        goToLevel = getLevel(goToLevel);
+        super.execute();
     }
 
     /**
@@ -22,7 +29,7 @@ public class TestElevatorDownCommand extends ElevatorGoToLevelCommand
     private static ElevatorLevels getLevel(ElevatorLevels currentLevel) {
         if(validToMoveDown(currentLevel))
             return ElevatorLevels.values()[currentLevel.ordinal() - 1];
-        return ElevatorLevels.NONE;
+        return currentLevel;
     }
 
     /**
@@ -31,6 +38,6 @@ public class TestElevatorDownCommand extends ElevatorGoToLevelCommand
      * @return true if the elevator is not at the bottom level, false otherwise.
      */
     private static boolean validToMoveDown(ElevatorLevels currentLevel) {
-        return currentLevel != ElevatorLevels.values()[0];
+        return !ElevatorLevels.values()[0].equals(currentLevel);
     }
 }

@@ -29,7 +29,6 @@ public final class Constants {
 
   public enum ElevatorLevels
   {
-    NONE,
     HOME,
     CORAL,
     ONE,
@@ -47,8 +46,8 @@ public final class Constants {
     public static final double ONE = 4;
     public static final double TWO = 6;
     public static final double THREE = 8;
-    public static final double FOUR = 10;
-    public static final double MAX = 10.25;
+    public static final double FOUR = 9.8;
+    //public static final double MAX = 10.25;
   }
 
   public static class ElevatorMotors {

@@ -4,7 +4,6 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorLevels;
@@ -13,8 +12,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 public class ElevatorGoToLevelCommand extends Command {
 
     private ElevatorSubsystem elevatorSubsystem;
-    private ElevatorLevels elevatorLevel;
-    private double requestPosRots = Double.MAX_VALUE;
+    protected ElevatorLevels goToLevel;
 
     private StatusSignal<Angle> leftPosition;
     private StatusSignal<Angle> rightPosition;
@@ -25,18 +23,13 @@ public class ElevatorGoToLevelCommand extends Command {
     final PositionVoltage rightPositionRequest;
     final PositionVoltage leftPositionRequest;
 
-    public ElevatorGoToLevelCommand(ElevatorSubsystem elevatorSubsystem, ElevatorLevels elevatorLevel) {
-        this.elevatorLevel = elevatorLevel;
+    public ElevatorGoToLevelCommand(ElevatorSubsystem elevatorSubsystem, ElevatorLevels goToLevel) {
+        addRequirements(elevatorSubsystem);
         rightPositionRequest = new PositionVoltage(0).withSlot(0);
         leftPositionRequest = new PositionVoltage(0).withSlot(0);
 
-        if(ElevatorLevels.NONE.equals(elevatorLevel))
-            return;
-
         this.elevatorSubsystem = elevatorSubsystem;
-        addRequirements(elevatorSubsystem);
-
-        requestPosRots = getEncoderValueForLevel(elevatorLevel);
+        this.goToLevel = goToLevel;
 
         rightPosition = elevatorSubsystem.getRightMotor().getPosition();
         leftPosition = elevatorSubsystem.getLeftMotor().getPosition();
@@ -48,36 +41,29 @@ public class ElevatorGoToLevelCommand extends Command {
 
     @Override
     public void initialize() {
-        if(ElevatorLevels.NONE.equals(elevatorLevel))
-            return;
-
-        setMotorNeutralMode(NeutralModeValue.Coast);
-
-        //Moves both motors toward
-        elevatorSubsystem.getLeftMotor()
-                .setControl(leftPositionRequest.withPosition(elevatorSubsystem.getLeftHomePos() + requestPosRots));
-        elevatorSubsystem.getRightMotor()
-                .setControl(rightPositionRequest.withPosition(elevatorSubsystem.getRightHomePos() + requestPosRots));
+        elevatorSubsystem.setLevel(goToLevel);
     }
 
 
     @Override
     public boolean isFinished() {
-        if(ElevatorLevels.NONE.equals(elevatorLevel))
-            return true;
+       //return isCloseEnoughToRightLevel();
+       return true;
+    }
+
+    /**
+     * Checks if the elevator position is clos enough to the goToLevel of the elevator.
+     * @return true if it is clos enough, false otherwise.
+     */
+    private boolean isCloseEnoughToRightLevel()
+    {
         ErrorRefresh();
-        if (requestPosRots <= 0) {
-            return !elevatorSubsystem.getBottomLimitSwitchAsBoolean();
-        } else if (leftPosition.hasUpdated() && rightPosition.hasUpdated()) {
-
-            SmartDashboard.putNumber("Ele Left Pos", leftPosition.getValueAsDouble());
-            SmartDashboard.putNumber("Ele Right", rightPosition.getValueAsDouble());
-
-            return (Math.abs(leftPosition.getValueAsDouble() - (requestPosRots + elevatorSubsystem.getLeftHomePos())) <= 0.1
-                    ||
-                    Math.abs(rightPosition.getValueAsDouble()
-                            - (requestPosRots + elevatorSubsystem.getRightHomePos())) <= 0.1);
-        }
+        MotorRefresh();
+        double error = Math.max(leftPosError.getValueAsDouble(), rightPosError.getValueAsDouble());
+        double positionOfElevator = elevatorSubsystem.getLeftMotor().getPosition().getValueAsDouble();
+        if(Math.abs(positionOfElevator - getEncoderValueForLevel(elevatorSubsystem.getGoToLevel())) <= Math.max(error, 0.5) ||
+        (ElevatorLevels.HOME.equals(elevatorSubsystem.getGoToLevel()) && elevatorSubsystem.getBottomLimitSwitchAsBoolean()))
+            return true;
         return false;
     }
 
@@ -87,8 +73,6 @@ public class ElevatorGoToLevelCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         // RobotContainer.noteAquired = false;
-        stopMotors();
-        setMotorNeutralMode(NeutralModeValue.Brake);
     }
 
     /**
@@ -110,8 +94,8 @@ public class ElevatorGoToLevelCommand extends Command {
                 return Constants.ElevatorEncoderValues.THREE;
             case FOUR:
                 return Constants.ElevatorEncoderValues.FOUR;
-            case MAX:
-                return Constants.ElevatorEncoderValues.MAX;
+            //case MAX:
+                //return Constants.ElevatorEncoderValues.MAX;
             default:
                 throw new IllegalArgumentException("Unknown level: " + level);
         }
@@ -139,5 +123,11 @@ public class ElevatorGoToLevelCommand extends Command {
     private void ErrorRefresh() {
         leftPosError.refresh();
         rightPosError.refresh();
+    }
+
+    private void MotorRefresh()
+    {
+        leftPosition.refresh();
+        rightPosition.refresh();
     }
 }
