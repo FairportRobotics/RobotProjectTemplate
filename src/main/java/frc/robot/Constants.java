@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -41,15 +39,16 @@ public final class Constants {
     MAX;
   }
 
+  //HOME is the MIN level of the elevator.
   public static class ElevatorEncoderValues
   {
     public static final double HOME = 0;
-    public static final double CORAL = 0;
-    public static final double ONE = 0;
-    public static final double TWO = 0;
-    public static final double THREE = 0;
-    public static final double FOUR = 0;
-    public static final double MAX = 0;
+    public static final double CORAL = 2;
+    public static final double ONE = 4;
+    public static final double TWO = 6;
+    public static final double THREE = 8;
+    public static final double FOUR = 10;
+    public static final double MAX = 10.25;
   }
 
   public static class ElevatorMotors {
