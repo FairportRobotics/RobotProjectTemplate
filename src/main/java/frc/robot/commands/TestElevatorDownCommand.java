@@ -31,6 +31,6 @@ public class TestElevatorDownCommand extends ElevatorGoToLevelCommand
      * @return true if the elevator is not at the bottom level, false otherwise.
      */
     private static boolean validToMoveDown(ElevatorLevels currentLevel) {
-        return currentLevel != ElevatorLevels.HOME;
+        return currentLevel != ElevatorLevels.values()[0];
     }
 }
