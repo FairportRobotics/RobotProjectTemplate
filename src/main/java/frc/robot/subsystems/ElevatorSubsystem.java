@@ -20,8 +20,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double leftHomePos = Double.MAX_VALUE;
     private double rightHomePos = Double.MAX_VALUE;
 
-    private TalonFX elevatorLeftMotor = new TalonFX(Constants.ElevatorConstants.ELEVATOR_LEFT_MOTOR_ID);
-    private TalonFX elevatorRightMotor = new TalonFX(Constants.ElevatorConstants.ELEVATOR_RIGHT_MOTOR_ID);
+    private TalonFX elevatorLeftMotor = new TalonFX(Constants.ElevatorMotors.LEFT_ID);
+    private TalonFX elevatorRightMotor = new TalonFX(Constants.ElevatorMotors.RIGHT_ID);
     //DigitalInput toplimitSwitch;
     private DigitalInput bottomlimitSwitch;
 
@@ -34,7 +34,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public ElevatorSubsystem() {
         //toplimitSwitch = new DigitalInput(8);
-        bottomlimitSwitch = new DigitalInput(Constants.ElevatorConstants.ELEVATOR_BOTTOM_SWITCH_ID);
+        bottomlimitSwitch = new DigitalInput(Constants.ElevatorLimitSwitches.BOTTOM_ID);
 
         TalonFXConfiguration elevatorMotor1Config = getDefaultTalonFXConfiguration();
         elevatorMotor1Config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
