@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.ElevatorLevels;
+import frc.robot.commands.ElevatorGoToLevelCommand;
 import frc.robot.commands.TestElevatorDownCommand;
 import frc.robot.commands.TestElevatorUpCommand;
 import frc.robot.generated.TunerConstants;
@@ -71,9 +73,11 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         //driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        // Sets the pov up and down of operator's controller to increase or decrease the level of the arm elevator.
+        // Configures buttons to move the elevator.
         driver.povUp().onTrue(new TestElevatorUpCommand(elevatorSubsystem));
         driver.povDown().onTrue(new TestElevatorDownCommand(elevatorSubsystem));
+        driver.leftBumper().onTrue(new ElevatorGoToLevelCommand(elevatorSubsystem, ElevatorLevels.HOME));
+        driver.rightBumper().onTrue(new ElevatorGoToLevelCommand(elevatorSubsystem, ElevatorLevels.FOUR));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
