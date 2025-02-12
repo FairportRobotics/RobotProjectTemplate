@@ -128,8 +128,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     private EncoderGetter encoderGetter = ElevatorGoToLevelCommand.ENCODER_GETTER;
 
     // Logic variables for the periodic method.
-    private boolean isChangingLevel = false, isBraked = false;
-    private int skipCycles = 0;
+    private volatile boolean isChangingLevel = false, isBraked = false;
+    private volatile int skipCycles = 0;
 
     //Stores all the registered helpers.
     private Helper[] helpers = {bottomLimitSwitch, leftPos, rightPos};
@@ -150,7 +150,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorRightMotor.getPosition().setUpdateFrequency(50);
         elevatorRightMotor.optimizeBusUtilization();
         // elevatorMotor2Config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
     }
 
     /**
@@ -205,9 +204,12 @@ public class ElevatorSubsystem extends SubsystemBase {
              * then 5 cycles of recalibrating the home positions (~100 ms) are skipped to
              * ensure enough time for the elevator to deactivate the bottom limit switch
              * and not trigger a recalibration stop in case the elevator is at the bottom currently.
+             * skipCycles is set to 0 if the elevator is going to the home position.
              */
             if (!ElevatorLevels.HOME.equals(goToLevel))
                 skipCycles = 5;
+            else
+                skipCycles = 0;
         } else
             defaultPeriodic();
         scheduleUpdates();
