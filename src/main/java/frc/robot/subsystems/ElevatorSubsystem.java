@@ -16,25 +16,6 @@ import frc.robot.commands.ElevatorGoToLevelCommand;
 import frc.robot.commands.ElevatorGoToLevelCommand.EncoderGetter;
 
 public class ElevatorSubsystem extends SubsystemBase {
-    class ObjectShell<T> {
-        //Stores some T object.
-        private volatile T value;
-        //Recieves a T object and stores it.
-        public ObjectShell(T value)
-        {
-            this.value = value;
-        }
-        //Returns the stored T object.
-        public T get()
-        {
-            return value;
-        }
-        //Sets the stored T object.
-        public void set(T value)
-        {
-            this.value = value;
-        }
-    }
     interface Helper
     {
         public void scheduleUpdate();
@@ -44,14 +25,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         //Get value should be initialized on construction of its subclasses
         private boolean scheduleUpdate = false;
         //Stores the value of a subclass.
-        protected final ObjectShell<T> SHELL;
+        protected T value;
         /**
          * Constructs a Helper object with a value and a scheduleRunnable.
-         * @param SHELL contains the value to be returned by the Helper.
+         * @param value contains the most recent value of the supplier.
          */
-        public AbstractHelper(ObjectShell<T> SHELL)
+        public AbstractHelper(T value)
         {
-            this.SHELL = SHELL;
+            this.value = value;
         }
         /**
          * Gets the value of the Helper object.
@@ -64,7 +45,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                 update();
                 scheduleUpdate = false;
             }
-            return SHELL.get();
+            return value;
         }
         /**
          * Schedules an update for the cached value the next time get is called.
@@ -84,12 +65,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     class SwitchHelper extends AbstractHelper<Boolean> {
         private DigitalInput limitSwitch;
         public SwitchHelper(DigitalInput limitSwitch) {
-            super(new ObjectShell<Boolean>(limitSwitch.get()));
+            super(limitSwitch.get());
             this.limitSwitch = limitSwitch;
         }
         @Override
         protected void update() {
-            SHELL.set(limitSwitch.get());
+            value = limitSwitch.get();
         }
     }
     /**
@@ -98,12 +79,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     class MotorPositionHelper extends AbstractHelper<Double> {
         private StatusSignal<Angle> position;
         public MotorPositionHelper(StatusSignal<Angle> position) {
-            super(new ObjectShell<Double>(position.refresh().getValueAsDouble()));
+            super(position.refresh().getValueAsDouble());
             this.position = position;
         }
         @Override
         protected void update() {
-            SHELL.set(position.refresh().getValueAsDouble());
+            value = position.refresh().getValueAsDouble();
         }
     }
 
