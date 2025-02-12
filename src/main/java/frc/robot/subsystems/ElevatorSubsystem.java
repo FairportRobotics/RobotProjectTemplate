@@ -1,11 +1,13 @@
 package frc.robot.subsystems;//lol "package" HA AH AHAHAHAGGGG *Cough noise *Cough noise*5 *Falls down stairs... - Lukas
 
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -14,9 +16,95 @@ import frc.robot.commands.ElevatorGoToLevelCommand;
 import frc.robot.commands.ElevatorGoToLevelCommand.EncoderGetter;
 
 public class ElevatorSubsystem extends SubsystemBase {
-    @FunctionalInterface
-    public interface PositionGetter {
-        double getPos(TalonFX motor);
+    class ObjectShell<T> {
+        //Stores some T object.
+        private volatile T value;
+        //Recieves a T object and stores it.
+        public ObjectShell(T value)
+        {
+            this.value = value;
+        }
+        //Returns the stored T object.
+        public T get()
+        {
+            return value;
+        }
+        //Sets the stored T object.
+        public void set(T value)
+        {
+            this.value = value;
+        }
+    }
+    interface Helper
+    {
+        public void scheduleUpdate();
+    }
+    abstract class AbstractHelper<T> implements Helper //T representing some type of object.
+    {
+        //Get value should be initialized on construction of its subclasses
+        private boolean scheduleUpdate = false;
+        //Stores the value of a subclass.
+        protected final ObjectShell<T> SHELL;
+        /**
+         * Constructs a Helper object with a value and a scheduleRunnable.
+         * @param SHELL contains the value to be returned by the Helper.
+         */
+        public AbstractHelper(ObjectShell<T> SHELL)
+        {
+            this.SHELL = SHELL;
+        }
+        /**
+         * Gets the value of the Helper object.
+         * @return the value of the Helper object.
+         */
+        public final T get()
+        {
+            if(scheduleUpdate)
+            {
+                update();
+                scheduleUpdate = false;
+            }
+            return SHELL.get();
+        }
+        /**
+         * Schedules an update for the cached value the next time get is called.
+         */
+        public final void scheduleUpdate()
+        {
+            scheduleUpdate = true;
+        }
+        /**
+         * Requires the subclass to update the value of the Shell object.
+         */
+        protected abstract void update();
+    }
+    /**
+     * Stores a limit switch and caches its get Boolean value.
+     */
+    class SwitchHelper extends AbstractHelper<Boolean> {
+        private DigitalInput limitSwitch;
+        public SwitchHelper(DigitalInput limitSwitch) {
+            super(new ObjectShell<Boolean>(limitSwitch.get()));
+            this.limitSwitch = limitSwitch;
+        }
+        @Override
+        protected void update() {
+            SHELL.set(limitSwitch.get());
+        }
+    }
+    /**
+     * Stores a motor position and caches its Double value.
+     */
+    class MotorPositionHelper extends AbstractHelper<Double> {
+        private StatusSignal<Angle> position;
+        public MotorPositionHelper(StatusSignal<Angle> position) {
+            super(new ObjectShell<Double>(position.refresh().getValueAsDouble()));
+            this.position = position;
+        }
+        @Override
+        protected void update() {
+            SHELL.set(position.refresh().getValueAsDouble());
+        }
     }
 
     // The home positions of the elevator motors, initially we don't know the home
@@ -28,26 +116,26 @@ public class ElevatorSubsystem extends SubsystemBase {
     private TalonFX elevatorLeftMotor = new TalonFX(Constants.ElevatorMotors.LEFT_ID),
             elevatorRightMotor = new TalonFX(Constants.ElevatorMotors.RIGHT_ID);
 
-    // The bottom limit switch of the elevator.
-    private DigitalInput bottomlimitSwitch;
+    // Helpers whe it comes to caching outcomes of the suppliers.
+    private SwitchHelper bottomLimitSwitch = new SwitchHelper(new DigitalInput(Constants.ElevatorLimitSwitches.BOTTOM_ID));
+    private MotorPositionHelper leftPos = new MotorPositionHelper(elevatorLeftMotor.getPosition());
+    private MotorPositionHelper rightPos = new MotorPositionHelper(elevatorRightMotor.getPosition());
 
     // The level that the elevator should go to.
     private volatile ElevatorLevels goToLevel = Constants.ElevatorLevels.HOME;
 
+    // Stores the encoder getter for the elevator for faster access.
     private EncoderGetter encoderGetter = ElevatorGoToLevelCommand.ENCODER_GETTER;
-
-    // Used to extract the most up-to-date position of the inputted motor.
-    private PositionGetter getterPos = (motor) -> {
-        return motor.getPosition().getValueAsDouble();
-    };
 
     // Logic variables for the periodic method.
     private boolean isChangingLevel = false, isBraked = false;
     private int skipCycles = 0;
 
+    //Stores all the registered helpers.
+    private Helper[] helpers = {bottomLimitSwitch, leftPos, rightPos};
+
     public ElevatorSubsystem() {
         // toplimitSwitch = new DigitalInput(8);
-        bottomlimitSwitch = new DigitalInput(Constants.ElevatorLimitSwitches.BOTTOM_ID);
 
         TalonFXConfiguration elevatorMotor1Config = getDefaultTalonFXConfiguration();
         elevatorMotor1Config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -116,12 +204,21 @@ public class ElevatorSubsystem extends SubsystemBase {
              * If the home position is not the level that the elevator should be going to,
              * then 5 cycles of recalibrating the home positions (~100 ms) are skipped to
              * ensure enough time for the elevator to deactivate the bottom limit switch
-             * and not trigger a recalibration stop.
+             * and not trigger a recalibration stop in case the elevator is at the bottom currently.
              */
             if (!ElevatorLevels.HOME.equals(goToLevel))
                 skipCycles = 5;
         } else
             defaultPeriodic();
+        scheduleUpdates();
+    }
+
+    /**
+     * Schedules updates for all the helpers.
+     */
+    private void scheduleUpdates() {
+        for(Helper helper : helpers)
+            helper.scheduleUpdate();
     }
 
     /**
@@ -136,11 +233,9 @@ public class ElevatorSubsystem extends SubsystemBase {
          * pressed, and this check is not intentially skipped, recalibrate the home
          * position.
          */
-        if (!isBraked && !bottomlimitSwitch.get() && skipCycles == 0) {
+        if (!isBraked && !bottomLimitSwitch.get() && skipCycles == 0) {
             stopMotors();
-
-            setHomePositions(getterPos.getPos(elevatorLeftMotor), getterPos.getPos(elevatorRightMotor));
-
+            setHomePositions(leftPos.get(), rightPos.get());
             return;
         }
 
@@ -154,7 +249,7 @@ public class ElevatorSubsystem extends SubsystemBase {
          * 1, stop the motors.
          */
         if (!isBraked && !ElevatorLevels.HOME.equals(goToLevel)
-                && Math.abs(getterPos.getPos(elevatorLeftMotor) + leftHomePos - encoderGetter.get(goToLevel)) <= 1) {
+                && Math.abs(leftPos.get() + leftHomePos - encoderGetter.get(goToLevel)) <= 1) {
             stopMotors();
             return;
         }
@@ -168,11 +263,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
     }
 
+    /**
+     * Moves the elevator down at some default speed.
+     */
     public void moveDown() {
+        double speed = -0.075;
         setMotorNeutralMode(NeutralModeValue.Coast);
-        isBraked = false;
-        elevatorLeftMotor.set(-0.075);
-        elevatorRightMotor.set(-0.075);
+        elevatorLeftMotor.set(speed);
+        elevatorRightMotor.set(speed);
     }
 
     /**
@@ -221,7 +319,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @return true if the bottom limit switch is pressed, false otherwise.
      */
     public boolean getBottomLimitSwitchAsBoolean() {
-        return bottomlimitSwitch.get();
+        return bottomLimitSwitch.get();
     }
 
     @Deprecated
@@ -280,9 +378,8 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     private void moveElevator() {
         setMotorNeutralMode(NeutralModeValue.Coast);
-        isBraked = false;
         if (!ElevatorLevels.HOME.equals(goToLevel))
-            setMotorPositions(ElevatorGoToLevelCommand.ENCODER_GETTER.get(goToLevel));
+            setMotorPositions(encoderGetter.get(goToLevel));
         else
             moveDown();
     }
@@ -294,17 +391,17 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorLeftMotor.stopMotor();
         elevatorRightMotor.stopMotor();
         setMotorNeutralMode(NeutralModeValue.Brake);
-        isBraked = true;
     }
 
     /**
      * Sets the neutral mode of both elevator motors.
-     * 
+     * Updates the isBraked variable accordingly.
      * @param modeValue is the neutral mode of the motors.
      */
     private void setMotorNeutralMode(NeutralModeValue modeValue) {
         elevatorLeftMotor.setNeutralMode(modeValue);
         elevatorRightMotor.setNeutralMode(modeValue);
+        isBraked = NeutralModeValue.Brake.equals(modeValue);
     }
 
     /**
