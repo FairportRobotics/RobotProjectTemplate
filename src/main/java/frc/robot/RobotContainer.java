@@ -15,7 +15,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.ElevatorLevelCommand;
-import frc.robot.commands.handCommand;
+import frc.robot.commands.HandCommand;
+import frc.robot.commands.Wait;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -75,8 +76,8 @@ public class RobotContainer {
         driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         // Controlls if the lego hand intakes or outakes
-        operator.x().onTrue(new handCommand(handSubsystem, .5));
-        operator.y().onTrue(new handCommand(handSubsystem, -.5));
+        operator.x().onTrue(new HandCommand(handSubsystem, .5));
+        operator.y().onTrue(new Wait(handSubsystem));
 
         // Sets the pov up and down of operator's controller to increase or decrease the level of the arm elevator.
         operator.povUp().onTrue(new ElevatorLevelCommand(elevatorSubsystem, true));

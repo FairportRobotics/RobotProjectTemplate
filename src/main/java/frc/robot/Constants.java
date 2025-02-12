@@ -19,6 +19,8 @@ public final class Constants {
 
   
   public static class ArmConstants{
+    public static final int ARM_MOTOR_ID = 10;
+    public static final int ARM_LIMIT_SWITCH_ID = 1;
     /**
    * The ArmPositions Enum is used to store positons for the arm. There are 4 values.
    * <ul>
@@ -50,7 +52,6 @@ public final class Constants {
 
       public double intake = .5;
       public double outake = -.5;
-      public double stop = 0;
   public static class AdvantageKitConstants{
     public enum RobotType{
       SIM,
