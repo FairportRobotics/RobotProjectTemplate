@@ -35,7 +35,7 @@ public final class Constants {
     TWO,
     THREE,
     FOUR,
-    MAX;
+    //MAX;
   }
 
   //HOME is the MIN level of the elevator.
@@ -46,7 +46,7 @@ public final class Constants {
     public static final double ONE = 4;
     public static final double TWO = 6;
     public static final double THREE = 8;
-    public static final double FOUR = 9.8;
+    public static final double FOUR = 9.5;
     //public static final double MAX = 10.25;
   }
 

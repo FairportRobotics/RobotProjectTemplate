@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorLevels;
 import frc.robot.commands.ElevatorGoToLevelCommand;
+import frc.robot.commands.ElevatorGoToLevelCommand.EncoderGetter;
 
 public class ElevatorSubsystem extends SubsystemBase {
     @FunctionalInterface
@@ -33,13 +34,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     // The level that the elevator should go to.
     private volatile ElevatorLevels goToLevel = Constants.ElevatorLevels.HOME;
 
+    private EncoderGetter encoderGetter = ElevatorGoToLevelCommand.ENCODER_GETTER;
+
     // Used to extract the most up-to-date position of the inputted motor.
     private PositionGetter getterPos = (motor) -> {
         return motor.getPosition().getValueAsDouble();
     };
 
     // Logic variables for the periodic method.
-    private boolean isChangingLevel = false, isCalibrated = false;
+    private boolean isChangingLevel = false, isBraked = false;
     private int skipCycles = 0;
 
     public ElevatorSubsystem() {
@@ -67,9 +70,9 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     private static TalonFXConfiguration getDefaultTalonFXConfiguration() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 1.7;
-        config.Slot0.kI = 1.5;
-        config.Slot0.kD = 0.3;
+        config.Slot0.kP = .9;
+        config.Slot0.kI = .3;
+        config.Slot0.kD = 0;
         return config;
     }
 
@@ -92,7 +95,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (newLevel == null || goToLevel.equals(newLevel) || elevatorNotInitialized())
             return;
         goToLevel = newLevel;
-        // The elevator must change its position now.
         isChangingLevel = true;
     }
 
@@ -104,15 +106,12 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        System.out.println(goToLevel.toString());
+        System.out.println(isBraked);
         if (isChangingLevel) {
             // Moves the elevator to the level
             moveElevator();
             // The elevator is already moving, default checks can now continue.
             isChangingLevel = false;
-            // The home position will recalibrate the next time the elevator reaches home
-            // position.
-            isCalibrated = false;
             /*
              * If the home position is not the level that the elevator should be going to,
              * then 5 cycles of recalibrating the home positions (~100 ms) are skipped to
@@ -132,21 +131,16 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     private void defaultPeriodic() {
         /**
-         * If the bottom limit switch is pressed, the home positions are not already
-         * calibrated, and this check is not intentially skipped, recalibrate the home
+         * If the elevator is not braking (was moving), the home positions are
+         * not already calibrated, bottom limit switch is
+         * pressed, and this check is not intentially skipped, recalibrate the home
          * position.
          */
-        if (!bottomlimitSwitch.get() && !isCalibrated && skipCycles == 0) {
-            elevatorLeftMotor.set(0.0);
-            elevatorRightMotor.set(0.0);
+        if (!isBraked && !bottomlimitSwitch.get() && skipCycles == 0) {
+            stopMotors();
 
             setHomePositions(getterPos.getPos(elevatorLeftMotor), getterPos.getPos(elevatorRightMotor));
 
-            elevatorLeftMotor.setNeutralMode(NeutralModeValue.Brake);
-            elevatorRightMotor.setNeutralMode(NeutralModeValue.Brake);
-
-            // The home positions are now calibrated
-            isCalibrated = true;
             return;
         }
 
@@ -155,13 +149,30 @@ public class ElevatorSubsystem extends SubsystemBase {
             skipCycles--;
 
         /**
-         * If robot home positions are not initialized, keep moving down.
+         * If the elevator is not braking (was moving) and the difference
+         * between the current elevator position and the goToLevel position is less than
+         * 1, stop the motors.
          */
-        if (elevatorNotInitialized()) {
-            elevatorLeftMotor.set(-0.1);
-            elevatorRightMotor.set(-0.1);
+        if (!isBraked && !ElevatorLevels.HOME.equals(goToLevel)
+                && Math.abs(getterPos.getPos(elevatorLeftMotor) + leftHomePos - encoderGetter.get(goToLevel)) <= 1) {
+            stopMotors();
             return;
         }
+
+        /**
+         * If the elevator is not initialized, move the elevator down.
+         */
+        if (elevatorNotInitialized()) {
+            moveDown();
+            return;
+        }
+    }
+
+    public void moveDown() {
+        setMotorNeutralMode(NeutralModeValue.Coast);
+        isBraked = false;
+        elevatorLeftMotor.set(-0.075);
+        elevatorRightMotor.set(-0.075);
     }
 
     /**
@@ -269,7 +280,11 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     private void moveElevator() {
         setMotorNeutralMode(NeutralModeValue.Coast);
-        setMotorPositions(ElevatorGoToLevelCommand.ENCODER_GETTER.get(goToLevel));
+        isBraked = false;
+        if (!ElevatorLevels.HOME.equals(goToLevel))
+            setMotorPositions(ElevatorGoToLevelCommand.ENCODER_GETTER.get(goToLevel));
+        else
+            moveDown();
     }
 
     /**
@@ -279,6 +294,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorLeftMotor.stopMotor();
         elevatorRightMotor.stopMotor();
         setMotorNeutralMode(NeutralModeValue.Brake);
+        isBraked = true;
     }
 
     /**

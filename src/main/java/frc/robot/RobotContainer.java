@@ -76,8 +76,8 @@ public class RobotContainer {
         // Configures buttons to move the elevator.
         driver.povUp().onTrue(new TestElevatorUpCommand(elevatorSubsystem));
         driver.povDown().onTrue(new TestElevatorDownCommand(elevatorSubsystem));
-        driver.leftBumper().onTrue(new ElevatorGoToLevelCommand(elevatorSubsystem, ElevatorLevels.HOME));
-        driver.rightBumper().onTrue(new ElevatorGoToLevelCommand(elevatorSubsystem, ElevatorLevels.FOUR));
+        driver.leftBumper().onTrue(new ElevatorGoToLevelCommand(elevatorSubsystem, ElevatorLevels.FOUR));
+        driver.rightBumper().onTrue(new ElevatorGoToLevelCommand(elevatorSubsystem, ElevatorLevels.HOME));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

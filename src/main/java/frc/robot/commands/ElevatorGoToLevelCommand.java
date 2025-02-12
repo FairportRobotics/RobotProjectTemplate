@@ -15,7 +15,7 @@ public class ElevatorGoToLevelCommand extends Command {
     // subclasses.
     protected ElevatorSubsystem elevatorSubsystem;
     // The level to set the elevator to.
-    protected static ElevatorLevels goToLevel;
+    protected ElevatorLevels goToLevel;
     // Run before the execution of this superclass' execution methods.
     protected Runnable preExecutionRunnable;
     public static final EncoderGetter ENCODER_GETTER = ElevatorGoToLevelCommand::getEncoderValueForLevel;
@@ -29,7 +29,7 @@ public class ElevatorGoToLevelCommand extends Command {
     public ElevatorGoToLevelCommand(ElevatorSubsystem elevatorSubsystem, ElevatorLevels goToLevel) {
         addRequirements(elevatorSubsystem);
         this.elevatorSubsystem = elevatorSubsystem;
-        ElevatorGoToLevelCommand.goToLevel = goToLevel;
+        this.goToLevel = goToLevel;
     }
 
     /**
@@ -40,10 +40,9 @@ public class ElevatorGoToLevelCommand extends Command {
      * @param preExecutionRunnable is the code to run before the command sets the
      *                             level of the elevator.
      */
-    protected ElevatorGoToLevelCommand(ElevatorSubsystem elevatorSubsystem, Runnable preExecutionRunnable) {
+    protected ElevatorGoToLevelCommand(ElevatorSubsystem elevatorSubsystem) {
         addRequirements(elevatorSubsystem);
         this.elevatorSubsystem = elevatorSubsystem;
-        this.preExecutionRunnable = preExecutionRunnable;
     }
 
     /**
@@ -52,8 +51,6 @@ public class ElevatorGoToLevelCommand extends Command {
      */
     @Override
     public void execute() {
-        if (preExecutionRunnable != null)
-            preExecutionRunnable.run();
         elevatorSubsystem.setLevel(goToLevel);
     }
 

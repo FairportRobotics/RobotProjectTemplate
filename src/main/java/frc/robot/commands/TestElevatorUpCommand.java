@@ -11,13 +11,14 @@ public class TestElevatorUpCommand extends ElevatorGoToLevelCommand {
      * @param elevatorSubsystem The elevator subsystem used by this command.
      */
     public TestElevatorUpCommand(ElevatorSubsystem elevatorSubsystem) {
-        super(elevatorSubsystem, new Runnable() {
-            @Override
-            public void run() {
-                goToLevel = getLevel(elevatorSubsystem.getGoToLevel()); // This will be run before the super class sets
-                                                                        // the level of the elevator.
-            }
-        });
+        super(elevatorSubsystem);
+    }
+
+    @Override
+    public void execute()
+    {
+        goToLevel = getLevel(elevatorSubsystem.getGoToLevel());
+        super.execute();
     }
 
     /**
