@@ -1,11 +1,16 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 //TODO: Make working algae code 
 public class AlgaeSubsystem extends SubsystemBase {
+  public TalonFX kraken_Motor;//Input device id here
+
+  public int number;
 /*I WILL DELETE THIS LATER ITS JUST HERE SO THERE ARENT ANY ERRORS WHEN I PUSH THIS WFILE
   public ExampleSubsystem() 
   {//NAME
@@ -19,7 +24,10 @@ public class AlgaeSubsystem extends SubsystemBase {
    * @return a command
    */
   public Command exampleMethodCommand()
-  {//NAME
+  {
+    kraken_Motor = new TalonFX(0);
+
+    //NAME
     // Inline construction of command goes here.
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
@@ -51,3 +59,7 @@ public class AlgaeSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }//NAME
 }
+
+//TODO: Limit switch
+//TODO: NEO motor
+//TODO: Kracken motor
