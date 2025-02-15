@@ -396,6 +396,15 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorRightMotor.setNeutralMode(modeValue);
         isBraked = NeutralModeValue.Brake.equals(modeValue);
     }
+     /*
+     * Attempts to change the level of the elevator.
+     * @param increaseElevator is true if the elevator should increase in level, false if the elevator should decrease in level.
+     * @return true if the elevator can change its level, false otherwise.
+     */
+    public boolean changeLevel(boolean increaseElevator)
+    {
+        throw new UnsupportedOperationException("Unimplemented method 'changeLevel'");
+    }
 
     /**
      * Sets the positions of both elevator motors.
