@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
  
 
-public class HandCommand extends Command{
+public class handCommand extends Command{
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 
     HandSubsystem _HandSubsystem;
@@ -29,7 +29,7 @@ public class HandCommand extends Command{
    *  HandCommand causees the neo in the hand to spin off the given value either intakeing or outakeing
    * @param subsystem The HandSubsystem.
    */
-    public HandCommand(HandSubsystem handSubsystem, double intakeSpeed){
+    public handCommand(HandSubsystem handSubsystem, double intakeSpeed){
         _HandSubsystem = handSubsystem;
         speed = intakeSpeed;
         addRequirements(_HandSubsystem);
