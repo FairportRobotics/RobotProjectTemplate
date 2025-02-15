@@ -3,18 +3,18 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
 
-public class ElevatorOffCommand extends Command{
+public class ElevatorOffCommand extends Command {
 
-    ElevatorSubsystem _ElevatorSubsystem;
+    private ElevatorSubsystem elevatorSubsystem;
 
-    public ElevatorOffCommand(ElevatorSubsystem ElevatorSubsystem){
-        _ElevatorSubsystem = ElevatorSubsystem;
-        addRequirements(_ElevatorSubsystem);
+    public ElevatorOffCommand(ElevatorSubsystem elevatorSubsystem) {
+        this.elevatorSubsystem = elevatorSubsystem;
+        addRequirements(elevatorSubsystem);
     }
 
     @Override
     public void initialize() {
-        _ElevatorSubsystem.set(0);
+        elevatorSubsystem.stopMotors();
     }
 
     @Override
