@@ -16,7 +16,6 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     public boolean changeLevel(boolean increaseElevator)
     {
-        //TODO unimplemented method
         throw new UnsupportedOperationException("Unimplemented method 'changeLevel'");
     }
 
