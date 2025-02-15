@@ -22,6 +22,11 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
+  public static class HandConstants{
+    public static final int HAND_MOTOR_ID = 10;
+    public static final int HAND_LIMIT_SWITCH_ID = 1;
+      }
+
   public static class ArmConstants {
 
     public static final int MotorYID = 0;
