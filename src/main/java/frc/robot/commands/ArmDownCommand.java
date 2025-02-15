@@ -38,8 +38,7 @@ public class ArmDownCommand extends Command {
    */
   public ArmDownCommand(ArmSubsystem subsystem) {
     m_subsystem = subsystem;
-    pos = m_subsystem.getPos();
-    
+
     currentPos = m_subsystem.armYMotor.getPosition();
 
     posError = m_subsystem.armYMotor.getClosedLoopError();
@@ -53,11 +52,15 @@ public class ArmDownCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    pos = m_subsystem.getPos();
+    System.out.println("pos was " + pos);
+    
+
     if (pos.ordinal() < ArmPositions.DOWN.ordinal()) {
-      pos = ArmPositions.values()[pos.ordinal() - 1];
+      pos = ArmPositions.values()[pos.ordinal() + 1];
     }
     m_subsystem.setPos(pos,posRequest);
-    System.out.println(pos);
+    System.out.println("pos is now " + pos);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -76,14 +79,15 @@ public class ArmDownCommand extends Command {
   @Override
   public boolean isFinished() {
       posError.refresh();
-
+      currentPos.refresh();
         //if (pos == ArmPositions.UP) {
             //return !m_subsystem.limitSwitch.get();
         //} 
         /*else /* */ if (currentPos.hasUpdated()) {
-
+          System.out.println("currentPos updated :D");
             SmartDashboard.putNumber("Arm Pos", currentPos.getValueAsDouble());
-
+            System.out.println(currentPos.getValueAsDouble());
+            System.out.println(Math.abs(currentPos.getValueAsDouble() - (pos.getValue() )));
             return (Math.abs(currentPos.getValueAsDouble() - (pos.getValue() )) <= 0.1);
         }
 
