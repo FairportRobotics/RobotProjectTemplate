@@ -10,8 +10,8 @@ import frc.robot.Constants;
 public class HandSubsystem extends SubsystemBase {
 
   
-  public SparkMax handMotor = new SparkMax(Constants.ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless);
-  public DigitalInput handLimitSwitch = new DigitalInput(Constants.ArmConstants.ARM_LIMIT_SWITCH_ID);
+  public SparkMax handMotor = new SparkMax(Constants.HandConstants.HAND_MOTOR_ID, MotorType.kBrushless);
+  public DigitalInput handLimitSwitch = new DigitalInput(Constants.HandConstants.HAND_LIMIT_SWITCH_ID);
   // public SparkClosedLoopController m_controller = handMotor.getClosedLoopController();
   private boolean hazPiece;
   /** Creates a new ExampleSubsystem. */

@@ -17,41 +17,11 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
-  
-  public static class ArmConstants{
-    public static final int ARM_MOTOR_ID = 10;
-    public static final int ARM_LIMIT_SWITCH_ID = 1;
-    /**
-   * The ArmPositions Enum is used to store positons for the arm. There are 4 values.
-   * <ul>
-   * <li> UP </l1>
-   * <li> MIDDLE </l1>
-   * <li> DOWN </l1>
-   * <li> NONE </l1>
-   * </ul>
-   * Each has a double that can be accesed with ArmPositions.getValue. Each value only has one double. No more, no less. If thou shall try to get two, thou shall only get one, and one shall be the number given. Trying to get three is outright. 
-   * 
-   */
-    public enum ArmPositions{
-      UP(1),
-      MIDDLE(2),
-      DOWN(3),
-      NONE(0);
-      double wa;
-      private ArmPositions(double value){
-        this.wa = value;
-        }
-      /**
-       * Get the value of the ArmPositions Object
-       * @return A double that is to be used for seting the position of the arm.
-       */
-      public double getValue(){
-        return wa;
-      }
+  public static class HandConstants{
+    public static final int HAND_MOTOR_ID = 10;
+    public static final int HAND_LIMIT_SWITCH_ID = 1;
       }
 
-      public double intake = .5;
-      public double outake = -.5;
   public static class AdvantageKitConstants{
     public enum RobotType{
       SIM,
@@ -59,6 +29,5 @@ public final class Constants {
       REPLAY
     }
     public static final RobotType CURRENT_MODE = RobotType.REAL;
-  }
   }
 }
