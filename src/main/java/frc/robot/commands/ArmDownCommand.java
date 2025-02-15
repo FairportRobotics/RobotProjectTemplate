@@ -53,16 +53,17 @@ public class ArmDownCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (pos.ordinal() > ArmPositions.DOWN.ordinal()) {
+    if (pos.ordinal() < ArmPositions.DOWN.ordinal()) {
       pos = ArmPositions.values()[pos.ordinal() - 1];
     }
     m_subsystem.setPos(pos,posRequest);
+    System.out.println(pos);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("ArmUpCommand running");
+  
   }
 
   // Called once the command ends or is interrupted.
