@@ -27,7 +27,7 @@ public class ElevatorDownCommand extends Command{
     public ElevatorLevels pos;
 
     public ElevatorDownCommand(ElevatorSubsystem ElevatorSubsystem){
-        pos = ElevatorSubsystem.getLevel();
+        pos = ElevatorSubsystem.getGoToLevel();
         if (pos != ElevatorLevels.HOME) {
             pos = ElevatorLevels.values()[pos.ordinal() - 1];
         }

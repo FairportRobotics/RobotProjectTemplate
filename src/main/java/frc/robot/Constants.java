@@ -29,43 +29,33 @@ public final class Constants {
 
   public enum ElevatorLevels
   {
-    NONE,
     HOME,
     CORAL,
     ONE,
     TWO,
     THREE,
     FOUR,
-    MAX;
+    //MAX;
   }
 
   //HOME is the MIN level of the elevator.
   public static class ElevatorEncoderValues
   {
     public static final double HOME = 0;
-    public static final double CORAL = 0;
-    public static final double ONE = 0;
-    public static final double TWO = 0;
-    public static final double THREE = 0;
-    public static final double FOUR = 0;
-    public static final double MAX = 0;
+    public static final double CORAL = 2;
+    public static final double ONE = 4;
+    public static final double TWO = 6;
+    public static final double THREE = 8;
+    public static final double FOUR = 9.5;
+    //public static final double MAX = 10.25;
   }
 
   public static class ElevatorMotors {
-    public static final int LEFT = 0;
-    public static final int RIGHT = 0;
-    public static final int MIDDLE = 0;
+    public static final int LEFT_ID = 29;
+    public static final int RIGHT_ID = 50;
   }
 
   public static class ElevatorLimitSwitches {
-    public static final int MAIN = 0;
-    public static final int MIDDLE = 0;
-  }
-
-  public static class ElevatorConstants{
-    public static final int ELEVATOR_LEFT_MOTOR_ID = -99999; //ALL IDs ARE PLACEHOLDERS
-    public static final int ELEVATOR_RIGHT_MOTOR_ID = -999999;
-
-    public static final int ELEVATOR_BOTTOM_SWITCH_ID = -999999999;
+    public static final int BOTTOM_ID = 9;
   }
 }

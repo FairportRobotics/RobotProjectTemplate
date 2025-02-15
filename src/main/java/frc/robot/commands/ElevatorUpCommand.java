@@ -27,7 +27,7 @@ public class ElevatorUpCommand extends Command{
     public ElevatorLevels pos;
 
     public ElevatorUpCommand(ElevatorSubsystem ElevatorSubsystem){
-        pos = ElevatorSubsystem.getLevel();
+        pos = ElevatorSubsystem.getGoToLevel();
         if (pos != ElevatorLevels.FOUR) {
             pos = ElevatorLevels.values()[pos.ordinal() + 1];
         }
