@@ -5,11 +5,15 @@
 package frc.robot;
 
 /**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
+ * The Constants class provides a convenient place for teams to hold robot-wide
+ * numerical or boolean
+ * constants. This class should not be used for any other purpose. All constants
+ * should be declared
  * globally (i.e. public static). Do not put anything functional in this class.
  *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
+ * <p>
+ * It is advised to statically import this class (or one of its inner classes)
+ * wherever the
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
@@ -17,8 +21,8 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
-  public static class AdvantageKitConstants{
-    public enum RobotType{
+  public static class AdvantageKitConstants {
+    public enum RobotType {
       SIM,
       REAL,
       REPLAY
@@ -27,31 +31,29 @@ public final class Constants {
     public static final RobotType CURRENT_MODE = RobotType.REAL;
   }
 
-  public enum ElevatorLevels
-  {
+  public enum ElevatorLevels {
     HOME,
     CORAL,
     ONE,
     TWO,
     THREE,
     FOUR,
-    //MAX;
+    // MAX;
   }
 
-  //HOME is the MIN level of the elevator.
-  public static class ElevatorEncoderValues
-  {
+  // HOME is the MIN level of the elevator.
+  public static class ElevatorEncoderValues {
     public static final double HOME = 0;
     public static final double CORAL = 2;
     public static final double ONE = 4;
     public static final double TWO = 6;
     public static final double THREE = 8;
     public static final double FOUR = 9.5;
-    //public static final double MAX = 10.25;
+    // public static final double MAX = 10.25;
   }
 
   public static class ElevatorMotors {
-    public static final int LEFT_ID = 29;
+    public static final int LEFT_ID = 20;
     public static final int RIGHT_ID = 50;
   }
 
