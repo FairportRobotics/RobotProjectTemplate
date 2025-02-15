@@ -38,7 +38,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   /** Creates a new ExampleSubsystem. */
   public ArmSubsystem() {
-    armYMotor = new TalonFX(4);
+    armYMotor = new TalonFX(4, "rio");
     limitSwitch = new DigitalInput(Constants.ArmConstants.LimitID);
     pos = ArmPositions.DOWN;
 
@@ -103,7 +103,7 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public void setPos(ArmPositions newPos, PositionVoltage PosRequest) {
     armYMotor.setNeutralMode(NeutralModeValue.Coast);
-
+    pos = newPos;
     absPos = armYMotor.getPosition();
     PosRequest = new PositionVoltage(0).withSlot(0);
     armYMotor.setControl(PosRequest.withPosition(pos.getValue()));
