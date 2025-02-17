@@ -55,9 +55,6 @@ public class ClimberDown extends Command {
 
     posError = m_subsystem.getError();
 
-    if (pos.ordinal() < ClimberPositions.DOWN.ordinal()) {
-      pos = ClimberPositions.values()[pos.ordinal() + 1];
-    }
     m_subsystem.setPos(pos, posRequest);
   }
 
