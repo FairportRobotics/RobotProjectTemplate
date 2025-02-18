@@ -30,11 +30,11 @@ import frc.robot.Constants.ArmConstants.ArmPositions;
 
 public class ArmSubsystem extends SubsystemBase {
 
-  public TalonFX armYMotor;
-  public DigitalInput limitSwitch;
-  public StatusSignal absPos;
-  public ArmPositions pos;
-  final VelocityVoltage m_velocity = new VelocityVoltage(0);
+  private TalonFX armYMotor;
+  private DigitalInput limitSwitch;
+  private StatusSignal absPos;
+  private ArmPositions pos;
+  private final VelocityVoltage m_velocity = new VelocityVoltage(0);
 
   /** Creates a new ExampleSubsystem. */
   public ArmSubsystem() {
@@ -91,9 +91,22 @@ public class ArmSubsystem extends SubsystemBase {
    *         can know what position the arm is curently set to. It's kinda
    *         usefull.
    */
-  public ArmPositions getPos() {
+  public ArmPositions getArmPos() {
     return pos;
   }
+
+  public StatusSignal getPos(){
+    return absPos;
+  }
+
+  public StatusSignal getError(){
+    return armYMotor.getClosedLoopError();
+  }
+
+  public boolean getSwitch(){
+    return !limitSwitch.get();
+  }
+
 
   /**
    * Set the value of the arm position.

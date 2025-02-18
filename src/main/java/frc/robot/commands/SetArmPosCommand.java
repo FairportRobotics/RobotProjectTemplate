@@ -38,7 +38,7 @@ public class SetArmPosCommand extends Command {
   public SetArmPosCommand(ArmSubsystem subsystem, ArmPositions newPos) {
     m_subsystem = subsystem;
     pos = newPos;
-    posError = m_subsystem.armYMotor.getClosedLoopError();
+    posError = m_subsystem.getError();
 
     posRequest = new PositionVoltage(0).withSlot(0);
 
@@ -67,7 +67,7 @@ public class SetArmPosCommand extends Command {
     posError.refresh();
 
         if (pos == ArmPositions.UP) {
-            return !m_subsystem.limitSwitch.get();
+            return m_subsystem.getSwitch();
         } 
         else if (currentPos.hasUpdated()) {
 
