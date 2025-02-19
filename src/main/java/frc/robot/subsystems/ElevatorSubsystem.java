@@ -184,10 +184,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     /**
-     * (This the initializer of the elevator subsystem when the robot is enabled)
-     * Moves the elevator down while the leftHomePos or rightHomePos are not set.
-     * When the bottom limit switch is pressed, leftHomePos and rightHomePos are
-     * initialized and the motors are stopped.
+     * This method is run constantly and is responsible for moving the elevator to
+     * the proper position while also ensuring that the elevator is moving towards
+     * or at the goToLevel.
      */
     @Override
     public void periodic() {
@@ -238,6 +237,8 @@ public class ElevatorSubsystem extends SubsystemBase {
      * The default periodic method for the elevator.
      * This includes recalibration of the home positions and moving the elevator
      * down if the home positions are not initialized.
+     * Conditions are prioritized from top to bottom as didtated by their return
+     * statements.
      */
     private void defaultPeriodic() {
         /**
@@ -249,18 +250,24 @@ public class ElevatorSubsystem extends SubsystemBase {
             stopMotors();
             setHomePositions(leftPos.get(), rightPos.get());
             return;
-        } else if (skipCycles > 0)
+        } else if (skipCycles > 0) // If the check was intentionally skipped, decrement the skip cycles and
+                                   // continue other checks.
             skipCycles--;
 
+        /**
+         * If the goToLevel is HOME and the bottom limit switch is not pressed,
+         * move down towards home. (Also used to update the speed of the motors)
+         */
         if (ElevatorLevels.HOME.equals(goToLevel) && !bottomLimitSwitch.get()) {
             moveDown();
             return;
         }
 
         /**
-         * If the elevator is not braking (was moving) and the difference
+         * If the elevator is not braking (was moving), the goToLevel is not HOME, and
+         * the difference
          * between the current elevator position and the goToLevel position is less than
-         * 1, stop the motors.
+         * 0.1, stop the motors.
          */
         if (!isBraked && !ElevatorLevels.HOME.equals(goToLevel)
                 && Math.abs(leftPos.get() - (encoderGetter.get(goToLevel) + leftHomePos)) <= 0.1) {
@@ -270,9 +277,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     /**
-     * Moves the elevator down.
+     * Moves the elevator down to the home position.
      */
     public void moveDown() {
+        goToLevel = ElevatorLevels.HOME;
         double speed;
         if (leftHomePos == Double.MAX_VALUE)
             speed = -0.05;
@@ -334,18 +342,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorLeftMotor.setNeutralMode(modeValue);
         elevatorRightMotor.setNeutralMode(modeValue);
         isBraked = NeutralModeValue.Brake.equals(modeValue);
-    }
-
-    /*
-     * Attempts to change the level of the elevator.
-     * 
-     * @param increaseElevator is true if the elevator should increase in level,
-     * false if the elevator should decrease in level.
-     * 
-     * @return true if the elevator can change its level, false otherwise.
-     */
-    public boolean changeLevel(boolean increaseElevator) {
-        throw new UnsupportedOperationException("Unimplemented method 'changeLevel'");
     }
 
     /**
