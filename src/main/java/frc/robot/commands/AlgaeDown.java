@@ -5,19 +5,18 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.AlgaeSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
-
 import com.ctre.phoenix6.StatusSignal;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class AlgaeDown extends Command {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField", "unused"})
+  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final AlgaeSubsystem m_subsystem;
-  private StatusSignal posError;
-  private StatusSignal pos;
+  private StatusSignal<Double> posError;
+  private StatusSignal<Angle> pos;
   /**
    * Creates a new ExampleCommand.
    *
@@ -34,14 +33,14 @@ public class AlgaeDown extends Command {
   public void initialize() 
   {
     pos = m_subsystem.getPos();
-    posError = m_subsystem.get_Error();
+    posError = m_subsystem.getError();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() 
   {
-    m_subsystem.deploy_ballsucker();
+    m_subsystem.ballIntake();
   }
 
   // Called once the command ends or is interrupted.
@@ -52,7 +51,7 @@ public class AlgaeDown extends Command {
   @Override
   public boolean isFinished() 
   {
-posError.refresh();
+      posError.refresh();
       pos.refresh();
 
         //if (pos == ArmPositions.UP) {

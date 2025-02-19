@@ -1,7 +1,6 @@
 
 package frc.robot.subsystems;
 
-
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.StatusSignal;
@@ -9,119 +8,108 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.jni.CANSparkJNI;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ArmConstants.ArmPositions;
 
 import com.revrobotics.spark.SparkMax;
 
 public class AlgaeSubsystem extends SubsystemBase 
 {//START
-  private TalonFX kraken_Motor;
+
+  //VARIABLES
+  private TalonFX krakenMotor;
   private DigitalInput limitSwitch;
-  private SparkMax wheelspin;
-  private StatusSignal pos;
-
-
+  private SparkMax wheelSpin;
+  private StatusSignal<Angle> pos;
+  //VARIABLES
 
   public AlgaeSubsystem() 
   {//ALGAESUBSYSTEM
-    kraken_Motor = new TalonFX(0);
-    wheelspin = new SparkMax(0, null);//deal with paramaters later
+
+    krakenMotor = new TalonFX(0);
+    wheelSpin = new SparkMax(0, null);//deal with paramaters later
     limitSwitch= new DigitalInput(0);
-        //PID LOOP
-        TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
-        krakenConfig.Slot0.kP = 0.8;
-        krakenConfig.Slot0.kI = 0.5;
-        krakenConfig.Slot0.kD = 0.3;
-        kraken_Motor.getConfigurator().apply(krakenConfig);
-        pos = kraken_Motor.getPosition();
-        pos.setUpdateFrequency(50);
-        kraken_Motor.optimizeBusUtilization();
-        kraken_Motor.getConfigurator().apply(krakenConfig, 0.050);
-        //PID LOOP
+       //PID LOOP
+      TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
+      krakenConfig.Slot0.kP = 0.8;
+      krakenConfig.Slot0.kI = 0.5;
+      krakenConfig.Slot0.kD = 0.3;
+      krakenMotor.getConfigurator().apply(krakenConfig);
+      pos = krakenMotor.getPosition();
+      pos.setUpdateFrequency(50);
+      krakenMotor.optimizeBusUtilization();
+      krakenMotor.getConfigurator().apply(krakenConfig, 0.050);
+      //PID LOOP
     
   }//ALGAESUBSYSTEM
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
+   /**
+   * Spins the wheels(53)<P>
+   * brings down the entire fence(56)<P>
+   * @Note line 58 may change position
    */
-  public void deploy_ballsucker()
-  {//BALLSUCKER
-    wheelspin.set(.1);
-    //this wheel is the wheel and it wheel the wheel?
-    kraken_Motor.setNeutralMode(NeutralModeValue.Coast);
+  public void ballIntake()
+  {//BallIntake
+    wheelSpin.set(.1); 
+    krakenMotor.setNeutralMode(NeutralModeValue.Coast);
     PositionVoltage PosRequest = new PositionVoltage(0).withSlot(0);
-    kraken_Motor.setControl(PosRequest.withPosition(1)); //probably less than that
+    krakenMotor.setControl(PosRequest.withPosition(1)); 
+  }//BallIntake
 
-  
-  }//BALLSUCKERS
-
-  public StatusSignal getPos()
-  {
+   /**
+   * @return Position
+   */
+  public StatusSignal<Angle> getPos()
+  {//GetPos
     return pos;
-  }
-  public void close_everything()
-  {
-    wheelspin.stopMotor();//i died its so difficult doing this
-    kraken_Motor.set(-.1);
-
-
-
-
-  }
-
-  public void stop_kraken()
-  {
-    kraken_Motor.stopMotor();
-  }
-
-  public StatusSignal get_Error()
-  {//Get_Error
-    return kraken_Motor.getClosedLoopError();
-  }//Get_Error
-
-  public boolean get_switch()
-  {//Get_Switch
-    return !limitSwitch.get();
-  }//Get_Switc
+  }//GetPos
+  
+  /**
+   * Stops the wheels from spinning (74)<P>
+   * Sets the kraken motor speed to -.1 so it closes(75)
+   */
+  public void closeIntake()
+  {//CloseAlgae
+    wheelSpin.stopMotor();
+    krakenMotor.set(-.1);
+  }//CloseAlgae
 
   /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
+   * Stops the kraken motor
    */
-  public boolean exampleCondition()
- {//NAME
-    // Query some boolean state, such as a digital sensor.
-    return false;
-  }//NAME
+  public void stopKraken()
+  {//StopKraken
+    krakenMotor.stopMotor();
+  }//StopKraken
 
-  @Override
+  /**
+   * @return Error
+   */
+  public StatusSignal<Double> getError()
+  {//GetError
+    return krakenMotor.getClosedLoopError();
+  }//GetError
+
+  public boolean getSwitch()
+  {//GetSwitch
+    return !limitSwitch.get();
+  }//GetSwitch
+
   public void periodic() 
-  {//NAME
-      if (pos == null) 
-      {
-        kraken_Motor.set(-.1);
-        if (limitSwitch.get()) 
-        {
-          kraken_Motor.set(0.0);
-          kraken_Motor.setPosition(0);
-          pos = kraken_Motor.getPosition();
-        }
-    }
-    Logger.recordOutput("Arm at Home ", !limitSwitch.get());  
-  }//NAME
-
-  @Override
-  public void simulationPeriodic()
-  {//NAME
-    // This method will be called once per scheduler run during simulation
-  }//NAME
+  {//Periodic
+    if (pos == null) 
+    {//if
+        krakenMotor.set(-.1);
+        if (!limitSwitch.get()) 
+        {//Enclosed if
+          krakenMotor.set(0.0);
+          krakenMotor.setPosition(0);
+          pos = krakenMotor.getPosition();
+        }//Enclosed if
+    }//if
+    Logger.recordOutput("Algae at Home ", !limitSwitch.get());  
+  }//Periodic
   
 }//END

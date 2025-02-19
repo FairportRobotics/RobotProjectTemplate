@@ -5,12 +5,11 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.AlgaeSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class AlgaeUp extends Command {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField", "unused"})
+  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final AlgaeSubsystem m_subsystem;
 
   /**
@@ -35,9 +34,9 @@ public class AlgaeUp extends Command {
   @Override
   public void execute() 
   {
-    if(m_subsystem.get_switch() == false)//run if not up
+    if(m_subsystem.getSwitch() == false)//run if not up
     {
-      m_subsystem.close_everything();
+      m_subsystem.closeIntake();
     }
   }
 
@@ -45,13 +44,13 @@ public class AlgaeUp extends Command {
   @Override
   public void end(boolean interrupted) 
   {
-    m_subsystem.stop_kraken();
+    m_subsystem.stopKraken();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() 
   {
-    return m_subsystem.get_switch();
+    return m_subsystem.getSwitch();
   }
 }
