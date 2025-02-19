@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** An example command that uses an example subsystem. */
 public class AlgaeUp extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final AlgaeSubsystem m_subsystem;
+  private final AlgaeSubsystem a_subsystem;
 
   /**
    * Creates a new ExampleCommand.
@@ -18,7 +18,7 @@ public class AlgaeUp extends Command {
    * @param subsystem The subsystem used by this command.
    */
   public AlgaeUp(AlgaeSubsystem subsystem) {
-    m_subsystem = subsystem;
+    a_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -34,9 +34,9 @@ public class AlgaeUp extends Command {
   @Override
   public void execute() 
   {
-    if(m_subsystem.getSwitch() == false)//run if not up
+    if(a_subsystem.getSwitch() == false)//run if not up
     {
-      m_subsystem.closeIntake();
+      a_subsystem.closeIntake();
     }
   }
 
@@ -44,13 +44,13 @@ public class AlgaeUp extends Command {
   @Override
   public void end(boolean interrupted) 
   {
-    m_subsystem.stopKraken();
+    a_subsystem.stopKraken();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() 
   {
-    return m_subsystem.getSwitch();
+    return a_subsystem.getSwitch();
   }
 }

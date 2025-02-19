@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** An example command that uses an example subsystem. */
 public class AlgaeDown extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final AlgaeSubsystem m_subsystem;
+  private final AlgaeSubsystem a_subsystem;
   private StatusSignal<Double> posError;
   private StatusSignal<Angle> pos;
   /**
@@ -22,8 +22,9 @@ public class AlgaeDown extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public AlgaeDown(AlgaeSubsystem subsystem) {
-    m_subsystem = subsystem;
+  public AlgaeDown(AlgaeSubsystem subsystem) 
+  {
+    a_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -32,15 +33,15 @@ public class AlgaeDown extends Command {
   @Override
   public void initialize() 
   {
-    pos = m_subsystem.getPos();
-    posError = m_subsystem.getError();
+    pos = a_subsystem.getPos();
+    posError = a_subsystem.getError();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() 
   {
-    m_subsystem.ballIntake();
+    a_subsystem.ballIntake();
   }
 
   // Called once the command ends or is interrupted.

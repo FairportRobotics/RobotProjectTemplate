@@ -10,8 +10,9 @@ import frc.robot.Constants;
 public class HandSubsystem extends SubsystemBase {
 
   
-  public SparkMax handMotor = new SparkMax(Constants.HandConstants.HAND_MOTOR_ID, MotorType.kBrushless);
-  public DigitalInput handLimitSwitch = new DigitalInput(Constants.HandConstants.HAND_LIMIT_SWITCH_ID);
+  public static Object getSwitch;
+  private SparkMax handMotor = new SparkMax(Constants.HandConstants.HAND_MOTOR_ID, MotorType.kBrushless);
+  private DigitalInput handLimitSwitch = new DigitalInput(Constants.HandConstants.HAND_LIMIT_SWITCH_ID);
   // public SparkClosedLoopController m_controller = handMotor.getClosedLoopController();
   private boolean hazPiece;
   /** Creates a new ExampleSubsystem. */
@@ -19,8 +20,14 @@ public class HandSubsystem extends SubsystemBase {
     
   }
 
+  public Boolean getSwitch()
+  {
+    return !handLimitSwitch.get();
+  }
+  //True or false from limit switch, its reverse so clear = false, obstructed = true its weird bro who ever designed this needs a new education
+
   public void setSpeed(double iShowSpeed){
-    this.handMotor.set(iShowSpeed);
+    handMotor.set(iShowSpeed);
   }
 
   @Override

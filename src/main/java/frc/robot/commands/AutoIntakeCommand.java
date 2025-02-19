@@ -1,21 +1,23 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.HandSubsystem;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class AutoIntakeCommand extends Command {
-    private ArmSubsystem armSubsystem;
+    private final HandSubsystem h_Subsystem;
 
     /**
      * Constructs an instance of the AutoIntakeCommand.
      * @param armSubsystem is the arm subsystem the command is using.
-     */
-    public AutoIntakeCommand(ArmSubsystem armSubsystem)
+     */ 
+    public AutoIntakeCommand(HandSubsystem HandSubsystem)
     {
-        this.armSubsystem = armSubsystem;
+        h_Subsystem = HandSubsystem;
+
     }
 
     /**
@@ -24,8 +26,8 @@ public class AutoIntakeCommand extends Command {
     @Override
     public void execute()
     {
-        armSubsystem.armYMotor.setNeutralMode(NeutralModeValue.Coast);
-        armSubsystem.armYMotor.set(0.1);
+        HandSubsystem.armYMotor.setNeutralMode(NeutralModeValue.Coast);
+        HandSubsystem.armYMotor.set(0.1);
     }
 
     /**
@@ -35,7 +37,7 @@ public class AutoIntakeCommand extends Command {
     @Override
     public boolean isFinished()
     {
-        return !armSubsystem.limitSwitch.get();
+        return !h_Subsystem.getSwitch();
     }
 
     /**
@@ -45,6 +47,6 @@ public class AutoIntakeCommand extends Command {
     @Override
     public void end(boolean interrupted)
     {
-        armSubsystem.armYMotor.set(0);
+        h_Subsystem.armYMotor.set(0);
     }
 }
