@@ -28,7 +28,8 @@ public final class Constants {
   }
 
   public enum ClimberPositions {
-    UP(1),
+    IN(1),
+    OUT(2),
     DOWN(3),
     NONE(0);
 

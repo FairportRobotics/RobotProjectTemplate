@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
-public class SetArmPosCommand extends Command {
+public class ArmGotoCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem m_subsystem;
   private ArmPositions pos;
@@ -22,7 +22,6 @@ public class SetArmPosCommand extends Command {
 
   private StatusSignal<Double> posError;
 
-  final PositionVoltage posRequest;
   /**
    * Creates a new SetArmPosCommand.
    * This command sets the arm positon to the passed in position.
@@ -30,12 +29,11 @@ public class SetArmPosCommand extends Command {
    * @param subsystem The ArmSubsystem. This is needed. Because. Just because.
    * @param newPos The requested position of the arm. You can find what diffrent positions there are in Constants.java
    */
-  public SetArmPosCommand(ArmSubsystem subsystem, ArmPositions newPos) {
+  public ArmGotoCommand(ArmSubsystem subsystem, ArmPositions newPos) {
     m_subsystem = subsystem;
     pos = newPos;
     posError = m_subsystem.getError();
 
-    posRequest = new PositionVoltage(0).withSlot(0);
 
 
     // Use addRequirements() here to declare subsystem dependencies.
@@ -45,7 +43,7 @@ public class SetArmPosCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.setPos(pos,posRequest);
+    m_subsystem.setPos(pos);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

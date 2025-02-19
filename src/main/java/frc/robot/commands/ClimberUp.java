@@ -21,7 +21,7 @@ public class ClimberUp extends Command {
 
   private StatusSignal<Double> posError;
 
-  final PositionVoltage posRequest;
+
 
   /**
    * Creates a new ClimberDown command.
@@ -33,9 +33,8 @@ public class ClimberUp extends Command {
    */
   public ClimberUp(ClimbingSubsystem subsystem) {
     m_subsystem = subsystem;
-    pos = ClimberPositions.UP;
+    pos = ClimberPositions.IN;
 
-    posRequest = new PositionVoltage(0).withSlot(0);
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
@@ -48,7 +47,7 @@ public class ClimberUp extends Command {
 
     posError = m_subsystem.getError();
 
-    m_subsystem.setPos(pos, posRequest);
+    m_subsystem.setPos(pos);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

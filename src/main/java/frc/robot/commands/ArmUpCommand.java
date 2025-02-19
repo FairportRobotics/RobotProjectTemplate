@@ -21,7 +21,6 @@ public class ArmUpCommand extends Command {
 
   private StatusSignal<Double> posError;
 
-  final PositionVoltage posRequest;
 
   /**
    * Creates a new ArmDownCommand.
@@ -39,7 +38,6 @@ public class ArmUpCommand extends Command {
 
     posError = m_subsystem.getError();
 
-    posRequest = new PositionVoltage(0).withSlot(0);
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
@@ -55,7 +53,7 @@ public class ArmUpCommand extends Command {
     if (pos.ordinal() > ArmPositions.UP.ordinal()) {
       pos = ArmPositions.values()[pos.ordinal() - 1];
     }
-    m_subsystem.setPos(pos,posRequest);
+    m_subsystem.setPos(pos);
     System.out.println("pos is now" + pos);
   }
 

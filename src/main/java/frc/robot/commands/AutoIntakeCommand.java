@@ -8,7 +8,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class AutoIntakeCommand extends Command {
-    private final HandSubsystem h_Subsystem;
+    private final HandSubsystem m_subsystem;
 
     /**
      * Constructs an instance of the AutoIntakeCommand.
@@ -16,7 +16,7 @@ public class AutoIntakeCommand extends Command {
      */ 
     public AutoIntakeCommand(HandSubsystem HandSubsystem)
     {
-        h_Subsystem = HandSubsystem;
+        m_subsystem = HandSubsystem;
 
     }
 
@@ -26,8 +26,8 @@ public class AutoIntakeCommand extends Command {
     @Override
     public void execute()
     {
-        HandSubsystem.armYMotor.setNeutralMode(NeutralModeValue.Coast);
-        HandSubsystem.armYMotor.set(0.1);
+        //HandSubsystem.armYMotor.setNeutralMode(NeutralModeValue.Coast);
+        m_subsystem.setSpeed(1);
     }
 
     /**
@@ -37,7 +37,7 @@ public class AutoIntakeCommand extends Command {
     @Override
     public boolean isFinished()
     {
-        return !h_Subsystem.getSwitch();
+        return !m_subsystem.getSwitch();
     }
 
     /**
@@ -47,6 +47,6 @@ public class AutoIntakeCommand extends Command {
     @Override
     public void end(boolean interrupted)
     {
-        h_Subsystem.armYMotor.set(0);
+        m_subsystem.setSpeed(0);
     }
 }

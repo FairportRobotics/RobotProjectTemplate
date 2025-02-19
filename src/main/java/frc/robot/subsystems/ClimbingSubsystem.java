@@ -9,9 +9,9 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,12 +22,12 @@ public class ClimbingSubsystem extends SubsystemBase {
 
   private TalonFX climbingMotor;
   private DigitalInput limitSwitch;
-  private StatusSignal absPos;
-  private StatusSignal error;
+  private StatusSignal<Angle> absPos;
+  private StatusSignal<Double> error;
   private ClimberPositions pos;
-  private final VelocityVoltage m_velocity = new VelocityVoltage(0);
+  private final PositionVoltage m_position = new PositionVoltage(0).withSlot(0);
 
-  /** Creates a new ExampleSubsystem. */
+  /** Creates a new ClimbingSubsystem. */
   public ClimbingSubsystem() {
     climbingMotor = new TalonFX(4, "rio");
     limitSwitch = new DigitalInput(Constants.ArmConstants.LimitID);
@@ -44,19 +44,6 @@ public class ClimbingSubsystem extends SubsystemBase {
     climbingMotor.getConfigurator().apply(armYConfig, 0.050);
   }
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
-  }
 
   @Override
   public void periodic() {
@@ -79,17 +66,19 @@ public class ClimbingSubsystem extends SubsystemBase {
   }
 
   /**
-   * Get the value of the curent set position for the arm.
+   * Get the current positon of the motor
    *
-   * @return an ArmPositions object that is curently set in the Subsystem. So you
-   *         can know what position the arm is curently set to. It's kinda
-   *         usefull.
+   * @return The positon of the motor. It's not computer science. Wait...
    */
-  public StatusSignal getPos() {
+  public StatusSignal<Angle> getPos() {
     return absPos;
   }
-
-  public StatusSignal getError(){
+ /**
+   * Get the closed loop error for the motor.
+   *
+   * @return the closed loop error. You need this for the PID loop. I blame Jordan.
+   */
+  public StatusSignal<Double> getError(){
     return error;
   }
 
@@ -99,12 +88,11 @@ public class ClimbingSubsystem extends SubsystemBase {
    * @param newPos New ArmPositions object to go to. This is important for keeping
    *               track of where the arm is. Maybe.
    */
-  public void setPos(ClimberPositions newPos, PositionVoltage PosRequest) {
+  public void setPos(ClimberPositions newPos) {
     climbingMotor.setNeutralMode(NeutralModeValue.Coast);
     pos = newPos;
     absPos = climbingMotor.getPosition();
-    PosRequest = new PositionVoltage(0).withSlot(0);
-    climbingMotor.setControl(PosRequest.withPosition(pos.getValue()));
+    climbingMotor.setControl(m_position.withPosition(pos.getValue()));
   }
 
   public void stopMotor(){

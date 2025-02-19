@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.security.DigestInputStream;
-
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.StatusSignal;
@@ -15,11 +13,6 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -32,9 +25,9 @@ public class ArmSubsystem extends SubsystemBase {
 
   private TalonFX armYMotor;
   private DigitalInput limitSwitch;
-  private StatusSignal absPos;
+  private StatusSignal<Angle> absPos;
   private ArmPositions pos;
-  private final VelocityVoltage m_velocity = new VelocityVoltage(0);
+  private final PositionVoltage m_voltage = new PositionVoltage(0).withSlot(0);
 
   /** Creates a new ExampleSubsystem. */
   public ArmSubsystem() {
@@ -53,24 +46,11 @@ public class ArmSubsystem extends SubsystemBase {
     armYMotor.getConfigurator().apply(armYConfig, 0.050);
   }
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
-  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    /*if (pos == ArmPositions.NONE) {
+    if (pos == ArmPositions.NONE) {
 
       this.armYMotor.set(0.1);
       if (!this.limitSwitch.get()) {
@@ -78,10 +58,14 @@ public class ArmSubsystem extends SubsystemBase {
         pos = ArmPositions.UP;
         armYMotor.setPosition(0);
         absPos = armYMotor.getPosition();
+        absPos.setUpdateFrequency(10);
+
       }
     }
     Logger.recordOutput("Arm at Home ", !limitSwitch.get());
-    */
+    if (!limitSwitch.get() && armYMotor.getAcceleration().getValueAsDouble() <= 0.0) {
+      stopMotor();
+    }
   }
 
   /**
@@ -95,14 +79,29 @@ public class ArmSubsystem extends SubsystemBase {
     return pos;
   }
 
-  public StatusSignal getPos(){
+    /**
+   * Get the value of the curent position of the motor.
+   *
+   * @return The current position of the motor. I literaly just said it.
+   */
+  public StatusSignal<Angle> getPos(){
     return absPos;
   }
 
-  public StatusSignal getError(){
+      /**
+   * Get the closed loop error of the motor.
+   *
+   * @return motor.getClosedLoopError. It's as shrimple as that
+   */
+  public StatusSignal<Double> getError(){
     return armYMotor.getClosedLoopError();
   }
 
+      /**
+   * The value of the limitswitch
+   *
+   * @return True when switch is triggered, False when not. It originaly did the opposite and it's so stupid. You would think naturaly not triggered would be false, but NOOOOO. That was just too much to ask for from our limit switch. It just thinks it's so SMART by mixing us up. When nanson was working on the elevator code, he spend a good few minuets trying to figure out why the homing code would not work. When he figured out that the limit switches were returning false, he did a backflip so large, he made it to the moon. It took us 13.4 Billion dollars to get him back(shout out to our sponsors) and once we did, he told us all about how aliens were making a colony there and how it was made of chesse and how the limit swich returned false when not triggered. We couldn't belive our ears(mostly because of the moon stuff).
+   */
   public boolean getSwitch(){
     return !limitSwitch.get();
   }
@@ -114,17 +113,18 @@ public class ArmSubsystem extends SubsystemBase {
    * @param newPos New ArmPositions object to go to. This is important for keeping
    *               track of where the arm is. Maybe.
    */
-  public void setPos(ArmPositions newPos, PositionVoltage PosRequest) {
+  public void setPos(ArmPositions newPos) {
     armYMotor.setNeutralMode(NeutralModeValue.Coast);
     pos = newPos;
     absPos = armYMotor.getPosition();
-    PosRequest = new PositionVoltage(0).withSlot(0);
-    armYMotor.setControl(PosRequest.withPosition(pos.getValue()));
+    armYMotor.setControl(m_voltage.withPosition(pos.getValue()));
   }
 
   public void stopMotor(){
     armYMotor.stopMotor();
   }
+
+
 
   @Override
   public void simulationPeriodic() {

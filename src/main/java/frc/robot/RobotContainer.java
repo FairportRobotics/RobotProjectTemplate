@@ -4,14 +4,21 @@
 
 package frc.robot;
 
+import frc.robot.Constants.ElevatorLevels;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.ArmConstants.ArmPositions;
+import frc.robot.commands.ArmGotoCommand;
+import frc.robot.commands.ElevatorGoToLevelCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.HandCommand;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.HandSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -19,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.ElevatorSubsystem;
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
@@ -28,9 +36,10 @@ public class RobotContainer {
   // // kSpeedAt12Volts desired top speed
 
   // private final Telemetry logger = new Telemetry(MaxSpeed);
-
+  private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final HandSubsystem m_HandSubsystem = new HandSubsystem();
+  private final HopperSubsystem m_HopperSubsystem = new HopperSubsystem(Commands.parallel(new ElevatorGoToLevelCommand(m_ElevatorSubsystem,ElevatorLevels.HOME), new ArmGotoCommand(m_armSubsystem, ArmPositions.DOWN), new IntakeCommand(m_HandSubsystem) ));
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =

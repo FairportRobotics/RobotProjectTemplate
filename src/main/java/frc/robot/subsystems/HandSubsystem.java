@@ -28,6 +28,9 @@ public class HandSubsystem extends SubsystemBase {
 
   public void setSpeed(double iShowSpeed){
     handMotor.set(iShowSpeed);
+    if (iShowSpeed == 0) {
+      handMotor.stopMotor();
+    }
   }
 
   @Override
