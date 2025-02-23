@@ -1,6 +1,9 @@
 package frc.robot.subsystems;//lol "package" HA AH AHAHAHAGGGG *Cough noise *Cough noise*5 *Falls down stairs... - Lukas
 
 import com.ctre.phoenix6.controls.PositionVoltage;
+
+import org.fairportrobotics.frc.posty.TestableSubsystem;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.core.CoreTalonFX;
@@ -14,7 +17,7 @@ import frc.robot.Constants.ElevatorLevels;
 import frc.robot.commands.ElevatorGoToLevelCommand;
 import frc.robot.commands.ElevatorGoToLevelCommand.EncoderGetter;
 
-public class ElevatorSubsystem extends SubsystemBase {
+public class ElevatorSubsystem extends TestableSubsystem {
 
     /**
      * A helper interface that schedules an update for the cached value of the
@@ -135,7 +138,10 @@ public class ElevatorSubsystem extends SubsystemBase {
      * Constructs an ElevatorSubsystem.
      */
     public ElevatorSubsystem() {
+        super("ElevatorSubsystem");
         setMotorNeutralMode(NeutralModeValue.Coast);
+
+        registerPOSTTest(() -> { return true;});
     }
 
     /**
@@ -357,4 +363,16 @@ public class ElevatorSubsystem extends SubsystemBase {
     public boolean isFinishedMoving(){
         return isBraked;
     }
+
+	@Override
+	public boolean onPowerOnTest() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'onPowerOnTest'");
+	}
+
+	@Override
+	public boolean onBuiltInTest() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'onBuiltInTest'");
+	}
 }
