@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import org.fairportrobotics.frc.posty.TestableSubsystem;
+
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -8,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DIOValues; 
 
-public class HandSubsystem extends SubsystemBase {
+public class HandSubsystem extends TestableSubsystem {
 
   
   public static Object getSwitch;
@@ -18,7 +21,7 @@ public class HandSubsystem extends SubsystemBase {
   private boolean hazPiece;
   /** Creates a new ExampleSubsystem. */
   public HandSubsystem() {
-    
+    super("HandSubsystem");
   }
 
   public Boolean getSwitch()
@@ -46,5 +49,5 @@ public class HandSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
 
   }
-  
+
 }

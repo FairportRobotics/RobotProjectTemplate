@@ -141,7 +141,13 @@ public class ElevatorSubsystem extends TestableSubsystem {
         super("ElevatorSubsystem");
         setMotorNeutralMode(NeutralModeValue.Coast);
 
-        registerPOSTTest(() -> { return true;});
+        registerPOSTTest("Falcons are connected", () -> {
+            return elevatorLeftMotor.isConnected() && elevatorRightMotor.isConnected();
+        });
+
+        registerPOSTTest("This is a failing test", () -> {
+            return false; // Always fail
+        });
     }
 
     /**
@@ -363,16 +369,4 @@ public class ElevatorSubsystem extends TestableSubsystem {
     public boolean isFinishedMoving(){
         return isBraked;
     }
-
-	@Override
-	public boolean onPowerOnTest() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'onPowerOnTest'");
-	}
-
-	@Override
-	public boolean onBuiltInTest() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'onBuiltInTest'");
-	}
 }

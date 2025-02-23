@@ -1,6 +1,7 @@
 
 package frc.robot.subsystems;
 
+import org.fairportrobotics.frc.posty.TestableSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.StatusSignal;
@@ -12,11 +13,10 @@ import frc.robot.Constants.DIOValues;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.spark.SparkMax;
 
-public class AlgaeSubsystem extends SubsystemBase 
+public class AlgaeSubsystem extends TestableSubsystem
 {//START
 
   //VARIABLES
@@ -28,9 +28,9 @@ public class AlgaeSubsystem extends SubsystemBase
 
   public AlgaeSubsystem() 
   {//ALGAESUBSYSTEM
-
-    krakenMotor = new TalonFX(0);
-    wheelSpin = new SparkMax(0, null);//deal with paramaters later
+    super("AlgaeSubsystem");
+    krakenMotor = new TalonFX(98); // TODO: FIX ID
+    wheelSpin = new SparkMax(97, null);//deal with paramaters later
     limitSwitch= new DigitalInput(DIOValues.ALGAELIMIT);
        //PID LOOP
       TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
@@ -112,5 +112,5 @@ public class AlgaeSubsystem extends SubsystemBase
     }//if
     Logger.recordOutput("Algae at Home ", !limitSwitch.get());  
   }//Periodic
-  
+
 }//END
