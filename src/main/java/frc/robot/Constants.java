@@ -11,7 +11,6 @@ package frc.robot;
  * should be declared
  * globally (i.e. public static). Do not put anything functional in this class.
  *
- * <p>
  * It is advised to statically import this class (or one of its inner classes)
  * wherever the
  * constants are needed, to reduce verbosity.
@@ -56,12 +55,10 @@ public final class Constants {
     /**
      * The ArmPositions Enum is used to store positons for the arm. There are 4
      * values.
-     * <ul>
-     * <li>UP </l1>
-     * <li>MIDDLE </l1>
-     * <li>DOWN </l1>
-     * <li>NONE </l1>
-     * </ul>
+     * - UP 
+     * - MIDDLE
+     * - DOWN
+     * - NONE
      * Each has a double that can be accesed with ArmPositions.getValue. Each value
      * only has one double. No more, no less. If thou shall try to get two, thou
      * shall only get one, and one shall be the number given. Trying to get three is

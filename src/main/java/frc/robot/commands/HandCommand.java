@@ -21,7 +21,8 @@ public class HandCommand extends Command {
    * HandCommand causees the neo in the hand to spin off the given value either
    * intaking or outaking (positive for intake, negative for outake)
    * 
-   * @param subsystem The HandSubsystem.
+   * @param handSubsystem The HandSubsystem.
+   * @param intakeSpeed
    */
   public HandCommand(HandSubsystem handSubsystem, double intakeSpeed) {
     _HandSubsystem = handSubsystem;

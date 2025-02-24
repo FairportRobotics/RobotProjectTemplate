@@ -47,9 +47,9 @@ public class AlgaeSubsystem extends TestableSubsystem
   }//ALGAESUBSYSTEM
 
    /**
-   * Spins the wheels(53)<P>
-   * brings down the entire fence(56)<P>
-   * @Note line 58 may change position
+   * Spins the wheels(53)
+   * brings down the entire fence(56)
+   * Note: line 58 may change position
    */
   public void ballIntake()
   {//BallIntake
@@ -68,7 +68,7 @@ public class AlgaeSubsystem extends TestableSubsystem
   }//GetPos
   
   /**
-   * Stops the wheels from spinning (74)<P>
+   * Stops the wheels from spinning (74)
    * Sets the kraken motor speed to -.1 so it closes(75)
    */
   public void closeIntake()

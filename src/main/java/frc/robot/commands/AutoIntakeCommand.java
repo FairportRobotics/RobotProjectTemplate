@@ -12,7 +12,7 @@ public class AutoIntakeCommand extends Command {
 
     /**
      * Constructs an instance of the AutoIntakeCommand.
-     * @param armSubsystem is the arm subsystem the command is using.
+     * @param HandSubsystem is the arm subsystem the command is using.
      */ 
     public AutoIntakeCommand(HandSubsystem HandSubsystem)
     {
