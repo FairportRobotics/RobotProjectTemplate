@@ -24,7 +24,7 @@ public class ElevatorGoToLevelCommand extends Command {
      * Creates a new ElevatorGoToLevelCommand.
      * 
      * @param elevatorSubsystem is the elevator subsystem used by this command.
-     * @param goToLevel         is the level to set the elevator to.
+     * @param goToLevel is the level to set the elevator to.
      */
     public ElevatorGoToLevelCommand(ElevatorSubsystem elevatorSubsystem, ElevatorLevels goToLevel) {
         addRequirements(elevatorSubsystem);
@@ -37,7 +37,6 @@ public class ElevatorGoToLevelCommand extends Command {
      * subclasses.
      * 
      * @param elevatorSubsystem    is the elevator subsystem used by this command.
-     * @param preExecutionRunnable is the code to run before the command sets the
      *                             level of the elevator.
      */
     protected ElevatorGoToLevelCommand(ElevatorSubsystem elevatorSubsystem) {

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import org.fairportrobotics.frc.posty.TestableSubsystem;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -12,12 +14,13 @@ import frc.robot.Constants.ElevatorLevels;
 import frc.robot.commands.ElevatorGoToLevelCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
 
-public class HopperSubsystem extends SubsystemBase {
+public class HopperSubsystem extends TestableSubsystem {
   private DigitalInput beamBreak;
   private Command m_autoIntakeCommand;
 
   /** Creates a new ExampleSubsystem. */
   public HopperSubsystem(Command p_autoIntakeCommand) {
+    super("HopperSubsystem");
     beamBreak = new DigitalInput(DIOValues.HOPPERBEAM);
     m_autoIntakeCommand = p_autoIntakeCommand;
 
@@ -46,4 +49,5 @@ public class HopperSubsystem extends SubsystemBase {
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
   }
+
 }

@@ -13,7 +13,6 @@ public class PathFindThenFollowPath extends SequentialCommandGroup {
     /**
      * Creates a new ExampleCommand.
      *
-     * @param subsystem The subsystem used by this command.
      */
     public PathFindThenFollowPath() {
 
