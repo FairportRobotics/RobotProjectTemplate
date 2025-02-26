@@ -12,6 +12,7 @@ import frc.robot.commands.ElevatorGoToLevelCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.HandCommand;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.OutakeCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.HandSubsystem;
@@ -51,10 +52,6 @@ public class RobotContainer {
           Commands.parallel(
               new ElevatorGoToLevelCommand(m_ElevatorSubsystem, ElevatorLevels.TWO),
               new ArmGotoCommand(m_armSubsystem, ArmPositions.MIDDLE))));
-
-    public RobotContainer(){
-      NamedCommands.registerCommand("Shoot", new OutakeCommand(HandSubsystem));
-    }
     
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController = new CommandXboxController(
@@ -70,6 +67,7 @@ public class RobotContainer {
    */
 
   public RobotContainer() {
+    NamedCommands.registerCommand("Shoot", new OutakeCommand(m_HandSubsystem));
     configureBindings();
   }
 
