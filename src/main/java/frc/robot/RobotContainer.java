@@ -54,13 +54,10 @@ public class RobotContainer {
               new ArmGotoCommand(m_armSubsystem, ArmPositions.MIDDLE))));
     
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController = new CommandXboxController(
-      OperatorConstants.kDriverControllerPort);
-
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   private final CommandXboxController driver = new CommandXboxController(0);
-  private final CommandXboxController opperator = new CommandXboxController(1);
+  private final CommandXboxController operator = new CommandXboxController(1);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -129,7 +126,7 @@ public class RobotContainer {
   // Schedule `exampleMethodCommand` when the Xbox controller's B button is
   // pressed,
   // cancelling on release.
-  // m_driverController.b().onTrue(new ArmDownCommand(m_armSubsystem));
+  // driver.b().onTrue(new ArmDownCommand(m_armSubsystem));
 
-  // m_driverController.a().onTrue(new ArmUpCommand(m_armSubsystem));
+  // driver.a().onTrue(new ArmUpCommand(m_armSubsystem));
 }
