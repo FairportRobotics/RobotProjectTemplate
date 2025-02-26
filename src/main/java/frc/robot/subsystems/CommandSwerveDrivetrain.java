@@ -129,7 +129,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
-     * <p>
      * This constructs the underlying hardware devices, so users should not
      * construct
      * the devices themselves. If they need the devices, they can access them
@@ -264,7 +263,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * Returns a command that applies the specified control request to this swerve
      * drivetrain.
      *
-     * @param request Function returning the request to apply
+     * @param requestSupplier Function returning the request to apply
      * @return Command to run
      */
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {

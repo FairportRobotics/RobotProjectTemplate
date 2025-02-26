@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import org.fairportrobotics.frc.posty.TestableSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.StatusSignal;
@@ -11,15 +12,13 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.ClimberPositions;
 import frc.robot.Constants.DIOValues;
 
-public class ClimbingSubsystem extends SubsystemBase {
+public class ClimbingSubsystem extends TestableSubsystem {
 
   private TalonFX climbingMotor;
   private DigitalInput limitSwitch;
@@ -30,7 +29,8 @@ public class ClimbingSubsystem extends SubsystemBase {
 
   /** Creates a new ClimbingSubsystem. */
   public ClimbingSubsystem() {
-    climbingMotor = new TalonFX(4, "rio");
+    super("ClimbingSubsystem");
+    climbingMotor = new TalonFX(99, "rio"); // TODO: FIX THIS ID
     limitSwitch = new DigitalInput(DIOValues.CLIMBERLIMIT);
     pos = ClimberPositions.NONE;
 

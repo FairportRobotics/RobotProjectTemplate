@@ -4,10 +4,10 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.HandSubsystem;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import edu.wpi.first.wpilibj.DigitalInput;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.HandSubsystem;
 
 public class HandCommand extends Command {
   @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
@@ -15,14 +15,14 @@ public class HandCommand extends Command {
   HandSubsystem _HandSubsystem;
   double speed;
   VelocityVoltage intakeRequest;
-  public DigitalInput handLimitSwitch = new DigitalInput(1);
 
   /**
    * Creates a new HandCommand.
    * HandCommand causees the neo in the hand to spin off the given value either
    * intaking or outaking (positive for intake, negative for outake)
    * 
-   * @param subsystem The HandSubsystem.
+   * @param handSubsystem The HandSubsystem.
+   * @param intakeSpeed
    */
   public HandCommand(HandSubsystem handSubsystem, double intakeSpeed) {
     _HandSubsystem = handSubsystem;
@@ -39,7 +39,7 @@ public class HandCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return handLimitSwitch.get();
+    return _HandSubsystem.getSwitch();
   }
 
   // Stops the movement of the motor.
