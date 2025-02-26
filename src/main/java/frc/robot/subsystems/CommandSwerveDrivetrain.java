@@ -3,6 +3,9 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -14,14 +17,20 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,6 +46,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
+
+    private NetworkTable llTable = NetworkTableInstance.getDefault().getTable("limelight");
+    private NetworkTableEntry botPose = llTable.getEntry("botpose_wpiblue");
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -283,26 +295,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @Override
     public void periodic() {
-        /*
-         * Periodically try to apply the operator perspective.
-         * If we haven't applied the operator perspective before, then we should apply
-         * it regardless of DS state.
-         * This allows us to correct the perspective in case the robot code restarts
-         * mid-match.
-         * Otherwise, only check and apply the operator perspective if the DS is
-         * disabled.
-         * This ensures driving behavior doesn't change until an explicit disable event
-         * occurs during testing.
-         */
-        if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
-            DriverStation.getAlliance().ifPresent(allianceColor -> {
-                setOperatorPerspectiveForward(
-                        allianceColor == Alliance.Red
-                                ? kRedAlliancePerspectiveRotation
-                                : kBlueAlliancePerspectiveRotation);
-                m_hasAppliedOperatorPerspective = true;
-            });
+        Subsystem.super.periodic();
+
+        Logger.recordOutput("Odemetry Pose", this.getPose());
+
+        double[] botPoseVals = botPose.getDoubleArray(new double[5]);
+
+        if (botPoseVals[0] == 0.0) {
+            return;
         }
+
+        Pose2d pose = new Pose2d(botPoseVals[0], botPoseVals[1], Rotation2d.fromDegrees(botPoseVals[5]));
+
+        if (DriverStation.isAutonomous()) {
+            double latency = Timer.getFPGATimestamp() - (botPoseVals[6] / 1000.0);
+            this.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 9999999));
+            this.addVisionMeasurement(pose, latency);
+        }
+
+        Logger.recordOutput("Limelight Pose", pose);
     }
 
     private void startSimThread() {
@@ -318,6 +329,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
+    }
+
+    private SwerveRequest.ApplyChassisSpeeds drive = new SwerveRequest.ApplyChassisSpeeds();
+
+    public Pose2d getPose() {
+        return this.getState().Pose;
     }
 
     /**

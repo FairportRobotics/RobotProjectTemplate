@@ -91,4 +91,20 @@ public class LightingSubsystem extends SubsystemBase {
     {
         _CANdle.setLEDs(255, 215, 0);
     }
+
+    /**
+     * Sets the CANdle to the nemo color.
+     */
+    public void nemo()
+    {
+        _CANdle.setLEDs(255, 165, 0);
+    }
+
+    /**
+     * Sets the CANdle to the underDaWata color.
+     */
+    public void underDaWata()
+    {
+        _CANdle.setLEDs(43, 101, 236);
+    }
 }
