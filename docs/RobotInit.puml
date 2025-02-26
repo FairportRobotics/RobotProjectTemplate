@@ -7,7 +7,6 @@ activate RobotContainer
 RC -> ElevatorSubsystem: new ElevatorSubsystem
 activate ElevatorSS
 
-
 RC -> ArmSubsystem: new ArmSubsystem
 activate ArmSubsystem
 
