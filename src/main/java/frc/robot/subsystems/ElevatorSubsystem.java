@@ -131,7 +131,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
     private volatile int skipCycles = 0;
 
     // Stores all the registered helpers.
-    private Helper[] helpers = { bottomLimitSwitch, leftPos, rightPos };
+    private Helper[] helpers = { leftPos, rightPos };
 
     /**
      * Constructs an ElevatorSubsystem.
