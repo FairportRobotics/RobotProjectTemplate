@@ -41,7 +41,7 @@ public class AlgaeDown extends Command {
   @Override
   public void execute() 
   {
-    a_subsystem.ballIntake();
+    a_subsystem.openBallIntake();
   }
 
   // Called once the command ends or is interrupted.

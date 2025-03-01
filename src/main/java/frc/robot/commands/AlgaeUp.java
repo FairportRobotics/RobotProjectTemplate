@@ -36,7 +36,7 @@ public class AlgaeUp extends Command {
   {
     if(a_subsystem.getSwitch() == false)//run if not up
     {
-      a_subsystem.closeIntake();
+      a_subsystem.closeBallIntake();
     }
   }
 
@@ -44,7 +44,7 @@ public class AlgaeUp extends Command {
   @Override
   public void end(boolean interrupted) 
   {
-    a_subsystem.stopKraken();
+    a_subsystem.stopFenceMotor();
   }
 
   // Returns true when the command should end.
