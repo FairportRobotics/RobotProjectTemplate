@@ -116,8 +116,6 @@ public final class Constants {
     public static final int ELEVATORLIMIT = 3;
     public static final int HANDLIMIT = 4;
     public static final int HOPPERBEAM = 5;
-
-    
   }
 
   // HOME is the MIN level of the elevator.
