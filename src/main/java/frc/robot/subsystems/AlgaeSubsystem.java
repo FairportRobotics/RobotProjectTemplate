@@ -105,7 +105,7 @@ public class AlgaeSubsystem extends TestableSubsystem
 
   public void periodic() 
   {//Periodic
-    if (pos == null) 
+    /*if (pos == null) 
     {//if
         fenceMotor.set(-.1);
         if (!limitSwitch.get()) 
@@ -116,6 +116,8 @@ public class AlgaeSubsystem extends TestableSubsystem
         }//Enclosed if
     }//if
     Logger.recordOutput("Algae at Home ", !limitSwitch.get());  
+  */
   }//Periodic
+  
 
 }//END

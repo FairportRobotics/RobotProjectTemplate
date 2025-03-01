@@ -30,6 +30,7 @@ public class ArmSubsystem extends TestableSubsystem {
   public ArmSubsystem() {
     super("ArmSubsystem");
     armYMotor = new TalonFX(99, "rio"); // TODO: FIX ID
+    armYMotor.setNeutralMode(NeutralModeValue.Brake);
     topSwitch = new DigitalInput(DIOValues.ARMLIMIT);
     targetPos = ArmPositions.NONE;
 
@@ -46,7 +47,7 @@ public class ArmSubsystem extends TestableSubsystem {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (targetPos == ArmPositions.NONE) {
+    /*if (targetPos == ArmPositions.NONE) {
 
       this.armYMotor.set(0.1);
       if (getSwitch()) {
@@ -62,6 +63,7 @@ public class ArmSubsystem extends TestableSubsystem {
     if (topSwitch.get() && armYMotor.get() >= 0) {
       stopMotor();
     }
+      */
   }
 
   /**

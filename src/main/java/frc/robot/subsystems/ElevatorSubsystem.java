@@ -184,6 +184,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
      */
     @Override
     public void periodic() {
+        /* 
         System.out.println(bottomLimitSwitch.get());
         if (isChangingLevel) {
             // Doesn't move the elevator if the elevator is not initialized and the robot is
@@ -199,7 +200,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
              * and not trigger a recalibration stop in case the elevator is at the bottom
              * currently.
              * skipCycles is set to 0 if the elevator is going to the home position.
-             */
+             *
             if (!ElevatorLevels.HOME.equals(goToLevel))
                 skipCycles = 5;
             else
@@ -207,6 +208,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
         } else
             defaultPeriodic();
         scheduleUpdates();
+        */
     }
 
     /**
