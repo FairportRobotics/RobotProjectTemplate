@@ -44,7 +44,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
     private EncoderGetter encoderGetter = ElevatorGoToLevelCommand.ENCODER_GETTER;
 
     // Logic variables for the periodic method.
-    private boolean elevatorNeedsToStartMoving = false, isBraked = false, isHome = true;
+    private boolean elevatorNeedsToStartMoving = false, isBraked = false, goToLevelIsHome = true;
     private int skipCycles = 0;
 
     /**
@@ -107,7 +107,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
             return;
         goToLevel = newLevel;
         elevatorNeedsToStartMoving = true;
-        isHome = ElevatorLevels.HOME.equals(goToLevel);
+        goToLevelIsHome = ElevatorLevels.HOME.equals(goToLevel);
     }
 
     /**
@@ -129,7 +129,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
         // If the elevator needs to start moving and the goToLevel is not HOME
         // (continuousChecks handles moving to home), start moving the elevator to the
         // goToLevel position.
-        if (elevatorNeedsToStartMoving && !isHome) {
+        if (elevatorNeedsToStartMoving && !goToLevelIsHome) {
             startMovingElevator();
             elevatorNeedsToStartMoving = false;
         } else
@@ -167,7 +167,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
          * If the goToLevel is HOME and the bottom limit switch is not pressed,
          * move down towards home. (continuously updates the speed of the motors)
          */
-        if (isHome && !BOTTOM_LIMIT_SWITCH.get()) {
+        if (goToLevelIsHome && !BOTTOM_LIMIT_SWITCH.get()) {
             moveDown();
             return;
         }
@@ -178,7 +178,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
          * between the current elevator position and the goToLevel position is less than
          * 0.1, stop the motors.
          */
-        if (!isBraked && !isHome
+        if (!isBraked && !goToLevelIsHome
                 && Math.abs(LEFT_POS.getValueAsDouble() - (encoderGetter.get(goToLevel) + leftHomePos)) <= 0.1) {
             stopMotors();
             return;
@@ -257,7 +257,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
          * skipCycles is set to 0 (should be checking immediately) if the elevator is
          * going to the home position.
          */
-        if (!isHome)
+        if (!goToLevelIsHome)
             skipCycles = 5;
         else
             skipCycles = 0;
