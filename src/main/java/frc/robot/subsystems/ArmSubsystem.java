@@ -34,16 +34,15 @@ public class ArmSubsystem extends TestableSubsystem {
     pos = ArmPositions.DOWN;
 
     TalonFXConfiguration armYConfig = new TalonFXConfiguration();
-        armYConfig.Slot0.kP = 0.8;
-        armYConfig.Slot0.kI = 0.5;
-        armYConfig.Slot0.kD = 0.3;
-        armYMotor.getConfigurator().apply(armYConfig);
-        absPos = armYMotor.getPosition();
-        absPos.setUpdateFrequency(50);
-        armYMotor.optimizeBusUtilization();
+    armYConfig.Slot0.kP = 0.8;
+    armYConfig.Slot0.kI = 0.5;
+    armYConfig.Slot0.kD = 0.3;
+    armYMotor.getConfigurator().apply(armYConfig);
+    absPos = armYMotor.getPosition();
+    absPos.setUpdateFrequency(50);
+    armYMotor.optimizeBusUtilization();
     armYMotor.getConfigurator().apply(armYConfig, 0.050);
   }
-
 
   @Override
   public void periodic() {
@@ -77,33 +76,44 @@ public class ArmSubsystem extends TestableSubsystem {
     return pos;
   }
 
-    /**
+  /**
    * Get the value of the curent position of the motor.
    *
    * @return The current position of the motor. I literaly just said it.
    */
-  public StatusSignal<Angle> getPos(){
+  public StatusSignal<Angle> getPos() {
     return absPos;
   }
 
-      /**
+  /**
    * Get the closed loop error of the motor.
    *
    * @return motor.getClosedLoopError. It's as shrimple as that
    */
-  public StatusSignal<Double> getError(){
+  public StatusSignal<Double> getError() {
     return armYMotor.getClosedLoopError();
   }
 
-      /**
+  /**
    * The value of the limitswitch
    *
-   * @return True when switch is triggered, False when not. It originaly did the opposite and it's so stupid. You would think naturaly not triggered would be false, but NOOOOO. That was just too much to ask for from our limit switch. It just thinks it's so SMART by mixing us up. When nanson was working on the elevator code, he spend a good few minuets trying to figure out why the homing code would not work. When he figured out that the limit switches were returning false, he did a backflip so large, he made it to the moon. It took us 13.4 Billion dollars to get him back(shout out to our sponsors) and once we did, he told us all about how aliens were making a colony there and how it was made of chesse and how the limit swich returned false when not triggered. We couldn't belive our ears(mostly because of the moon stuff).
+   * @return True when switch is triggered, False when not. It originaly did the
+   *         opposite and it's so stupid. You would think naturaly not triggered
+   *         would be false, but NOOOOO. That was just too much to ask for from
+   *         our limit switch. It just thinks it's so SMART by mixing us up. When
+   *         nanson was working on the elevator code, he spend a good few minuets
+   *         trying to figure out why the homing code would not work. When he
+   *         figured out that the limit switches were returning false, he did a
+   *         backflip so large, he made it to the moon. It took us 13.4 Billion
+   *         dollars to get him back(shout out to our sponsors) and once we did,
+   *         he told us all about how aliens were making a colony there and how it
+   *         was made of chesse and how the limit swich returned false when not
+   *         triggered. We couldn't belive our ears(mostly because of the moon
+   *         stuff).
    */
-  public boolean getSwitch(){
+  public boolean getSwitch() {
     return !limitSwitch.get();
   }
-
 
   /**
    * Set the value of the arm position.
@@ -121,11 +131,9 @@ public class ArmSubsystem extends TestableSubsystem {
   /**
    * What do you think this does?
    */
-  public void stopMotor(){
+  public void stopMotor() {
     armYMotor.stopMotor();
   }
-
-
 
   @Override
   public void simulationPeriodic() {
