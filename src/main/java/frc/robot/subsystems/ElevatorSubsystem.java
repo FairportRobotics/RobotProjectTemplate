@@ -70,22 +70,6 @@ public class ElevatorSubsystem extends TestableSubsystem {
     }
 
     /**
-     * Stores a limit switch and returns an intuitive boolean value (true when
-     * pressed, false otherwise).
-     */
-    public class SwitchFixer {
-        private DigitalInput limitSwitch;
-
-        public SwitchFixer(DigitalInput limitSwitch) {
-            this.limitSwitch = limitSwitch;
-        }
-
-        public boolean get() {
-            return !limitSwitch.get();
-        }
-    }
-
-    /**
      * Stores a motor position and caches its Double value.
      */
     class MotorToDoubleHelper extends AbstractHelper<Double> {
@@ -115,8 +99,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
             RIGHT_POS_VOLTAGE = new PositionVoltage(0).withSlot(0);
 
     // Helpers whe it comes to caching outcomes of the suppliers.
-    private SwitchFixer bottomLimitSwitch = new SwitchFixer(
-            new DigitalInput(Constants.ElevatorLimitSwitches.BOTTOM_ID));
+    private DigitalInput bottomLimitSwitch = new DigitalInput(Constants.ElevatorLimitSwitches.BOTTOM_ID);
     private MotorToDoubleHelper leftPos = new MotorToDoubleHelper(elevatorLeftMotor);
     private MotorToDoubleHelper rightPos = new MotorToDoubleHelper(elevatorRightMotor);
 
