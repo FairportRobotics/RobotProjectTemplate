@@ -44,7 +44,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
     private EncoderGetter encoderGetter = ElevatorGoToLevelCommand.ENCODER_GETTER;
 
     // Logic variables for the periodic method.
-    private boolean elevatorNeedsToStartMoving = false, isBraked = false;
+    private boolean elevatorNeedsToStartMoving = false, isBraked = false, isHome = true;
     private int skipCycles = 0;
 
     /**
@@ -107,6 +107,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
             return;
         goToLevel = newLevel;
         elevatorNeedsToStartMoving = true;
+        isHome = ElevatorLevels.HOME.equals(goToLevel);
     }
 
     /**
@@ -125,7 +126,10 @@ public class ElevatorSubsystem extends TestableSubsystem {
         // Refresh the positions of the motors for this periodic cycle.
         refreshPositions();
 
-        if (elevatorNeedsToStartMoving) {
+        // If the elevator needs to start moving and the goToLevel is not HOME
+        // (continuousChecks handles moving to home), start moving the elevator to the
+        // goToLevel position.
+        if (elevatorNeedsToStartMoving && !ElevatorLevels.HOME.equals(goToLevel)) {
             startMovingElevator();
             elevatorNeedsToStartMoving = false;
         } else
@@ -237,14 +241,13 @@ public class ElevatorSubsystem extends TestableSubsystem {
 
     /**
      * Moves the elevator to the level specified by goToLevel and sets skipCycles
-     * accordingly.
+     * accordingly. (Should only be used for its utilization with position voltage
+     * by setting a specific position and not to anywhere where a limit switch is
+     * utilized)
      */
     private void startMovingElevator() {
         setMotorNeutralMode(NeutralModeValue.Coast);
-        if (!ElevatorLevels.HOME.equals(goToLevel))
-            setMotorPositions(encoderGetter.get(goToLevel));
-        else
-            moveDown();
+        setMotorPositions(encoderGetter.get(goToLevel));
         /*
          * If the home position is not the level that the elevator should be going to,
          * then 5 cycles of recalibrating the home positions (~100 ms) are skipped to
