@@ -129,7 +129,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
         // If the elevator needs to start moving and the goToLevel is not HOME
         // (continuousChecks handles moving to home), start moving the elevator to the
         // goToLevel position.
-        if (elevatorNeedsToStartMoving && !ElevatorLevels.HOME.equals(goToLevel)) {
+        if (elevatorNeedsToStartMoving && !isHome) {
             startMovingElevator();
             elevatorNeedsToStartMoving = false;
         } else
@@ -167,7 +167,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
          * If the goToLevel is HOME and the bottom limit switch is not pressed,
          * move down towards home. (continuously updates the speed of the motors)
          */
-        if (ElevatorLevels.HOME.equals(goToLevel) && !BOTTOM_LIMIT_SWITCH.get()) {
+        if (isHome && !BOTTOM_LIMIT_SWITCH.get()) {
             moveDown();
             return;
         }
@@ -178,7 +178,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
          * between the current elevator position and the goToLevel position is less than
          * 0.1, stop the motors.
          */
-        if (!isBraked && !ElevatorLevels.HOME.equals(goToLevel)
+        if (!isBraked && !isHome
                 && Math.abs(LEFT_POS.getValueAsDouble() - (encoderGetter.get(goToLevel) + leftHomePos)) <= 0.1) {
             stopMotors();
             return;
@@ -257,7 +257,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
          * skipCycles is set to 0 (should be checking immediately) if the elevator is
          * going to the home position.
          */
-        if (!ElevatorLevels.HOME.equals(goToLevel))
+        if (!isHome)
             skipCycles = 5;
         else
             skipCycles = 0;
