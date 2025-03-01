@@ -70,19 +70,18 @@ public class ElevatorSubsystem extends TestableSubsystem {
     }
 
     /**
-     * Stores a limit switch and caches its get Boolean value.
+     * Stores a limit switch and returns an intuitive boolean value (true when
+     * pressed, false otherwise).
      */
-    class SwitchHelper extends AbstractHelper<Boolean> {
+    public class SwitchFixer {
         private DigitalInput limitSwitch;
 
-        public SwitchHelper(DigitalInput limitSwitch) {
-            super(!limitSwitch.get());
+        public SwitchFixer(DigitalInput limitSwitch) {
             this.limitSwitch = limitSwitch;
         }
 
-        @Override
-        protected void update() {
-            value = !limitSwitch.get();
+        public boolean get() {
+            return !limitSwitch.get();
         }
     }
 
@@ -116,7 +115,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
             RIGHT_POS_VOLTAGE = new PositionVoltage(0).withSlot(0);
 
     // Helpers whe it comes to caching outcomes of the suppliers.
-    private SwitchHelper bottomLimitSwitch = new SwitchHelper(
+    private SwitchFixer bottomLimitSwitch = new SwitchFixer(
             new DigitalInput(Constants.ElevatorLimitSwitches.BOTTOM_ID));
     private MotorToDoubleHelper leftPos = new MotorToDoubleHelper(elevatorLeftMotor);
     private MotorToDoubleHelper rightPos = new MotorToDoubleHelper(elevatorRightMotor);
@@ -366,7 +365,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
         elevatorRightMotor.setControl(RIGHT_POS_VOLTAGE.withPosition(rightHomePos + position));
     }
 
-    public boolean isFinishedMoving(){
+    public boolean isFinishedMoving() {
         return isBraked;
     }
 }
