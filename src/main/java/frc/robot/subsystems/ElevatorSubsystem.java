@@ -236,7 +236,8 @@ public class ElevatorSubsystem extends TestableSubsystem {
     }
 
     /**
-     * Moves the elevator to the level specified by goToLevel.
+     * Moves the elevator to the level specified by goToLevel and sets skipCycles
+     * accordingly.
      */
     private void startMovingElevator() {
         setMotorNeutralMode(NeutralModeValue.Coast);
