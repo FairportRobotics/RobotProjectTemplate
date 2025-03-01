@@ -37,7 +37,7 @@ public class ArmDownCommand extends Command {
   public ArmDownCommand(ArmSubsystem subsystem) {
     m_subsystem = subsystem;
 
-    currentPos = m_subsystem.getPos();
+    currentPos = m_subsystem.getActualPos();
 
     posError = m_subsystem.getError();
 
@@ -56,7 +56,7 @@ public class ArmDownCommand extends Command {
     if (pos.ordinal() < ArmPositions.DOWN.ordinal()) {
       pos = ArmPositions.values()[pos.ordinal() + 1];
     }
-    m_subsystem.setPos(pos);
+    m_subsystem.setTargetPos(pos);
     System.out.println("pos is now " + pos);
   }
 

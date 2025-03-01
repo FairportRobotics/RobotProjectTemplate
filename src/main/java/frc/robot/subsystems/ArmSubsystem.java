@@ -21,68 +21,67 @@ import frc.robot.Constants.DIOValues;
 public class ArmSubsystem extends TestableSubsystem {
 
   private TalonFX armYMotor;
-  private DigitalInput limitSwitch;
-  private StatusSignal<Angle> absPos;
-  private ArmPositions pos;
+  private DigitalInput topSwitch; //Today on TopSwitch...
+  private StatusSignal<Angle> actualPos;
+  private ArmPositions targetPos;
   private final PositionVoltage m_voltage = new PositionVoltage(0).withSlot(0);
 
   /** Creates a new ArmSubsystem. */
   public ArmSubsystem() {
     super("ArmSubsystem");
     armYMotor = new TalonFX(99, "rio"); // TODO: FIX ID
-    limitSwitch = new DigitalInput(DIOValues.ARMLIMIT);
-    pos = ArmPositions.DOWN;
+    topSwitch = new DigitalInput(DIOValues.ARMLIMIT);
+    targetPos = ArmPositions.NONE;
 
     TalonFXConfiguration armYConfig = new TalonFXConfiguration();
     armYConfig.Slot0.kP = 0.8;
     armYConfig.Slot0.kI = 0.5;
     armYConfig.Slot0.kD = 0.3;
     armYMotor.getConfigurator().apply(armYConfig);
-    absPos = armYMotor.getPosition();
-    absPos.setUpdateFrequency(50);
+    actualPos = armYMotor.getPosition();
+    actualPos.setUpdateFrequency(50);
     armYMotor.optimizeBusUtilization();
-    armYMotor.getConfigurator().apply(armYConfig, 0.050);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (pos == ArmPositions.NONE) {
+    if (targetPos == ArmPositions.NONE) {
 
       this.armYMotor.set(0.1);
-      if (!this.limitSwitch.get()) {
+      if (getSwitch()) {
         this.armYMotor.set(0.0);
-        pos = ArmPositions.UP;
+        targetPos = ArmPositions.UP;
         armYMotor.setPosition(0);
-        absPos = armYMotor.getPosition();
-        absPos.setUpdateFrequency(10);
+        actualPos = armYMotor.getPosition();
+        actualPos.setUpdateFrequency(10);
 
       }
     }
-    Logger.recordOutput("Arm at Home ", !limitSwitch.get());
-    if (!limitSwitch.get() && armYMotor.getAcceleration().getValueAsDouble() <= 0.0) {
+    Logger.recordOutput("Arm at Home ", !topSwitch.get());
+    if (topSwitch.get() && armYMotor.get() >= 0) {
       stopMotor();
     }
   }
 
   /**
-   * Get the value of the curent set position for the arm.
+   * Get the value of the current set position for the arm.
    *
-   * @return an ArmPositions object that is curently set in the Subsystem. So you
-   *         can know what position the arm is curently set to. It's kinda
-   *         usefull.
+   * @return an ArmPositions object that is currently set in the Subsystem. So you
+   *         can know what position the arm is currently set to. It's kinda
+   *         useful.
    */
   public ArmPositions getArmPos() {
-    return pos;
+    return targetPos;
   }
 
   /**
-   * Get the value of the curent position of the motor.
+   * Get the value of the current position of the motor.
    *
-   * @return The current position of the motor. I literaly just said it.
+   * @return The current position of the motor. I literally just said it.
    */
-  public StatusSignal<Angle> getPos() {
-    return absPos;
+  public StatusSignal<Angle> getActualPos() {
+    return actualPos;
   }
 
   /**
@@ -97,22 +96,22 @@ public class ArmSubsystem extends TestableSubsystem {
   /**
    * The value of the limitswitch
    *
-   * @return True when switch is triggered, False when not. It originaly did the
-   *         opposite and it's so stupid. You would think naturaly not triggered
+   * @return True when switch is triggered, False when not. It originally did the
+   *         opposite and it's so stupid. You would think naturally not triggered
    *         would be false, but NOOOOO. That was just too much to ask for from
    *         our limit switch. It just thinks it's so SMART by mixing us up. When
-   *         nanson was working on the elevator code, he spend a good few minuets
+   *         Nanson was working on the elevator code, he spend a good few minuets
    *         trying to figure out why the homing code would not work. When he
    *         figured out that the limit switches were returning false, he did a
    *         backflip so large, he made it to the moon. It took us 13.4 Billion
    *         dollars to get him back(shout out to our sponsors) and once we did,
    *         he told us all about how aliens were making a colony there and how it
-   *         was made of chesse and how the limit swich returned false when not
-   *         triggered. We couldn't belive our ears(mostly because of the moon
+   *         was made of cheese and how the limit switch returned false when not
+   *         triggered. We couldn't believe our ears(mostly because of the moon
    *         stuff).
    */
   public boolean getSwitch() {
-    return !limitSwitch.get();
+    return topSwitch.get();
   }
 
   /**
@@ -121,11 +120,11 @@ public class ArmSubsystem extends TestableSubsystem {
    * @param newPos New ArmPositions object to go to. This is important for keeping
    *               track of where the arm is. Maybe.
    */
-  public void setPos(ArmPositions newPos) {
+  public void setTargetPos(ArmPositions newPos) {
     armYMotor.setNeutralMode(NeutralModeValue.Coast);
-    pos = newPos;
-    absPos = armYMotor.getPosition();
-    armYMotor.setControl(m_voltage.withPosition(pos.getValue()));
+    targetPos = newPos;
+    actualPos = armYMotor.getPosition();
+    armYMotor.setControl(m_voltage.withPosition(targetPos.getValue()));
   }
 
   /**

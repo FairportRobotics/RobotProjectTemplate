@@ -34,7 +34,7 @@ public class ArmUpCommand extends Command {
     m_subsystem = subsystem;
     System.out.println(m_subsystem.getArmPos());
 
-    currentPos = m_subsystem.getPos();
+    currentPos = m_subsystem.getActualPos();
 
     posError = m_subsystem.getError();
 
@@ -53,7 +53,7 @@ public class ArmUpCommand extends Command {
     if (pos.ordinal() > ArmPositions.UP.ordinal()) {
       pos = ArmPositions.values()[pos.ordinal() - 1];
     }
-    m_subsystem.setPos(pos);
+    m_subsystem.setTargetPos(pos);
     System.out.println("pos is now" + pos);
   }
 

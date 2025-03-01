@@ -26,7 +26,7 @@ public class HandSubsystem extends TestableSubsystem {
 
   public Boolean getSwitch()
   {
-    return !handLimitSwitch.get();
+    return handLimitSwitch.get();
   }
   //True or false from limit switch, its reverse so clear = false, obstructed = true its weird bro who ever designed this needs a new education
 
