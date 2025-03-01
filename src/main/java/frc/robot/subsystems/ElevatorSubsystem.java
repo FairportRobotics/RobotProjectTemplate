@@ -4,14 +4,14 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 
 import org.fairportrobotics.frc.posty.TestableSubsystem;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorLevels;
 import frc.robot.commands.ElevatorGoToLevelCommand;
@@ -19,102 +19,33 @@ import frc.robot.commands.ElevatorGoToLevelCommand.EncoderGetter;
 
 public class ElevatorSubsystem extends TestableSubsystem {
 
-    /**
-     * A helper interface that schedules an update for the cached value of the
-     * Helper object.
-     */
-    interface Helper {
-        public void scheduleUpdate();
-    }
-
-    abstract class AbstractHelper<T> implements Helper // T representing some type of object.
-    {
-        // Get value should be initialized on construction of its subclasses
-        private boolean scheduleUpdate = false;
-        // Stores the value of a subclass.
-        protected T value;
-
-        /**
-         * Constructs a Helper object with a value and a scheduleRunnable.
-         * 
-         * @param value contains the most recent value of the supplier.
-         */
-        public AbstractHelper(T value) {
-            this.value = value;
-        }
-
-        /**
-         * Gets the value of the Helper object.
-         * 
-         * @return the value of the Helper object.
-         */
-        public final T get() {
-            if (scheduleUpdate) {
-                update();
-                scheduleUpdate = false;
-            }
-            return value;
-        }
-
-        /**
-         * Schedules an update for the cached value the next time get is called.
-         */
-        public final void scheduleUpdate() {
-            scheduleUpdate = true;
-        }
-
-        /**
-         * Requires the subclass to update the value of the Shell object.
-         */
-        protected abstract void update();
-    }
-
-    /**
-     * Stores a motor position and caches its Double value.
-     */
-    class MotorToDoubleHelper extends AbstractHelper<Double> {
-        private CoreTalonFX motor;
-
-        public MotorToDoubleHelper(CoreTalonFX motor) {
-            super(motor.getPosition().getValueAsDouble());
-            this.motor = motor;
-        }
-
-        @Override
-        protected void update() {
-            value = motor.getPosition().getValueAsDouble();
-        }
-    }
-
     // The home positions of the elevator motors, initially we don't know the home
     // positions of the elevator.
     private double leftHomePos = Double.MAX_VALUE, rightHomePos = Double.MAX_VALUE;
 
     // The motors of the elevator.
-    private TalonFX elevatorLeftMotor = applyDefaultSettings(new TalonFX(Constants.ElevatorMotors.LEFT_ID), true),
-            elevatorRightMotor = applyDefaultSettings(new TalonFX(Constants.ElevatorMotors.RIGHT_ID), false);
+    private final TalonFX ELEVATOR_LEFT_MOTOR = applyDefaultSettings(new TalonFX(Constants.ElevatorMotors.LEFT_ID),
+            true),
+            ELEVATOR_RIGHT_MOTOR = applyDefaultSettings(new TalonFX(Constants.ElevatorMotors.RIGHT_ID), false);
 
     // Stores the position PID that does the motor control.
     private final PositionVoltage LEFT_POS_VOLTAGE = new PositionVoltage(0).withSlot(0),
             RIGHT_POS_VOLTAGE = new PositionVoltage(0).withSlot(0);
 
     // Helpers whe it comes to caching outcomes of the suppliers.
-    private DigitalInput bottomLimitSwitch = new DigitalInput(Constants.ElevatorLimitSwitches.BOTTOM_ID);
-    private MotorToDoubleHelper leftPos = new MotorToDoubleHelper(elevatorLeftMotor);
-    private MotorToDoubleHelper rightPos = new MotorToDoubleHelper(elevatorRightMotor);
+    private final DigitalInput BOTTOM_LIMIT_SWITCH = new DigitalInput(Constants.ElevatorLimitSwitches.BOTTOM_ID);
+    private final StatusSignal<Angle> LEFT_POS = ELEVATOR_LEFT_MOTOR.getPosition(),
+            RIGHT_POS = ELEVATOR_RIGHT_MOTOR.getPosition();
 
     // The level that the elevator should go to.
-    private volatile ElevatorLevels goToLevel = Constants.ElevatorLevels.HOME;
+    private ElevatorLevels goToLevel = Constants.ElevatorLevels.HOME;
 
     // Stores the encoder getter for the elevator for faster access.
     private EncoderGetter encoderGetter = ElevatorGoToLevelCommand.ENCODER_GETTER;
 
     // Logic variables for the periodic method.
-    private volatile boolean isChangingLevel = true, isBraked = false;
-    private volatile int skipCycles = 0;
-
-    // Stores all the registered helpers.
-    private Helper[] helpers = { leftPos, rightPos };
+    private boolean elevatorNeedsToStartMoving = false, isBraked = false, goToLevelIsHome = true;
+    private int skipCycles = 0;
 
     /**
      * Constructs an ElevatorSubsystem.
@@ -124,7 +55,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
         setMotorNeutralMode(NeutralModeValue.Coast);
 
         registerPOSTTest("Falcons are connected", () -> {
-            return elevatorLeftMotor.isConnected() && elevatorRightMotor.isConnected();
+            return ELEVATOR_LEFT_MOTOR.isConnected() && ELEVATOR_RIGHT_MOTOR.isConnected();
         });
 
         registerPOSTTest("This is a failing test", () -> {
@@ -142,7 +73,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
      */
     private static TalonFX applyDefaultSettings(TalonFX motor, boolean counterClockwisePositive) {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = .7;
+        config.Slot0.kP = .9;
         config.Slot0.kI = .5;
         config.Slot0.kD = .1;
         if (counterClockwisePositive)
@@ -150,7 +81,8 @@ public class ElevatorSubsystem extends TestableSubsystem {
         else
             config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         motor.getConfigurator().apply(config);
-        motor.getPosition().setUpdateFrequency(50);
+        motor.getPosition().setUpdateFrequency(0); // Prevents the signal from being disabled and allows for manual
+                                                   // refreshes.
         motor.optimizeBusUtilization();
         return motor;
     }
@@ -174,7 +106,8 @@ public class ElevatorSubsystem extends TestableSubsystem {
         if (newLevel == null || goToLevel.equals(newLevel) || notInitialized())
             return;
         goToLevel = newLevel;
-        isChangingLevel = true;
+        elevatorNeedsToStartMoving = true;
+        goToLevelIsHome = ElevatorLevels.HOME.equals(goToLevel);
     }
 
     /**
@@ -185,38 +118,81 @@ public class ElevatorSubsystem extends TestableSubsystem {
     @Override
     public void periodic() {
         /* 
-        System.out.println(bottomLimitSwitch.get());
-        if (isChangingLevel) {
-            // Doesn't move the elevator if the elevator is not initialized and the robot is
-            // already at the bottom.
-            if (!(notInitialized() && bottomLimitSwitch.get()))
-                moveElevator();
-            // The elevator is already moving, default checks can now continue.
-            isChangingLevel = false;
-            /*
-             * If the home position is not the level that the elevator should be going to,
-             * then 5 cycles of recalibrating the home positions (~100 ms) are skipped to
-             * ensure enough time for the elevator to deactivate the bottom limit switch
-             * and not trigger a recalibration stop in case the elevator is at the bottom
-             * currently.
-             * skipCycles is set to 0 if the elevator is going to the home position.
-             *
-            if (!ElevatorLevels.HOME.equals(goToLevel))
-                skipCycles = 5;
-            else
-                skipCycles = 0;
+        System.out.println(BOTTOM_LIMIT_SWITCH.get());
+        // If the elevator is not moving and the elevator does not need to move, don't
+        // continue additional checks.
+        if (isBraked && !elevatorNeedsToStartMoving)
+            return;
+
+        // Refresh the positions of the motors for this periodic cycle.
+        refreshPositions();
+
+        // If the elevator needs to start moving and the goToLevel is not HOME
+        // (continuousChecks handles moving to home), start moving the elevator to the
+        // goToLevel position.
+        if (elevatorNeedsToStartMoving && !goToLevelIsHome) {
+            startMovingElevator();
+            elevatorNeedsToStartMoving = false;
         } else
-            defaultPeriodic();
-        scheduleUpdates();
-        */
+            continuousChecks();
+            */
     }
 
     /**
-     * Schedules updates for all the helpers.
+     * This method runs when the elevator doesn't need to start moving.
+     * This method is responsible for initializing/recalibrating home positions,
+     * continuously updating the speed of the motors when moving down to home and
+     * stopping the motors when the elevator is close enough to the goToLevel.
+     * 
+     * Checks are prioritized and are responsible as following:
+     * 1. Stopping motors and updating home positions when the bottom limit switch
+     * is pressed. (Overrides other checks)
+     * 2. Constantly updating the speed of the motors when moving down to home.
+     * (Includes initialization)
+     * 3. Stopping motors when the elevator is close enough to the goToLevel.
      */
-    private void scheduleUpdates() {
-        for (Helper helper : helpers)
-            helper.scheduleUpdate();
+    private void continuousChecks() {
+        /**
+         * If the elevator is not braking (was moving), the bottom limit switch is
+         * pressed, and either the elevator is not initialized or this check not
+         * intentionally skipped, then stop the elevator and update the home positions.
+         */
+        if (!isBraked && skipCycles == 0 && BOTTOM_LIMIT_SWITCH.get()) {
+            stopMotors();
+            setHomePositions(LEFT_POS.getValueAsDouble(), RIGHT_POS.getValueAsDouble());
+            return;
+        } else if (skipCycles > 0) // If the check was intentionally skipped, decrement the skip cycles and
+                                   // continue other checks.
+            skipCycles--;
+
+        /**
+         * If the goToLevel is HOME and the bottom limit switch is not pressed,
+         * move down towards home. (continuously updates the speed of the motors)
+         */
+        if (goToLevelIsHome && !BOTTOM_LIMIT_SWITCH.get()) {
+            moveDown();
+            return;
+        }
+
+        /**
+         * If the elevator is not braking (was moving), the goToLevel is not HOME, and
+         * the difference
+         * between the current elevator position and the goToLevel position is less than
+         * 0.1, stop the motors.
+         */
+        if (!isBraked && !goToLevelIsHome
+                && Math.abs(LEFT_POS.getValueAsDouble() - (encoderGetter.get(goToLevel) + leftHomePos)) <= 0.1) {
+            stopMotors();
+            return;
+        }
+    }
+
+    /**
+     * Refreshes the positions of the motors in the status signals.
+     */
+    private void refreshPositions() {
+        LEFT_POS.refresh();
+        RIGHT_POS.refresh();
     }
 
     /**
@@ -230,49 +206,6 @@ public class ElevatorSubsystem extends TestableSubsystem {
     }
 
     /**
-     * The default periodic method for the elevator.
-     * This includes recalibration of the home positions and moving the elevator
-     * down if the home positions are not initialized.
-     * Conditions are prioritized from top to bottom as didtated by their return
-     * statements.
-     */
-    private void defaultPeriodic() {
-        /**
-         * If the elevator is not braking (was moving), the bottom limit switch is
-         * pressed, and either the elevator is not initialized or this check not
-         * intentionally skipped, then stop the elevator and update the home positions.
-         */
-        if (!isBraked && skipCycles == 0 && bottomLimitSwitch.get()) {
-            stopMotors();
-            setHomePositions(leftPos.get(), rightPos.get());
-            return;
-        } else if (skipCycles > 0) // If the check was intentionally skipped, decrement the skip cycles and
-                                   // continue other checks.
-            skipCycles--;
-
-        /**
-         * If the goToLevel is HOME and the bottom limit switch is not pressed,
-         * move down towards home. (Also used to update the speed of the motors)
-         */
-        if (ElevatorLevels.HOME.equals(goToLevel) && !bottomLimitSwitch.get()) {
-            moveDown();
-            return;
-        }
-
-        /**
-         * If the elevator is not braking (was moving), the goToLevel is not HOME, and
-         * the difference
-         * between the current elevator position and the goToLevel position is less than
-         * 0.1, stop the motors.
-         */
-        if (!isBraked && !ElevatorLevels.HOME.equals(goToLevel)
-                && Math.abs(leftPos.get() - (encoderGetter.get(goToLevel) + leftHomePos)) <= 0.1) {
-            stopMotors();
-            return;
-        }
-    }
-
-    /**
      * Moves the elevator down to the home position.
      */
     public void moveDown() {
@@ -281,11 +214,11 @@ public class ElevatorSubsystem extends TestableSubsystem {
         if (leftHomePos == Double.MAX_VALUE)
             speed = -0.05;
         else
-            speed = Math.min(-0.175 * (((double) leftPos.get() + leftHomePos)
+            speed = Math.min(-0.175 * (((double) LEFT_POS.getValueAsDouble() + leftHomePos)
                     / encoderGetter.get(ElevatorLevels.values()[ElevatorLevels.values().length - 1])), -0.035);
         setMotorNeutralMode(NeutralModeValue.Coast);
-        elevatorLeftMotor.set(speed);
-        elevatorRightMotor.set(speed);
+        ELEVATOR_LEFT_MOTOR.set(speed);
+        ELEVATOR_RIGHT_MOTOR.set(speed);
     }
 
     /**
@@ -294,7 +227,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
      * @return true if the bottom limit switch is pressed, false otherwise.
      */
     public boolean getBottomLimitSwitchAsBoolean() {
-        return bottomLimitSwitch.get();
+        return BOTTOM_LIMIT_SWITCH.get();
     }
 
     /**
@@ -309,22 +242,35 @@ public class ElevatorSubsystem extends TestableSubsystem {
     }
 
     /**
-     * Moves the elevator to the level specified by goToLevel.
+     * Moves the elevator to the level specified by goToLevel and sets skipCycles
+     * accordingly. (Should only be used for its utilization with position voltage
+     * by setting a specific position and not to anywhere where a limit switch is
+     * utilized)
      */
-    private void moveElevator() {
+    private void startMovingElevator() {
         setMotorNeutralMode(NeutralModeValue.Coast);
-        if (!ElevatorLevels.HOME.equals(goToLevel))
-            setMotorPositions(encoderGetter.get(goToLevel));
+        setMotorPositions(encoderGetter.get(goToLevel));
+        /*
+         * If the home position is not the level that the elevator should be going to,
+         * then 5 cycles of recalibrating the home positions (~100 ms) are skipped to
+         * ensure enough time for the elevator to deactivate the bottom limit switch
+         * and not trigger a recalibration stop in case the elevator is at the bottom
+         * currently.
+         * skipCycles is set to 0 (should be checking immediately) if the elevator is
+         * going to the home position.
+         */
+        if (!goToLevelIsHome)
+            skipCycles = 5;
         else
-            moveDown();
+            skipCycles = 0;
     }
 
     /**
      * Stops the elevator motors and sets the motors to brake.
      */
     public void stopMotors() {
-        elevatorLeftMotor.stopMotor();
-        elevatorRightMotor.stopMotor();
+        ELEVATOR_LEFT_MOTOR.stopMotor();
+        ELEVATOR_RIGHT_MOTOR.stopMotor();
         setMotorNeutralMode(NeutralModeValue.Brake);
     }
 
@@ -335,8 +281,8 @@ public class ElevatorSubsystem extends TestableSubsystem {
      * @param modeValue is the neutral mode of the motors.
      */
     private void setMotorNeutralMode(NeutralModeValue modeValue) {
-        elevatorLeftMotor.setNeutralMode(modeValue);
-        elevatorRightMotor.setNeutralMode(modeValue);
+        ELEVATOR_LEFT_MOTOR.setNeutralMode(modeValue);
+        ELEVATOR_RIGHT_MOTOR.setNeutralMode(modeValue);
         isBraked = NeutralModeValue.Brake.equals(modeValue);
     }
 
@@ -346,10 +292,15 @@ public class ElevatorSubsystem extends TestableSubsystem {
      * @param position is the position to set the motors to.
      */
     private void setMotorPositions(double position) {
-        elevatorLeftMotor.setControl(LEFT_POS_VOLTAGE.withPosition(leftHomePos + position));
-        elevatorRightMotor.setControl(RIGHT_POS_VOLTAGE.withPosition(rightHomePos + position));
+        ELEVATOR_LEFT_MOTOR.setControl(LEFT_POS_VOLTAGE.withPosition(leftHomePos + position));
+        ELEVATOR_RIGHT_MOTOR.setControl(RIGHT_POS_VOLTAGE.withPosition(rightHomePos + position));
     }
 
+    /**
+     * Check for if the elevator is done moving.
+     * 
+     * @return true if the elevator is not moving anymore, false otherwise.
+     */
     public boolean isFinishedMoving() {
         return isBraked;
     }
