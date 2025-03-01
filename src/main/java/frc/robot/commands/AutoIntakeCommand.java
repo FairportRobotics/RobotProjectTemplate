@@ -27,7 +27,7 @@ public class AutoIntakeCommand extends Command {
     public void execute()
     {
         //HandSubsystem.armYMotor.setNeutralMode(NeutralModeValue.Coast);
-        m_subsystem.setSpeed(1);
+        m_subsystem.setSpeed(.1);
     }
 
     /**
