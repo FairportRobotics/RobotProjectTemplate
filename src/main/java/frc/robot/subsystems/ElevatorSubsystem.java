@@ -54,13 +54,22 @@ public class ElevatorSubsystem extends TestableSubsystem {
         super("ElevatorSubsystem");
         setMotorNeutralMode(NeutralModeValue.Coast);
 
-        registerPOSTTest("Falcons are connected", () -> {
-            return ELEVATOR_LEFT_MOTOR.isConnected() && ELEVATOR_RIGHT_MOTOR.isConnected();
+        registerPOSTTest("Elevator left motor is connected", () -> {
+            return ELEVATOR_LEFT_MOTOR.isConnected();
         });
 
-        registerPOSTTest("This is a failing test", () -> {
-            return false; // Always fail
+        registerPOSTTest("Elevator left motor is connected", () -> {
+            return ELEVATOR_RIGHT_MOTOR.isConnected();
         });
+
+        registerBITTest("Elevator bottomLimitSwitch works", () -> {
+            setLevel(ElevatorLevels.HOME);
+
+            waitForCondition(() -> BOTTOM_LIMIT_SWITCH.get(), 20);
+
+            return true;
+        });
+
     }
 
     /**

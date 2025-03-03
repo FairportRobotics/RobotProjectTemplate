@@ -22,6 +22,8 @@ public class HandSubsystem extends TestableSubsystem {
   /** Creates a new ExampleSubsystem. */
   public HandSubsystem() {
     super("HandSubsystem");
+
+    registerPOSTTest("Motor is connected", () -> handMotor.getBusVoltage() > 0);
   }
 
   public Boolean getSwitch()
