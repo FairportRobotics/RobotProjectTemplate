@@ -44,6 +44,9 @@ public class AlgaeSubsystem extends TestableSubsystem
       krakenMotor.getConfigurator().apply(krakenConfig, 0.050);
       //PID LOOP
     
+    registerPOSTTest("Agetator motor is connected", () -> wheelSpin.getBusVoltage() > 0);
+    registerPOSTTest("Pivot motor is connected", () -> krakenMotor.isConnected());
+
   }//ALGAESUBSYSTEM
 
    /**

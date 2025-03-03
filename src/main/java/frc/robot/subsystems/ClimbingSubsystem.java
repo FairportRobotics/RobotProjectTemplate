@@ -43,6 +43,8 @@ public class ClimbingSubsystem extends TestableSubsystem {
         absPos.setUpdateFrequency(50);
         climbingMotor.optimizeBusUtilization();
     climbingMotor.getConfigurator().apply(armYConfig, 0.050);
+
+    registerPOSTTest("Motor is connected", () -> climbingMotor.isConnected());
   }
 
 

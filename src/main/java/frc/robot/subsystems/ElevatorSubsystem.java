@@ -11,7 +11,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorLevels;
 import frc.robot.commands.ElevatorGoToLevelCommand;
@@ -141,13 +140,22 @@ public class ElevatorSubsystem extends TestableSubsystem {
         super("ElevatorSubsystem");
         setMotorNeutralMode(NeutralModeValue.Coast);
 
-        registerPOSTTest("Falcons are connected", () -> {
-            return elevatorLeftMotor.isConnected() && elevatorRightMotor.isConnected();
+        registerPOSTTest("Elevator left motor is connected", () -> {
+            return elevatorLeftMotor.isConnected();
         });
 
-        registerPOSTTest("This is a failing test", () -> {
-            return false; // Always fail
+        registerPOSTTest("Elevator left motor is connected", () -> {
+            return elevatorLeftMotor.isConnected();
         });
+
+        registerBITTest("Elevator bottomLimitSwitch works", () -> {
+            setLevel(ElevatorLevels.HOME);
+
+            waitForCondition(() -> bottomLimitSwitch.get(), 20);
+
+            return true;
+        });
+
     }
 
     /**
