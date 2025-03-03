@@ -22,7 +22,7 @@ public final class Constants {
   }
 
   public static class HandConstants {
-    public static final int HAND_MOTOR_ID = 10;
+    public static final int HAND_MOTOR_ID = 16;
     public static final int HAND_LIMIT_SWITCH_ID = 1;
   }
 
@@ -49,7 +49,7 @@ public final class Constants {
 
   public static class ArmConstants {
 
-    public static final int MotorYID = 0;
+    public static final int MotorYID = 15;
     public static final int LimitID = 0;
 
     /**
@@ -130,8 +130,8 @@ public final class Constants {
   }
 
   public static class ElevatorMotors {
-    public static final int LEFT_ID = 20;
-    public static final int RIGHT_ID = 50;
+    public static final int LEFT_ID = 14;
+    public static final int RIGHT_ID = 13;
   }
 
   public static class ElevatorLimitSwitches {
