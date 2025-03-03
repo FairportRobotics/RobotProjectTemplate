@@ -43,7 +43,7 @@ public class ArmGotoCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.setPos(pos);
+    m_subsystem.setTargetPos(pos);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
