@@ -52,7 +52,6 @@ public class ElevatorSubsystem extends TestableSubsystem {
      */
     public ElevatorSubsystem() {
         super("ElevatorSubsystem");
-        setMotorNeutralMode(NeutralModeValue.Coast);
 
         registerPOSTTest("Elevator left motor is connected", () -> {
             return ELEVATOR_LEFT_MOTOR.isConnected();
@@ -69,7 +68,6 @@ public class ElevatorSubsystem extends TestableSubsystem {
 
             return true;
         });
-
     }
 
     /**
@@ -126,25 +124,27 @@ public class ElevatorSubsystem extends TestableSubsystem {
      */
     @Override
     public void periodic() {
-        /* 
-        System.out.println(BOTTOM_LIMIT_SWITCH.get());
-        // If the elevator is not moving and the elevator does not need to move, don't
-        // continue additional checks.
-        if (isBraked && !elevatorNeedsToStartMoving)
-            return;
-
-        // Refresh the positions of the motors for this periodic cycle.
-        refreshPositions();
-
-        // If the elevator needs to start moving and the goToLevel is not HOME
-        // (continuousChecks handles moving to home), start moving the elevator to the
-        // goToLevel position.
-        if (elevatorNeedsToStartMoving && !goToLevelIsHome) {
-            startMovingElevator();
-            elevatorNeedsToStartMoving = false;
-        } else
-            continuousChecks();
-            */
+        /*
+         * System.out.println(BOTTOM_LIMIT_SWITCH.get());
+         * // If the elevator is not moving and the elevator does not need to move,
+         * don't
+         * // continue additional checks.
+         * if (isBraked && !elevatorNeedsToStartMoving)
+         * return;
+         * 
+         * // Refresh the positions of the motors for this periodic cycle.
+         * refreshPositions();
+         * 
+         * // If the elevator needs to start moving and the goToLevel is not HOME
+         * // (continuousChecks handles moving to home), start moving the elevator to
+         * the
+         * // goToLevel position.
+         * if (elevatorNeedsToStartMoving && !goToLevelIsHome) {
+         * startMovingElevator();
+         * elevatorNeedsToStartMoving = false;
+         * } else
+         * continuousChecks();
+         */
     }
 
     /**
