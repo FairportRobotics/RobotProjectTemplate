@@ -49,10 +49,11 @@ public class ClimbingSubsystem extends TestableSubsystem {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    /* 
     if (pos == ClimberPositions.NONE) {
 
       this.climbingMotor.set(0.1);
-      if (!this.limitSwitch.get()) {
+      if (this.limitSwitch.get()) {
         this.climbingMotor.set(0.0);
         pos = ClimberPositions.HOME;
         climbingMotor.setPosition(0);
@@ -62,14 +63,14 @@ public class ClimbingSubsystem extends TestableSubsystem {
         error.setUpdateFrequency(10);
       }
     }
-    Logger.recordOutput("Arm at Home ", !limitSwitch.get());
-    
+    Logger.recordOutput("Arm at Home ", limitSwitch.get());
+    */
   }
 
   /**
-   * Get the current positon of the motor
+   * Get the current position of the motor
    *
-   * @return The positon of the motor. It's not computer science. Wait...
+   * @return The position of the motor. It's not computer science. Wait...
    */
   public StatusSignal<Angle> getPos() {
     return absPos;
