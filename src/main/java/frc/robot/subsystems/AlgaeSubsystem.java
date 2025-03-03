@@ -30,10 +30,10 @@ public class AlgaeSubsystem extends TestableSubsystem
    * the system that algaes the systemsub
    */
   public AlgaeSubsystem() 
-  {//ALGAESUBSYSTEM
+  {//AlgaeSubsystem
     super("AlgaeSubsystem");
-    fenceMotor = new TalonFX(98); // TODO: FIX ID
-    wheelSpin = new SparkMax(97, null);//deal with paramaters later
+    fenceMotor = new TalonFX(17); //Kraken motor
+    wheelSpin = new SparkMax(18, null);//Neo motor
     limitSwitch= new DigitalInput(DIOValues.ALGAELIMIT);
       //PID LOOP
       TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
@@ -47,11 +47,12 @@ public class AlgaeSubsystem extends TestableSubsystem
       fenceMotor.optimizeBusUtilization();
       fenceMotor.getConfigurator().apply(krakenConfig, 0.050);
     
-  }//ALGAESUBSYSTEM
+  }//AlgaeSubsystem
 
    /**
    * Spins the wheels, first line
    * brings down the entire fence
+   * Calculates and applies voltage to bring it to a specific voltage
    * Note: last line may change position
    */
   public void openBallIntake()
@@ -92,11 +93,14 @@ public class AlgaeSubsystem extends TestableSubsystem
    * @return Error
   */
   public StatusSignal<Double> getError()
-  {//GetError
+  {//getError
     return fenceMotor.getClosedLoopError();
-  }//GetError
+  }//getError
 
   /**
+   * gets the state of the switc
+   * @return 
+   * True or False state
   */
   public boolean getSwitch()
   {//getSwitch
