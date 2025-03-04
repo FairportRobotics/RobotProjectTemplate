@@ -78,7 +78,8 @@ public class ElevatorSubsystem extends TestableSubsystem {
      *                                 positive, false for clockwise positive.
      * @return the motor with the default settings applied.
      */
-    private static TalonFX applyDefaultSettings(TalonFX motor, boolean counterClockwisePositive) {
+    private TalonFX applyDefaultSettings(TalonFX motor, boolean counterClockwisePositive) {
+        setMotorNeutralMode(NeutralModeValue.Brake);
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.Slot0.kP = .3;
         config.Slot0.kI = 0;
@@ -89,7 +90,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
             config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         motor.getConfigurator().apply(config);
         motor.getPosition().setUpdateFrequency(0); // Prevents the signal from being disabled and allows for manual
-                                                   // refreshes.
+                                                   // refreshing.
         motor.optimizeBusUtilization();
         return motor;
     }
@@ -128,27 +129,28 @@ public class ElevatorSubsystem extends TestableSubsystem {
         // don't
         // continue additional checks.
         if (isBraked && !elevatorNeedsToStartMoving)
-        return;
-        
+            return;
+
         // Refresh the positions of the motors for this periodic cycle.
         refreshPositions();
-        
+
         // If the elevator needs to start moving and the goToLevel is not HOME
         // (continuousChecks handles moving to home), start moving the elevator to
         // the
         // goToLevel position.
         if (elevatorNeedsToStartMoving && !goToLevelIsHome) {
-        startMovingElevator();
-        elevatorNeedsToStartMoving = false;
-        } else
+            startMovingElevator();
+            elevatorNeedsToStartMoving = false;
+        }
         continuousChecks();
     }
 
     /**
-     * This method runs when the elevator doesn't need to start moving.
-     * This method is responsible for initializing/recalibrating home positions,
-     * continuously updating the speed of the motors when moving down to home and
-     * stopping the motors when the elevator is close enough to the goToLevel.
+     * This method runs everytime periodic is run as long as the fuction was not
+     * exited. This method is responsible for initializing/recalibrating home
+     * positions, continuously updating the speed of the motors when moving down to
+     * home and stopping the motors when the elevator is close enough to the
+     * goToLevel.
      * 
      * Checks are prioritized and are responsible as following:
      * 1. Stopping motors and updating home positions when the bottom limit switch
@@ -164,7 +166,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
          * intentionally skipped, then stop the elevator and update the home positions.
          */
         if (!isBraked && skipCycles == 0 && BOTTOM_LIMIT_SWITCH.get()) {
-            stopMotors();
+            setMotorNeutralMode(NeutralModeValue.Brake);
             setHomePositions(LEFT_POS.getValueAsDouble(), RIGHT_POS.getValueAsDouble());
             return;
         } else if (skipCycles > 0) // If the check was intentionally skipped, decrement the skip cycles and
@@ -188,7 +190,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
          */
         if (!isBraked && !goToLevelIsHome
                 && Math.abs(LEFT_POS.getValueAsDouble() - (encoderGetter.get(goToLevel) + leftHomePos)) <= 0.1) {
-            stopMotors();
+            setMotorNeutralMode(NeutralModeValue.Brake);
             return;
         }
     }
@@ -226,8 +228,9 @@ public class ElevatorSubsystem extends TestableSubsystem {
         }
         double speed;
         if (isInitialized())
-            speed = -0.01; //Math.min(-0.175 * (((double) LEFT_POS.getValueAsDouble() + leftHomePos)
-                    // / encoderGetter.get(ElevatorLevels.values()[ElevatorLevels.values().length - 1])), -0.035);
+            speed = -0.01; // Math.min(-0.175 * (((double) LEFT_POS.getValueAsDouble() + leftHomePos)
+        // / encoderGetter.get(ElevatorLevels.values()[ElevatorLevels.values().length -
+        // 1])), -0.035);
         else
             speed = -0.01;
         if (isBraked)
@@ -281,17 +284,9 @@ public class ElevatorSubsystem extends TestableSubsystem {
     }
 
     /**
-     * Stops the elevator motors and sets the motors to brake.
-     */
-    public void stopMotors() {
-        ELEVATOR_LEFT_MOTOR.stopMotor();
-        ELEVATOR_RIGHT_MOTOR.stopMotor();
-        setMotorNeutralMode(NeutralModeValue.Brake);
-    }
-
-    /**
      * Sets the neutral mode of both elevator motors.
-     * Updates the isBraked variable accordingly.
+     * Updates the isBraked variable accordingly and stops the motors automatically
+     * if set to brake.
      * 
      * @param modeValue is the neutral mode of the motors.
      */
@@ -299,6 +294,10 @@ public class ElevatorSubsystem extends TestableSubsystem {
         ELEVATOR_LEFT_MOTOR.setNeutralMode(modeValue);
         ELEVATOR_RIGHT_MOTOR.setNeutralMode(modeValue);
         isBraked = NeutralModeValue.Brake.equals(modeValue);
+        if (isBraked) {
+            ELEVATOR_LEFT_MOTOR.stopMotor();
+            ELEVATOR_RIGHT_MOTOR.stopMotor();
+        }
     }
 
     /**
