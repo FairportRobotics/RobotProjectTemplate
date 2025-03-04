@@ -122,7 +122,7 @@ public class RobotContainer {
 
     // reset the field-centric heading on left bumper press
     driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-    driver.rightTrigger().onTrue(Commands.deadline(new WaitCommand(.25), new HandCommand(m_HandSubsystem, 0)));
+    driver.rightTrigger().onTrue(Commands.deadline(new WaitCommand(.25), new HandCommand(m_HandSubsystem, .1)));
     // drivetrain.registerTelemetry(logger::telemeterize);
 
     // Test commands for testing :)
