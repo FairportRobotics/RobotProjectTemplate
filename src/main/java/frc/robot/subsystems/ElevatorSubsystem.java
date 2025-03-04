@@ -110,7 +110,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
      *                 nothing.
      */
     public void setLevel(ElevatorLevels newLevel) {
-        if (newLevel == null || goToLevel.equals(newLevel) || notInitialized())
+        if (newLevel == null || goToLevel.equals(newLevel) || !isInitialized())
             return;
         goToLevel = newLevel;
         elevatorNeedsToStartMoving = true;
@@ -205,21 +205,19 @@ public class ElevatorSubsystem extends TestableSubsystem {
     }
 
     /**
-     * Checks if the elevator is not initialized
+     * Checks if the elevator is initialized
      * 
-     * @return true if the elevator is not initialized, false if the elevator is
+     * @return true if the elevator is initialized, false if the elevator is
      *         initialized.
      */
-    private boolean notInitialized() {
+    private boolean isInitialized() {
         if (isInitialized) // Shortcut check to prevent unnecessary calculations if the elevator is already
                            // initialized.
-            return false;
-        isInitialized = !(leftHomePos == Double.MAX_VALUE || rightHomePos == Double.MAX_VALUE); // Is initialized is any
-                                                                                                // case where the home
-                                                                                                // positions are both
-                                                                                                // not the default
-                                                                                                // values.
-        return !isInitialized;
+            return true;
+        // If both home positions are not their default values, the elevator is
+        // initialized.
+        isInitialized = !(leftHomePos == Double.MAX_VALUE || rightHomePos == Double.MAX_VALUE);
+        return isInitialized;
     }
 
     /**
@@ -231,11 +229,11 @@ public class ElevatorSubsystem extends TestableSubsystem {
             goToLevelIsHome = true;
         }
         double speed;
-        if (notInitialized())
-            speed = -0.05;
-        else
+        if (isInitialized())
             speed = Math.min(-0.175 * (((double) LEFT_POS.getValueAsDouble() + leftHomePos)
                     / encoderGetter.get(ElevatorLevels.values()[ElevatorLevels.values().length - 1])), -0.035);
+        else
+            speed = -0.05;
         if (isBraked)
             setMotorNeutralMode(NeutralModeValue.Coast);
         ELEVATOR_LEFT_MOTOR.set(speed);
