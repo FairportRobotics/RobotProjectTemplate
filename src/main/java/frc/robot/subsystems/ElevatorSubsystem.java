@@ -44,7 +44,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
     private EncoderGetter encoderGetter = ElevatorGoToLevelCommand.ENCODER_GETTER;
 
     // Logic variables for the periodic method.
-    private boolean elevatorNeedsToStartMoving = false, isBraked = false, goToLevelIsHome = true;
+    private boolean elevatorNeedsToStartMoving = false, isBraked = false, goToLevelIsHome = true, isInitialized = false;
     private int skipCycles = 0;
 
     /**
@@ -52,7 +52,6 @@ public class ElevatorSubsystem extends TestableSubsystem {
      */
     public ElevatorSubsystem() {
         super("ElevatorSubsystem");
-        setMotorNeutralMode(NeutralModeValue.Coast);
 
         registerPOSTTest("Elevator left motor is connected", () -> {
             return ELEVATOR_LEFT_MOTOR.isConnected();
@@ -69,7 +68,6 @@ public class ElevatorSubsystem extends TestableSubsystem {
 
             return true;
         });
-
     }
 
     /**
@@ -112,7 +110,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
      *                 nothing.
      */
     public void setLevel(ElevatorLevels newLevel) {
-        if (newLevel == null || goToLevel.equals(newLevel) || notInitialized())
+        if (newLevel == null || goToLevel.equals(newLevel) || !isInitialized())
             return;
         goToLevel = newLevel;
         elevatorNeedsToStartMoving = true;
@@ -126,25 +124,27 @@ public class ElevatorSubsystem extends TestableSubsystem {
      */
     @Override
     public void periodic() {
-        /* 
-        System.out.println(BOTTOM_LIMIT_SWITCH.get());
-        // If the elevator is not moving and the elevator does not need to move, don't
-        // continue additional checks.
-        if (isBraked && !elevatorNeedsToStartMoving)
-            return;
-
-        // Refresh the positions of the motors for this periodic cycle.
-        refreshPositions();
-
-        // If the elevator needs to start moving and the goToLevel is not HOME
-        // (continuousChecks handles moving to home), start moving the elevator to the
-        // goToLevel position.
-        if (elevatorNeedsToStartMoving && !goToLevelIsHome) {
-            startMovingElevator();
-            elevatorNeedsToStartMoving = false;
-        } else
-            continuousChecks();
-            */
+        /*
+         * System.out.println(BOTTOM_LIMIT_SWITCH.get());
+         * // If the elevator is not moving and the elevator does not need to move,
+         * don't
+         * // continue additional checks.
+         * if (isBraked && !elevatorNeedsToStartMoving)
+         * return;
+         * 
+         * // Refresh the positions of the motors for this periodic cycle.
+         * refreshPositions();
+         * 
+         * // If the elevator needs to start moving and the goToLevel is not HOME
+         * // (continuousChecks handles moving to home), start moving the elevator to
+         * the
+         * // goToLevel position.
+         * if (elevatorNeedsToStartMoving && !goToLevelIsHome) {
+         * startMovingElevator();
+         * elevatorNeedsToStartMoving = false;
+         * } else
+         * continuousChecks();
+         */
     }
 
     /**
@@ -205,27 +205,36 @@ public class ElevatorSubsystem extends TestableSubsystem {
     }
 
     /**
-     * Checks if the elevator is not initialized
+     * Checks if the elevator is initialized
      * 
-     * @return true if the elevator is not initialized, false if the elevator is
+     * @return true if the elevator is initialized, false if the elevator is
      *         initialized.
      */
-    private boolean notInitialized() {
-        return leftHomePos == Double.MAX_VALUE || rightHomePos == Double.MAX_VALUE;
+    private boolean isInitialized() {
+        if (isInitialized) // Shortcut check to prevent unnecessary calculations if the elevator is already
+                           // initialized.
+            return true;
+        // If both home positions are not their default values, the elevator is
+        // initialized.
+        return isInitialized = !(leftHomePos == Double.MAX_VALUE || rightHomePos == Double.MAX_VALUE);
     }
 
     /**
      * Moves the elevator down to the home position.
      */
     public void moveDown() {
-        goToLevel = ElevatorLevels.HOME;
+        if (!goToLevelIsHome) {
+            goToLevel = ElevatorLevels.HOME;
+            goToLevelIsHome = true;
+        }
         double speed;
-        if (leftHomePos == Double.MAX_VALUE)
-            speed = -0.05;
-        else
+        if (isInitialized())
             speed = Math.min(-0.175 * (((double) LEFT_POS.getValueAsDouble() + leftHomePos)
                     / encoderGetter.get(ElevatorLevels.values()[ElevatorLevels.values().length - 1])), -0.035);
-        setMotorNeutralMode(NeutralModeValue.Coast);
+        else
+            speed = -0.05;
+        if (isBraked)
+            setMotorNeutralMode(NeutralModeValue.Coast);
         ELEVATOR_LEFT_MOTOR.set(speed);
         ELEVATOR_RIGHT_MOTOR.set(speed);
     }
