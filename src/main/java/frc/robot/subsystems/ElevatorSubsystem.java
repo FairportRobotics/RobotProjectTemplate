@@ -218,14 +218,18 @@ public class ElevatorSubsystem extends TestableSubsystem {
      * Moves the elevator down to the home position.
      */
     public void moveDown() {
-        goToLevel = ElevatorLevels.HOME;
+        if (!goToLevelIsHome) {
+            goToLevel = ElevatorLevels.HOME;
+            goToLevelIsHome = true;
+        }
         double speed;
-        if (leftHomePos == Double.MAX_VALUE)
+        if (notInitialized())
             speed = -0.05;
         else
             speed = Math.min(-0.175 * (((double) LEFT_POS.getValueAsDouble() + leftHomePos)
                     / encoderGetter.get(ElevatorLevels.values()[ElevatorLevels.values().length - 1])), -0.035);
-        setMotorNeutralMode(NeutralModeValue.Coast);
+        if (isBraked)
+            setMotorNeutralMode(NeutralModeValue.Coast);
         ELEVATOR_LEFT_MOTOR.set(speed);
         ELEVATOR_RIGHT_MOTOR.set(speed);
     }
