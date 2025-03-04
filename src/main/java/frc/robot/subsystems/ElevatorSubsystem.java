@@ -35,7 +35,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
             RIGHT_POS_VOLTAGE = new PositionVoltage(0).withSlot(0);
 
     // Helpers whe it comes to caching outcomes of the suppliers.
-    private final DigitalInput BOTTOM_LIMIT_SWITCH = new DigitalInput(Constants.ElevatorLimitSwitches.BOTTOM_ID);
+    private final DigitalInput BOTTOM_LIMIT_SWITCH = new DigitalInput(Constants.DIOValues.ELEVATORLIMIT);
     private final StatusSignal<Angle> LEFT_POS = ELEVATOR_LEFT_MOTOR.getPosition(),
             RIGHT_POS = ELEVATOR_RIGHT_MOTOR.getPosition();
 

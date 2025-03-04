@@ -134,7 +134,4 @@ public final class Constants {
     public static final int RIGHT_ID = 13;
   }
 
-  public static class ElevatorLimitSwitches {
-    public static final int BOTTOM_ID = 9;
-  }
 }
