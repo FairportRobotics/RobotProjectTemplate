@@ -50,7 +50,7 @@ public class ClimbingSubsystem extends TestableSubsystem {
 
   @Override
   public void periodic() {
-    
+    /*
     if (pos == ClimberPositions.NONE) {
       System.out.println("Thing is-a going");
       climbingMotor.set(0.1);
@@ -65,7 +65,7 @@ public class ClimbingSubsystem extends TestableSubsystem {
       }
     }
     Logger.recordOutput("Arm at Home ", limitSwitch.get());
-    
+    */
   }
 
   /**

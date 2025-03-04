@@ -121,12 +121,12 @@ public final class Constants {
   // HOME is the MIN level of the elevator.
   public static class ElevatorEncoderValues {
     public static final double HOME = 0;
-    public static final double CORAL = 2;
-    public static final double ONE = 4;
-    public static final double TWO = 6;
-    public static final double THREE = 8;
-    public static final double FOUR = 9.5;
-    // public static final double MAX = 10.25;
+    public static final double CORAL = 3;
+    public static final double ONE = 6;
+    public static final double TWO = 9;
+    public static final double THREE = 12;
+    public static final double FOUR = 15;
+    // public static final double MAX = 19;
   }
 
   public static class ElevatorMotors {

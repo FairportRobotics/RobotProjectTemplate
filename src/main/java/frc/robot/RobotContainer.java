@@ -8,7 +8,9 @@ import frc.robot.Constants.ElevatorLevels;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ArmConstants.ArmPositions;
 import frc.robot.commands.ArmGotoCommand;
+import frc.robot.commands.ElevatorDownCommand;
 import frc.robot.commands.ElevatorGoToLevelCommand;
+import frc.robot.commands.ElevatorUpCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.HandCommand;
 import frc.robot.commands.IntakeCommand;
@@ -126,6 +128,9 @@ public class RobotContainer {
 
     // Test commands for testing :)
     //driver.a().onTrue();
+
+    driver.povUp().onTrue(new ElevatorUpCommand(m_ElevatorSubsystem));
+    driver.povDown().onTrue(new ElevatorDownCommand(m_ElevatorSubsystem));
   }
 
   public Command getAutonomousCommand() {

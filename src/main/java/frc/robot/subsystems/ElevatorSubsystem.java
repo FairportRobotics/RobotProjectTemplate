@@ -25,8 +25,8 @@ public class ElevatorSubsystem extends TestableSubsystem {
 
     // The motors of the elevator.
     private final TalonFX ELEVATOR_LEFT_MOTOR = applyDefaultSettings(new TalonFX(Constants.ElevatorMotors.LEFT_ID),
-            true),
-            ELEVATOR_RIGHT_MOTOR = applyDefaultSettings(new TalonFX(Constants.ElevatorMotors.RIGHT_ID), false);
+            false),
+            ELEVATOR_RIGHT_MOTOR = applyDefaultSettings(new TalonFX(Constants.ElevatorMotors.RIGHT_ID), true);
 
     // Stores the position PID that does the motor control.
     private final PositionVoltage LEFT_POS_VOLTAGE = new PositionVoltage(0).withSlot(0),
@@ -80,9 +80,9 @@ public class ElevatorSubsystem extends TestableSubsystem {
      */
     private static TalonFX applyDefaultSettings(TalonFX motor, boolean counterClockwisePositive) {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = .9;
-        config.Slot0.kI = .5;
-        config.Slot0.kD = .1;
+        config.Slot0.kP = .3;
+        config.Slot0.kI = 0;
+        config.Slot0.kD = 0;
         if (counterClockwisePositive)
             config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         else
@@ -124,27 +124,24 @@ public class ElevatorSubsystem extends TestableSubsystem {
      */
     @Override
     public void periodic() {
-        /*
-         * System.out.println(BOTTOM_LIMIT_SWITCH.get());
-         * // If the elevator is not moving and the elevator does not need to move,
-         * don't
-         * // continue additional checks.
-         * if (isBraked && !elevatorNeedsToStartMoving)
-         * return;
-         * 
-         * // Refresh the positions of the motors for this periodic cycle.
-         * refreshPositions();
-         * 
-         * // If the elevator needs to start moving and the goToLevel is not HOME
-         * // (continuousChecks handles moving to home), start moving the elevator to
-         * the
-         * // goToLevel position.
-         * if (elevatorNeedsToStartMoving && !goToLevelIsHome) {
-         * startMovingElevator();
-         * elevatorNeedsToStartMoving = false;
-         * } else
-         * continuousChecks();
-         */
+        // If the elevator is not moving and the elevator does not need to move,
+        // don't
+        // continue additional checks.
+        if (isBraked && !elevatorNeedsToStartMoving)
+        return;
+        
+        // Refresh the positions of the motors for this periodic cycle.
+        refreshPositions();
+        
+        // If the elevator needs to start moving and the goToLevel is not HOME
+        // (continuousChecks handles moving to home), start moving the elevator to
+        // the
+        // goToLevel position.
+        if (elevatorNeedsToStartMoving && !goToLevelIsHome) {
+        startMovingElevator();
+        elevatorNeedsToStartMoving = false;
+        } else
+        continuousChecks();
     }
 
     /**
@@ -229,10 +226,10 @@ public class ElevatorSubsystem extends TestableSubsystem {
         }
         double speed;
         if (isInitialized())
-            speed = Math.min(-0.175 * (((double) LEFT_POS.getValueAsDouble() + leftHomePos)
-                    / encoderGetter.get(ElevatorLevels.values()[ElevatorLevels.values().length - 1])), -0.035);
+            speed = -0.01; //Math.min(-0.175 * (((double) LEFT_POS.getValueAsDouble() + leftHomePos)
+                    // / encoderGetter.get(ElevatorLevels.values()[ElevatorLevels.values().length - 1])), -0.035);
         else
-            speed = -0.05;
+            speed = -0.01;
         if (isBraked)
             setMotorNeutralMode(NeutralModeValue.Coast);
         ELEVATOR_LEFT_MOTOR.set(speed);
