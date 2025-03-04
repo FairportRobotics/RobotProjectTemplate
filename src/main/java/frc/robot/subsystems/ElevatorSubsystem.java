@@ -165,7 +165,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
      *         otherwise.
      */
     private boolean armCheck(ElevatorLevels checkLevel) {
-        Objects.requireNonNull(checkLevel, "CheckLevel should not be null");
+        Objects.requireNonNull(checkLevel, "checkLevel should not be null");
         return isArmDown() && checkLevel.ordinal() < ElevatorLevels.CORAL.ordinal();
     }
 
