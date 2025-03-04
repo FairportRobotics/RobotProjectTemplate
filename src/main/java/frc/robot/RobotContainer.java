@@ -14,6 +14,7 @@ import frc.robot.commands.HandCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OutakeCommand;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClimbingSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.HandSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
@@ -21,6 +22,8 @@ import frc.robot.subsystems.HopperSubsystem;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,6 +46,7 @@ public class RobotContainer {
 
   // private final Telemetry logger = new Telemetry(MaxSpeed);
   private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
+  private final ClimbingSubsystem m_ClimbingSubsystem = new ClimbingSubsystem();
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
   private final HandSubsystem m_HandSubsystem = new HandSubsystem();
   private final HopperSubsystem m_HopperSubsystem = new HopperSubsystem(
@@ -54,6 +58,10 @@ public class RobotContainer {
           Commands.parallel(
               new ElevatorGoToLevelCommand(m_ElevatorSubsystem, ElevatorLevels.TWO),
               new ArmGotoCommand(m_armSubsystem, ArmPositions.MIDDLE))));
+
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -92,7 +100,7 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(
     // Drivetrain will execute this command periodically
     drivetrain.applyRequest(() ->
-    drivetrain.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+    drive.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
     .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
     .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
     )
@@ -115,6 +123,9 @@ public class RobotContainer {
     driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
     driver.rightTrigger().onTrue(Commands.deadline(new WaitCommand(.25), new HandCommand(m_HandSubsystem, 0)));
     // drivetrain.registerTelemetry(logger::telemeterize);
+
+    // Test commands for testing :)
+    //driver.a().onTrue();
   }
 
   public Command getAutonomousCommand() {

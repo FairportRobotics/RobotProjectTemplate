@@ -50,11 +50,10 @@ public class ClimbingSubsystem extends TestableSubsystem {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    /* 
+    
     if (pos == ClimberPositions.NONE) {
-
-      this.climbingMotor.set(0.1);
+      System.out.println("Thing is-a going");
+      climbingMotor.set(0.1);
       if (this.limitSwitch.get()) {
         this.climbingMotor.set(0.0);
         pos = ClimberPositions.HOME;
@@ -66,7 +65,7 @@ public class ClimbingSubsystem extends TestableSubsystem {
       }
     }
     Logger.recordOutput("Arm at Home ", limitSwitch.get());
-    */
+    
   }
 
   /**
