@@ -44,7 +44,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
     private EncoderGetter encoderGetter = ElevatorGoToLevelCommand.ENCODER_GETTER;
 
     // Logic variables for the periodic method.
-    private boolean elevatorNeedsToStartMoving = false, isBraked = false, goToLevelIsHome = true;
+    private boolean elevatorNeedsToStartMoving = false, isBraked = false, goToLevelIsHome = true, isInitialized = false;
     private int skipCycles = 0;
 
     /**
@@ -211,7 +211,15 @@ public class ElevatorSubsystem extends TestableSubsystem {
      *         initialized.
      */
     private boolean notInitialized() {
-        return leftHomePos == Double.MAX_VALUE || rightHomePos == Double.MAX_VALUE;
+        if (isInitialized) // Shortcut check to prevent unnecessary calculations if the elevator is already
+                           // initialized.
+            return false;
+        isInitialized = !(leftHomePos == Double.MAX_VALUE || rightHomePos == Double.MAX_VALUE); // Is initialized is any
+                                                                                                // case where the home
+                                                                                                // positions are both
+                                                                                                // not the default
+                                                                                                // values.
+        return !isInitialized;
     }
 
     /**
