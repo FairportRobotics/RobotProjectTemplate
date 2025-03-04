@@ -47,9 +47,9 @@ public class RobotContainer {
   // // kSpeedAt12Volts desired top speed
 
   // private final Telemetry logger = new Telemetry(MaxSpeed);
-  private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
-  private final ClimbingSubsystem m_ClimbingSubsystem = new ClimbingSubsystem();
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
+  private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem(m_armSubsystem);
+  private final ClimbingSubsystem m_ClimbingSubsystem = new ClimbingSubsystem();
   private final HandSubsystem m_HandSubsystem = new HandSubsystem();
   private final HopperSubsystem m_HopperSubsystem = new HopperSubsystem(
       Commands.sequence(
@@ -62,8 +62,8 @@ public class RobotContainer {
               new ArmGotoCommand(m_armSubsystem, ArmPositions.MIDDLE))));
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -100,13 +100,12 @@ public class RobotContainer {
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
     drivetrain.setDefaultCommand(
-    // Drivetrain will execute this command periodically
-    drivetrain.applyRequest(() ->
-    drive.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-    .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-    .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-    )
-    );
+        // Drivetrain will execute this command periodically
+        drivetrain.applyRequest(() -> drive.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative
+                                                                                         // Y (forward)
+            .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        ));
 
     // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     // joystick.b().whileTrue(drivetrain.applyRequest(() ->
@@ -127,7 +126,7 @@ public class RobotContainer {
     // drivetrain.registerTelemetry(logger::telemeterize);
 
     // Test commands for testing :)
-    //driver.a().onTrue();
+    // driver.a().onTrue();
 
     driver.povUp().onTrue(new ElevatorUpCommand(m_ElevatorSubsystem));
     driver.povDown().onTrue(new ElevatorDownCommand(m_ElevatorSubsystem));

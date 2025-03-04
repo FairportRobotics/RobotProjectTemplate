@@ -2,6 +2,8 @@ package frc.robot.subsystems;//lol "package" HA AH AHAHAHAGGGG *Cough noise *Cou
 
 import com.ctre.phoenix6.controls.PositionVoltage;
 
+import java.util.Objects;
+
 import org.fairportrobotics.frc.posty.TestableSubsystem;
 
 import com.ctre.phoenix6.StatusSignal;
@@ -47,10 +49,15 @@ public class ElevatorSubsystem extends TestableSubsystem {
     private boolean elevatorNeedsToStartMoving = false, isBraked = false, goToLevelIsHome = true, isInitialized = false;
     private int skipCycles = 0;
 
+    // The arm subsystem that needs to be communicated with as to not break the arm.
+    private ArmSubsystem armSubsystem;
+
     /**
      * Constructs an ElevatorSubsystem.
+     * 
+     * @throws NullPointerException if armSubsystem is null.
      */
-    public ElevatorSubsystem() {
+    public ElevatorSubsystem(ArmSubsystem armSubsystem) {
         super("ElevatorSubsystem");
 
         registerPOSTTest("Elevator left motor is connected", () -> {
@@ -68,6 +75,10 @@ public class ElevatorSubsystem extends TestableSubsystem {
 
             return true;
         });
+
+        Objects.requireNonNull(armSubsystem, "ArmSubsystem is needed to ensure the robot doesn't break.");
+
+        this.armSubsystem = armSubsystem;
     }
 
     /**
@@ -79,7 +90,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
      * @return the motor with the default settings applied.
      */
     private TalonFX applyDefaultSettings(TalonFX motor, boolean counterClockwisePositive) {
-        setMotorNeutralMode(NeutralModeValue.Brake);
+        setMotorStatus(NeutralModeValue.Brake);
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.Slot0.kP = .3;
         config.Slot0.kI = 0;
@@ -111,11 +122,60 @@ public class ElevatorSubsystem extends TestableSubsystem {
      *                 nothing.
      */
     public void setLevel(ElevatorLevels newLevel) {
-        if (newLevel == null || goToLevel.equals(newLevel) || !isInitialized())
+        if (newLevel == null || goToLevel.equals(newLevel) || !isInitialized() || disableManualControl(newLevel))
             return;
+        actuallySetLevel(newLevel);
+    }
+
+    /**
+     * Sets the level of the elevator.
+     * 
+     * @param newLevel is the level to set the elevator to.
+     */
+    private void actuallySetLevel(ElevatorLevels newLevel) {
         goToLevel = newLevel;
         elevatorNeedsToStartMoving = true;
         goToLevelIsHome = ElevatorLevels.HOME.equals(goToLevel);
+    }
+
+    /**
+     * Disables manual control of the elevator due to checks with other subsystems.
+     * 
+     * @return true if manual control should be disabled, false otherwise.
+     */
+    private boolean disableManualControl(ElevatorLevels newLevel) {
+        return armCheck(newLevel);
+    }
+
+    /**
+     * Checks if current level of the elevator is in a bad position for the arm.
+     * 
+     * @return true if the elevator is in a bad position for the arm, false
+     *         otherwise.
+     */
+    private boolean armCheck() {
+        return isArmDown() && goToLevel.ordinal() < ElevatorLevels.CORAL.ordinal();
+    }
+
+    /**
+     * Checks if the checkLevel is a bad position for the arm.
+     * 
+     * @param checkLevel is the level to check if it is a bad position for the arm.
+     * @return true if the checkLevel is a bad position for the arm, false
+     *         otherwise.
+     */
+    private boolean armCheck(ElevatorLevels checkLevel) {
+        Objects.requireNonNull(checkLevel, "CheckLevel should not be null");
+        return isArmDown() && checkLevel.ordinal() < ElevatorLevels.CORAL.ordinal();
+    }
+
+    /**
+     * Checks if the arm is down.
+     * 
+     * @return true if the arm is down, false otherwise.
+     */
+    private boolean isArmDown() {
+        return Constants.ArmConstants.ArmPositions.DOWN.equals(armSubsystem.getArmPos());
     }
 
     /**
@@ -125,6 +185,10 @@ public class ElevatorSubsystem extends TestableSubsystem {
      */
     @Override
     public void periodic() {
+        if (armCheck()) {
+            actuallySetLevel(ElevatorLevels.CORAL);
+            return;
+        }
         // If the elevator is not moving and the elevator does not need to move,
         // don't
         // continue additional checks.
@@ -142,7 +206,8 @@ public class ElevatorSubsystem extends TestableSubsystem {
             startMovingElevator();
             elevatorNeedsToStartMoving = false;
         }
-        continuousChecks();
+        if (!isBraked)
+            continuousChecks();
     }
 
     /**
@@ -150,7 +215,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
      * exited. This method is responsible for initializing/recalibrating home
      * positions, continuously updating the speed of the motors when moving down to
      * home and stopping the motors when the elevator is close enough to the
-     * goToLevel.
+     * goToLevel. This method assumes that the elevator is currently moving.
      * 
      * Checks are prioritized and are responsible as following:
      * 1. Stopping motors and updating home positions when the bottom limit switch
@@ -161,12 +226,12 @@ public class ElevatorSubsystem extends TestableSubsystem {
      */
     private void continuousChecks() {
         /**
-         * If the elevator is not braking (was moving), the bottom limit switch is
-         * pressed, and either the elevator is not initialized or this check not
-         * intentionally skipped, then stop the elevator and update the home positions.
+         * If he bottom limit switch is pressed, and either the elevator is not
+         * initialized or this check not intentionally skipped, then stop the elevator
+         * and update the home positions.
          */
-        if (!isBraked && skipCycles == 0 && BOTTOM_LIMIT_SWITCH.get()) {
-            setMotorNeutralMode(NeutralModeValue.Brake);
+        if (skipCycles == 0 && BOTTOM_LIMIT_SWITCH.get()) {
+            setMotorStatus(NeutralModeValue.Brake);
             setHomePositions(LEFT_POS.getValueAsDouble(), RIGHT_POS.getValueAsDouble());
             return;
         } else if (skipCycles > 0) // If the check was intentionally skipped, decrement the skip cycles and
@@ -183,14 +248,12 @@ public class ElevatorSubsystem extends TestableSubsystem {
         }
 
         /**
-         * If the elevator is not braking (was moving), the goToLevel is not HOME, and
-         * the difference
-         * between the current elevator position and the goToLevel position is less than
-         * 0.1, stop the motors.
+         * If the goToLevel is not HOME, and the difference between the current elevator
+         * position and the goToLevel position is less than 0.1, stop the motors.
          */
-        if (!isBraked && !goToLevelIsHome
+        if (!goToLevelIsHome
                 && Math.abs(LEFT_POS.getValueAsDouble() - (encoderGetter.get(goToLevel) + leftHomePos)) <= 0.1) {
-            setMotorNeutralMode(NeutralModeValue.Brake);
+            setMotorStatus(NeutralModeValue.Brake);
             return;
         }
     }
@@ -234,7 +297,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
         else
             speed = -0.01;
         if (isBraked)
-            setMotorNeutralMode(NeutralModeValue.Coast);
+            setMotorStatus(NeutralModeValue.Coast);
         ELEVATOR_LEFT_MOTOR.set(speed);
         ELEVATOR_RIGHT_MOTOR.set(speed);
     }
@@ -266,7 +329,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
      * utilized)
      */
     private void startMovingElevator() {
-        setMotorNeutralMode(NeutralModeValue.Coast);
+        setMotorStatus(NeutralModeValue.Coast);
         setMotorPositions(encoderGetter.get(goToLevel));
         /*
          * If the home position is not the level that the elevator should be going to,
@@ -289,15 +352,17 @@ public class ElevatorSubsystem extends TestableSubsystem {
      * if set to brake.
      * 
      * @param modeValue is the neutral mode of the motors.
+     * @throws NullPointerException if modeValue is null.
      */
-    private void setMotorNeutralMode(NeutralModeValue modeValue) {
-        ELEVATOR_LEFT_MOTOR.setNeutralMode(modeValue);
-        ELEVATOR_RIGHT_MOTOR.setNeutralMode(modeValue);
+    public void setMotorStatus(NeutralModeValue modeValue) {
+        Objects.requireNonNull(modeValue);
         isBraked = NeutralModeValue.Brake.equals(modeValue);
         if (isBraked) {
             ELEVATOR_LEFT_MOTOR.stopMotor();
             ELEVATOR_RIGHT_MOTOR.stopMotor();
         }
+        ELEVATOR_LEFT_MOTOR.setNeutralMode(modeValue);
+        ELEVATOR_RIGHT_MOTOR.setNeutralMode(modeValue);
     }
 
     /**
