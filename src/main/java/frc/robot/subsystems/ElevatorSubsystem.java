@@ -216,8 +216,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
             return true;
         // If both home positions are not their default values, the elevator is
         // initialized.
-        isInitialized = !(leftHomePos == Double.MAX_VALUE || rightHomePos == Double.MAX_VALUE);
-        return isInitialized;
+        return isInitialized = !(leftHomePos == Double.MAX_VALUE || rightHomePos == Double.MAX_VALUE);
     }
 
     /**
