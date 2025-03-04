@@ -100,13 +100,23 @@ public final class Constants {
   }
 
   public enum ElevatorLevels {
-    HOME,
-    CORAL,
-    ONE,
-    TWO,
-    THREE,
-    FOUR,
-    // MAX;
+    HOME(0),
+    HUMAN_PLAYER_STATION(10),
+    ONE(11),
+    TWO(20),
+    THREE(30),
+    FOUR(40);
+    
+    double rotationUnits;
+
+    private ElevatorLevels(double rotationUnits){
+      this.rotationUnits = rotationUnits;
+    }
+
+    public double getRotationUnits(){
+      return rotationUnits;
+    }
+
   }
 
   public static class DIOValues {

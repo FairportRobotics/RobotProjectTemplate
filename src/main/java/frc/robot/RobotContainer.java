@@ -48,17 +48,17 @@ public class RobotContainer {
 
   // private final Telemetry logger = new Telemetry(MaxSpeed);
   private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
-  private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem(m_armSubsystem);
+  private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem(m_armSubsystem);
   private final ClimbingSubsystem m_ClimbingSubsystem = new ClimbingSubsystem();
   private final HandSubsystem m_HandSubsystem = new HandSubsystem();
   private final HopperSubsystem m_HopperSubsystem = new HopperSubsystem(
       Commands.sequence(
           new ArmGotoCommand(m_armSubsystem, ArmPositions.DOWN),
           Commands.parallel(
-              new ElevatorGoToLevelCommand(m_ElevatorSubsystem, ElevatorLevels.ONE),
+              new ElevatorGoToLevelCommand(m_elevatorSubsystem, ElevatorLevels.ONE),
               new IntakeCommand(m_HandSubsystem)),
           Commands.parallel(
-              new ElevatorGoToLevelCommand(m_ElevatorSubsystem, ElevatorLevels.TWO),
+              new ElevatorGoToLevelCommand(m_elevatorSubsystem, ElevatorLevels.TWO),
               new ArmGotoCommand(m_armSubsystem, ArmPositions.MIDDLE))));
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -120,6 +120,9 @@ public class RobotContainer {
     driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
     driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
+    driver.a().onTrue(new ElevatorGoToLevelCommand(m_elevatorSubsystem, ElevatorLevels.HOME));
+    driver.b().onTrue(new ElevatorGoToLevelCommand(m_elevatorSubsystem, ElevatorLevels.FOUR));
+
     // reset the field-centric heading on left bumper press
     driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
     driver.rightTrigger().onTrue(Commands.deadline(new WaitCommand(.25), new HandCommand(m_HandSubsystem, .1)));
@@ -128,8 +131,8 @@ public class RobotContainer {
     // Test commands for testing :)
     // driver.a().onTrue();
 
-    driver.povUp().onTrue(new ElevatorUpCommand(m_ElevatorSubsystem));
-    driver.povDown().onTrue(new ElevatorDownCommand(m_ElevatorSubsystem));
+    //driver.povUp().onTrue(new ElevatorUpCommand(m_ElevatorSubsystem));
+    //driver.povDown().onTrue(new ElevatorDownCommand(m_ElevatorSubsystem));
   }
 
   public Command getAutonomousCommand() {
