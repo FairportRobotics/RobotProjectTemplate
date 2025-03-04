@@ -18,6 +18,9 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.HandSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,10 +36,9 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
-  // private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  private double MaxAngularRate = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   // // kSpeedAt12Volts desired top speed
 
   // private final Telemetry logger = new Telemetry(MaxSpeed);
@@ -52,7 +54,7 @@ public class RobotContainer {
           Commands.parallel(
               new ElevatorGoToLevelCommand(m_ElevatorSubsystem, ElevatorLevels.TWO),
               new ArmGotoCommand(m_armSubsystem, ArmPositions.MIDDLE))));
-    
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -84,22 +86,17 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
 
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
-    // drivetrain.setDefaultCommand(
-    // // Drivetrain will execute this command periodically
-    // drivetrain.applyRequest(() ->
-    // drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
-    // negative Y (forward)
-    // .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X
-    // (left)
-    // .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive
-    // counterclockwise with negative X (left)
-    // )
-    // );
+    drivetrain.setDefaultCommand(
+    // Drivetrain will execute this command periodically
+    drivetrain.applyRequest(() ->
+    drivetrain.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+    .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+    .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+    )
+    );
 
     // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     // joystick.b().whileTrue(drivetrain.applyRequest(() ->

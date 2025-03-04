@@ -378,14 +378,4 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 visionMeasurementStdDevs);
     }
 
-    public class DriveSubsystem extends SubsystemBase {
-        public DriveSubsystem() {
-            // All other subsystem initialization
-            // ...
-
-            // Configure AutoBuilder last
-
-        }
-    }
-
 }
