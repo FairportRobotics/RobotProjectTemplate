@@ -30,9 +30,11 @@ public class ArmGotoCommand extends Command {
    * @param newPos The requested position of the arm. You can find what diffrent positions there are in Constants.java
    */
   public ArmGotoCommand(ArmSubsystem subsystem, ArmPositions newPos) {
+    
     m_subsystem = subsystem;
     pos = newPos;
     posError = m_subsystem.getError();
+    currentPos = m_subsystem.getActualPos();
 
 
 
@@ -58,6 +60,7 @@ public class ArmGotoCommand extends Command {
   @Override
   public boolean isFinished() {
     posError.refresh();
+    currentPos.refresh();
 
         if (pos == ArmPositions.UP) {
             return m_subsystem.getSwitch();

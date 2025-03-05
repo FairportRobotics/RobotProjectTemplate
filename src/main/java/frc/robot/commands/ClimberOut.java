@@ -70,7 +70,7 @@ public class ClimberOut extends Command {
     // return !m_subsystem.limitSwitch.get();
     // }
     /* else /* */ if (currentPos.hasUpdated()) {
-      System.out.println("currentPos updated :D");
+      
       SmartDashboard.putNumber("Arm Pos", currentPos.getValueAsDouble());
       System.out.println(currentPos.getValueAsDouble());
       System.out.println(Math.abs(currentPos.getValueAsDouble() - (pos.getValue())));

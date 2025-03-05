@@ -8,6 +8,8 @@ import frc.robot.Constants.ElevatorLevels;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ArmConstants.ArmPositions;
 import frc.robot.commands.ArmGotoCommand;
+import frc.robot.commands.ClimberIn;
+import frc.robot.commands.ClimberOut;
 import frc.robot.commands.ElevatorGoToLevelCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.HandCommand;
@@ -118,12 +120,16 @@ public class RobotContainer {
     driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
     driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-    driver.a().onTrue(new ElevatorGoToLevelCommand(m_elevatorSubsystem, ElevatorLevels.HOME));
-    driver.b().onTrue(new ElevatorGoToLevelCommand(m_elevatorSubsystem, ElevatorLevels.FOUR));
+    
 
     // reset the field-centric heading on left bumper press
     driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-    driver.rightTrigger().onTrue(Commands.deadline(new WaitCommand(.25), new HandCommand(m_HandSubsystem, .1)));
+    driver.povDown().onTrue(new ElevatorGoToLevelCommand(m_elevatorSubsystem, ElevatorLevels.HOME));
+    driver.povUp().onTrue(new ElevatorGoToLevelCommand(m_elevatorSubsystem, ElevatorLevels.FOUR));
+    driver.rightTrigger().onTrue(Commands.deadline(new WaitCommand(.5), new HandCommand(m_HandSubsystem, .1)));
+    driver.x().onTrue(new ClimberOut(m_ClimbingSubsystem));
+    driver.y().onTrue(new ClimberIn(m_ClimbingSubsystem));
+    driver.a().onTrue(new ArmGotoCommand(m_armSubsystem, ArmPositions.MIDDLE));
     // drivetrain.registerTelemetry(logger::telemeterize);
 
     // Test commands for testing :)

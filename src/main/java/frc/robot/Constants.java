@@ -28,7 +28,7 @@ public final class Constants {
 
   public enum ClimberPositions {
     IN(1),
-    OUT(2),
+    OUT(20),
     HOME(3),
     NONE(0);
 
@@ -49,8 +49,9 @@ public final class Constants {
 
   public static class ArmConstants {
 
-    public static final int MotorYID = 15;
+    public static final int ARMMOTOR = 15;
     public static final int LimitID = 0;
+    public static final int CLIMBERMOTOR = 19;
 
     /**
      * The ArmPositions Enum is used to store positons for the arm. There are 4
@@ -66,10 +67,11 @@ public final class Constants {
      * 
      */
     public enum ArmPositions {
-      UP(1),
-      MIDDLE(2),
-      DOWN(3),
+      UP(0),
+      MIDDLE(.25),
+      DOWN(.5),
       NONE(0);
+      
 
       double wa;
 
@@ -101,11 +103,11 @@ public final class Constants {
 
   public enum ElevatorLevels {
     HOME(0),
-    HUMAN_PLAYER_STATION(10),
-    ONE(11),
-    TWO(20),
-    THREE(30),
-    FOUR(40);
+    HUMAN_PLAYER_STATION(4),
+    ONE(5),
+    TWO(7),
+    THREE(10),
+    FOUR(15);
     
     double rotationUnits;
 
@@ -121,10 +123,10 @@ public final class Constants {
 
   public static class DIOValues {
     public static final int ALGAELIMIT = 0;
-    public static final int ARMLIMIT = 1;
-    public static final int CLIMBERLIMIT = 2;
-    public static final int ELEVATORLIMIT = 3;
-    public static final int HANDLIMIT = 4;
+    public static final int ARMLIMIT = 0;
+    public static final int CLIMBERLIMIT = 4;
+    public static final int ELEVATORLIMIT = 2;
+    public static final int HANDLIMIT = 1;
     public static final int HOPPERBEAM = 5;
   }
 

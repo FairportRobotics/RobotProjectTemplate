@@ -11,11 +11,13 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.ArmConstants.ArmPositions;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.DIOValues;
 
 public class ArmSubsystem extends TestableSubsystem {
@@ -23,47 +25,50 @@ public class ArmSubsystem extends TestableSubsystem {
   private TalonFX armYMotor;
   private DigitalInput topSwitch; //Today on TopSwitch...
   private StatusSignal<Angle> actualPos;
+  public double armHomePos = Double.MAX_VALUE;
   private ArmPositions targetPos;
   private final PositionVoltage m_voltage = new PositionVoltage(0).withSlot(0);
 
   /** Creates a new ArmSubsystem. */
   public ArmSubsystem() {
     super("ArmSubsystem");
-    armYMotor = new TalonFX(99, "rio"); // TODO: FIX ID
+    armYMotor = new TalonFX(ArmConstants.ARMMOTOR, "rio"); // TODO: FIX ID
     armYMotor.setNeutralMode(NeutralModeValue.Brake);
     topSwitch = new DigitalInput(DIOValues.ARMLIMIT);
     targetPos = ArmPositions.NONE;
 
     TalonFXConfiguration armYConfig = new TalonFXConfiguration();
-    armYConfig.Slot0.kP = 0.8;
+    armYConfig.Slot0.kP = 1;
     armYConfig.Slot0.kI = 0.5;
     armYConfig.Slot0.kD = 0.3;
+    armYConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     armYMotor.getConfigurator().apply(armYConfig);
     actualPos = armYMotor.getPosition();
     actualPos.setUpdateFrequency(50);
     armYMotor.optimizeBusUtilization();
+    
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    /*if (targetPos == ArmPositions.NONE) {
+    if (armHomePos == Double.MAX_VALUE) {
 
       this.armYMotor.set(0.1);
       if (getSwitch()) {
         this.armYMotor.set(0.0);
-        targetPos = ArmPositions.UP;
-        armYMotor.setPosition(0);
-        actualPos = armYMotor.getPosition();
-        actualPos.setUpdateFrequency(10);
+        
+        StatusSignal<Angle> pos = armYMotor.getPosition();
 
+        actualPos.waitForUpdate(1.0);
+
+        armHomePos = actualPos.getValueAsDouble();
+
+        this.armYMotor.setNeutralMode(NeutralModeValue.Brake);
       }
     }
     Logger.recordOutput("Arm at Home ", !topSwitch.get());
-    if (topSwitch.get() && armYMotor.get() >= 0) {
-      stopMotor();
-    }
-      */
+    
   }
 
   /**
@@ -125,7 +130,7 @@ public class ArmSubsystem extends TestableSubsystem {
   public void setTargetPos(ArmPositions newPos) {
     targetPos = newPos;
     actualPos = armYMotor.getPosition();
-    armYMotor.setControl(m_voltage.withPosition(targetPos.getValue()));
+    armYMotor.setControl(m_voltage.withPosition(targetPos.getValue() + armHomePos));
   }
 
   /**

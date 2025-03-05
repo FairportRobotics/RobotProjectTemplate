@@ -15,6 +15,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ClimberPositions;
 import frc.robot.Constants.DIOValues;
 
@@ -30,7 +31,7 @@ public class ClimbingSubsystem extends TestableSubsystem {
   /** Creates a new ClimbingSubsystem. */
   public ClimbingSubsystem() {
     super("ClimbingSubsystem");
-    climbingMotor = new TalonFX(99, "rio"); // TODO: FIX THIS ID
+    climbingMotor = new TalonFX(ArmConstants.CLIMBERMOTOR, "rio"); 
     climbingMotor.setNeutralMode(NeutralModeValue.Brake);
     limitSwitch = new DigitalInput(DIOValues.CLIMBERLIMIT);
     pos = ClimberPositions.NONE;
@@ -45,6 +46,7 @@ public class ClimbingSubsystem extends TestableSubsystem {
         climbingMotor.optimizeBusUtilization();
     climbingMotor.getConfigurator().apply(armYConfig, 0.050);
 
+    error = climbingMotor.getClosedLoopError();
     registerPOSTTest("Motor is connected", () -> climbingMotor.isConnected());
   }
 
