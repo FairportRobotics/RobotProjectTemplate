@@ -123,7 +123,6 @@ public class ArmSubsystem extends TestableSubsystem {
    *               track of where the arm is. Maybe.
    */
   public void setTargetPos(ArmPositions newPos) {
-    armYMotor.setNeutralMode(NeutralModeValue.Coast);
     targetPos = newPos;
     actualPos = armYMotor.getPosition();
     armYMotor.setControl(m_voltage.withPosition(targetPos.getValue()));

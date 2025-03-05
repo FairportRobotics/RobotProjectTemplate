@@ -31,6 +31,7 @@ public class ClimbingSubsystem extends TestableSubsystem {
   public ClimbingSubsystem() {
     super("ClimbingSubsystem");
     climbingMotor = new TalonFX(99, "rio"); // TODO: FIX THIS ID
+    climbingMotor.setNeutralMode(NeutralModeValue.Brake);
     limitSwitch = new DigitalInput(DIOValues.CLIMBERLIMIT);
     pos = ClimberPositions.NONE;
 

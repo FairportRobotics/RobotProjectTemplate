@@ -33,7 +33,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
     this.armSubsystem = armSubsystem;
 
     // toplimitSwitch = new DigitalInput(8);
-    bottomlimitSwitch = new DigitalInput(Constants.ElevatorLimitSwitches.BOTTOM_ID);
+    bottomlimitSwitch = new DigitalInput(Constants.DIOValues.ELEVATORLIMIT);
 
     TalonFXConfiguration elevatorMotor1Config = new TalonFXConfiguration();
     elevatorMotor1Config.Slot0.kP = 0.7;

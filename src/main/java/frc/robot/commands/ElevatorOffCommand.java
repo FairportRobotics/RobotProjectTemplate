@@ -16,7 +16,7 @@ public class ElevatorOffCommand extends Command {
 
     @Override
     public void initialize() {
-        elevatorSubsystem.setMotorStatus(NeutralModeValue.Brake);
+        //elevatorSubsystem.setMotorStatus(NeutralModeValue.Brake);
     }
 
     @Override
