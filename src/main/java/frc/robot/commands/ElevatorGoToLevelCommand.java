@@ -7,7 +7,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.ElevatorLevels;
+import frc.robot.Constants.ElevatorPositions;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 public class ElevatorGoToLevelCommand extends Command {
@@ -24,7 +24,7 @@ public class ElevatorGoToLevelCommand extends Command {
     final PositionVoltage rightPositionRequest;
     final PositionVoltage leftPositionRequest;
 
-    public ElevatorGoToLevelCommand(ElevatorSubsystem elevatorSubsystem, ElevatorLevels pos) {
+    public ElevatorGoToLevelCommand(ElevatorSubsystem elevatorSubsystem, ElevatorPositions pos) {
         _elevatorSubsystem = elevatorSubsystem;
         addRequirements(_elevatorSubsystem);
 

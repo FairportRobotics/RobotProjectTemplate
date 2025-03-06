@@ -18,8 +18,8 @@ public class ElevatorSubsystem extends TestableSubsystem {
   public double rightHomePos = Double.MAX_VALUE;
   public double leftHomePos = Double.MAX_VALUE;
 
-  public TalonFX elevatorLeftMotor = new TalonFX(Constants.ElevatorMotors.LEFT_ID);
-  public TalonFX elevatorRightMotor = new TalonFX(Constants.ElevatorMotors.RIGHT_ID);
+  public TalonFX elevatorLeftMotor = new TalonFX(Constants.CanBusIds.ELEVATOR_LEFT_MOTOR_ID);
+  public TalonFX elevatorRightMotor = new TalonFX(Constants.CanBusIds.ELEVATOR_RIGHT_MOTOR_ID);
   public DigitalInput bottomlimitSwitch;
 
   private StatusSignal<Angle> leftPos;
@@ -33,7 +33,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
     this.armSubsystem = armSubsystem;
 
     // toplimitSwitch = new DigitalInput(8);
-    bottomlimitSwitch = new DigitalInput(Constants.DIOValues.ELEVATORLIMIT);
+    bottomlimitSwitch = new DigitalInput(Constants.DIOValues.ELEVATOR_LIMIT_SWITCH);
 
     TalonFXConfiguration elevatorMotor1Config = new TalonFXConfiguration();
     elevatorMotor1Config.Slot0.kP = 0.7;

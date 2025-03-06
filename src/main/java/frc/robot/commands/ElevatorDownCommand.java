@@ -1,6 +1,6 @@
 package frc.robot.commands;
 
-import frc.robot.Constants.ElevatorLevels;
+import frc.robot.Constants.ElevatorPositions;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 //public class ElevatorDownCommand extends ElevatorGoToLevelCommand {
