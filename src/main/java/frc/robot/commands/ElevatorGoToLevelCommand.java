@@ -14,6 +14,7 @@ public class ElevatorGoToLevelCommand extends Command {
 
     private ElevatorSubsystem _elevatorSubsystem;
     private double requestPosRots = Double.MAX_VALUE;
+    private ElevatorPositions requestedPos;
 
     private StatusSignal<Angle> leftPosition;
     private StatusSignal<Angle> rightPosition;
@@ -29,6 +30,7 @@ public class ElevatorGoToLevelCommand extends Command {
         addRequirements(_elevatorSubsystem);
 
         requestPosRots = pos.getRotationUnits();
+        requestedPos = pos;
 
         rightPosition = _elevatorSubsystem.elevatorRightMotor.getPosition();
         leftPosition = _elevatorSubsystem.elevatorLeftMotor.getPosition();
@@ -40,26 +42,27 @@ public class ElevatorGoToLevelCommand extends Command {
         leftPositionRequest = new PositionVoltage(0).withSlot(0);
     }
 
-    public ElevatorGoToLevelCommand(ElevatorSubsystem elevatorSubsystem, double pos) {
-        _elevatorSubsystem = elevatorSubsystem;
-        addRequirements(_elevatorSubsystem);
-        requestPosRots = pos;
+    // public ElevatorGoToLevelCommand(ElevatorSubsystem elevatorSubsystem, double pos) {
+    //     _elevatorSubsystem = elevatorSubsystem;
+    //     addRequirements(_elevatorSubsystem);
+    //     requestPosRots = pos;
 
-        rightPosition = _elevatorSubsystem.elevatorRightMotor.getPosition();
-        leftPosition = _elevatorSubsystem.elevatorLeftMotor.getPosition();
+    //     rightPosition = _elevatorSubsystem.elevatorRightMotor.getPosition();
+    //     leftPosition = _elevatorSubsystem.elevatorLeftMotor.getPosition();
 
-        leftPosError = _elevatorSubsystem.elevatorLeftMotor.getClosedLoopError();
-        rightPosError = _elevatorSubsystem.elevatorRightMotor.getClosedLoopError();
+    //     leftPosError = _elevatorSubsystem.elevatorLeftMotor.getClosedLoopError();
+    //     rightPosError = _elevatorSubsystem.elevatorRightMotor.getClosedLoopError();
 
-        rightPositionRequest = new PositionVoltage(0).withSlot(0);
-        leftPositionRequest = new PositionVoltage(0).withSlot(0);
-    }
+    //     rightPositionRequest = new PositionVoltage(0).withSlot(0);
+    //     leftPositionRequest = new PositionVoltage(0).withSlot(0);
+    // }
 
     @Override
     public void initialize() {
         _elevatorSubsystem.elevatorLeftMotor.setNeutralMode(NeutralModeValue.Coast);
         _elevatorSubsystem.elevatorRightMotor.setNeutralMode(NeutralModeValue.Coast);
 
+        if (_elevatorSubsystem.canGoToPosition(requestedPos))
         _elevatorSubsystem.elevatorLeftMotor
                 .setControl(leftPositionRequest.withPosition(_elevatorSubsystem.leftHomePos + requestPosRots));
         _elevatorSubsystem.elevatorRightMotor

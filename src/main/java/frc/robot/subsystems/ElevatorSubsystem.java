@@ -97,7 +97,7 @@ public class ElevatorSubsystem extends TestableSubsystem {
         this.elevatorRightMotor.setNeutralMode(NeutralModeValue.Brake);
       }
 
-      if (armSubsystem.getActualPos().getValueAsDouble() > ArmPositions.DOWN.getValue() ){
+      if (armSubsystem.getActualPos().getValueAsDouble() > ArmPositions.MIDDLE.getValue() ){
         lowestValidElevatorPosition = ElevatorPositions.ARM_LIMIT.getRotationUnits();
       }
     }
@@ -107,5 +107,12 @@ public class ElevatorSubsystem extends TestableSubsystem {
     Logger.recordOutput("Elevator Left Pos", leftPos.refresh().getValue());
     Logger.recordOutput("Elevator Right Pos", rightPos.refresh().getValue());
   }
+  public boolean canGoToPosition(ElevatorPositions requestedPos){
+    if (requestedPos.getRotationUnits() > lowestValidElevatorPosition)
+        return true;
+    else    
+        return false;
+}
+
 
 }
