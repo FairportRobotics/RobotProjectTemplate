@@ -12,6 +12,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
+import frc.robot.Constants.ArmPositions;
+import frc.robot.Constants.ElevatorPositions;
 
 public class ElevatorSubsystem extends TestableSubsystem {
 
@@ -27,10 +29,14 @@ public class ElevatorSubsystem extends TestableSubsystem {
 
   private ArmSubsystem armSubsystem;
 
+  private double lowestValidElevatorPosition = ElevatorPositions.HOME.getRotationUnits();
+
   public ElevatorSubsystem(ArmSubsystem armSubsystem) {
     super("ElevatorSubsystem");
 
     this.armSubsystem = armSubsystem;
+
+    this.armSubsystem.setElevatorSubsystem(this);
 
     // toplimitSwitch = new DigitalInput(8);
     bottomlimitSwitch = new DigitalInput(Constants.DIOValues.ELEVATOR_LIMIT_SWITCH);
@@ -89,6 +95,10 @@ public class ElevatorSubsystem extends TestableSubsystem {
 
         this.elevatorLeftMotor.setNeutralMode(NeutralModeValue.Brake);
         this.elevatorRightMotor.setNeutralMode(NeutralModeValue.Brake);
+      }
+
+      if (armSubsystem.getActualPos().getValueAsDouble() > ArmPositions.DOWN.getValue() ){
+        lowestValidElevatorPosition = ElevatorPositions.ARM_LIMIT.getRotationUnits();
       }
     }
 
