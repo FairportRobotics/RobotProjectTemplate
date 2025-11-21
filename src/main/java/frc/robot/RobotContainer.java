@@ -8,7 +8,15 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+
+import org.fairportrobotics.frc.robolib.DriveSystems.SwerveDrive.SwerveBuilder;
+import org.fairportrobotics.frc.robolib.DriveSystems.SwerveDrive.SwerveDriveSubsystem;
+
+import com.pathplanner.lib.auto.CommandUtil;
+
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -26,10 +34,71 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+  private final SwerveDriveSubsystem m_SwerveDriveSubsystem;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+
+    SwerveBuilder swerveBuilder = new SwerveBuilder();
+    m_SwerveDriveSubsystem = swerveBuilder
+        .withCanbusName("null")
+        .withPigeonId(1) 
+        .withSwerveModule(swerveBuilder.new SwerveModuleBuilder()
+                          .withDriveMotorId(18)
+                          .withDriveKP(1)
+                          .withDriveKI(0)
+                          .withDriveKD(0)
+                          .withSteerMotorId(17)
+                          .withSteerKP(1)
+                          .withSteerKI(0)
+                          .withSteerKD(0)
+                          .withSteerEncoderId(16)
+                          .withGearRatio(1)
+                          .withModuleLocation(new Translation2d(-1, 0))
+                          .build())
+        .withSwerveModule(swerveBuilder.new SwerveModuleBuilder()
+                          .withDriveMotorId(18)
+                          .withDriveKP(1)
+                          .withDriveKI(0)
+                          .withDriveKD(0)
+                          .withSteerMotorId(17)
+                          .withSteerKP(1)
+                          .withSteerKI(0)
+                          .withSteerKD(0)
+                          .withSteerEncoderId(16)
+                          .withGearRatio(1)
+                          .withModuleLocation(new Translation2d(-1, 0))
+                          .build())
+        .withSwerveModule(swerveBuilder.new SwerveModuleBuilder()
+                          .withDriveMotorId(18)
+                          .withDriveKP(1)
+                          .withDriveKI(0)
+                          .withDriveKD(0)
+                          .withSteerMotorId(17)
+                          .withSteerKP(1)
+                          .withSteerKI(0)
+                          .withSteerKD(0)
+                          .withSteerEncoderId(16)
+                          .withGearRatio(1)
+                          .withModuleLocation(new Translation2d(-1, 0))
+                          .build())
+        .withSwerveModule(swerveBuilder.new SwerveModuleBuilder()
+                          .withDriveMotorId(18)
+                          .withDriveKP(1)
+                          .withDriveKI(0)
+                          .withDriveKD(0)
+                          .withSteerMotorId(17)
+                          .withSteerKP(1)
+                          .withSteerKI(0)
+                          .withSteerKD(0)
+                          .withSteerEncoderId(16)
+                          .withGearRatio(1)
+                          .withModuleLocation(new Translation2d(-1, 0))
+                          .build())
+        .build();
+
   }
 
   /**
@@ -59,5 +128,14 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return Autos.exampleAuto(m_exampleSubsystem);
+  }
+
+  public Command getDriveCommand() {
+    return Commands.run(new Runnable() {
+      @Override
+      public void run() {
+        m_SwerveDriveSubsystem.setChassisSpeedsFromJoystick(m_driverController.getLeftX(), m_driverController.getLeftY(), m_driverController.getRightX());
+      } 
+    }, m_SwerveDriveSubsystem);
   }
 }
