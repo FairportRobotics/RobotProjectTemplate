@@ -4,12 +4,18 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.fairportrobotics.frc.posty.TestableSubsystem;
+import org.fairportrobotics.frc.posty.test.BitTest;
+import org.fairportrobotics.frc.posty.test.PostTest;
+import static org.fairportrobotics.frc.posty.assertions.Assertions.*;
 
-public class ExampleSubsystem extends SubsystemBase {
+import edu.wpi.first.wpilibj2.command.Command;
+
+public class ExampleSubsystem extends TestableSubsystem {
   /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem() {}
+  public ExampleSubsystem() {
+    super();
+  }
 
   /**
    * Example command factory method.
@@ -43,5 +49,26 @@ public class ExampleSubsystem extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+  }
+
+  @PostTest
+  public void myPassingPostTest() {
+    assertThat(true).isTrue();
+    assertThat(false).isFalse();
+  }
+
+  @PostTest(enabled = false)
+  public void myFailingPostTest() {
+    assertThat("Hello World!").contains("HA");
+  }
+
+  @PostTest(name = "Drive Motors Connected", enabled = false)
+  public void motorsConnected() {
+    assertThat(false).as("Left Motor is not connected").isTrue();
+    assertThat(false).as("Right Motor is not connected").isTrue();
+  }
+
+  @BitTest
+  public void myBitTest() {
   }
 }

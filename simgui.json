@@ -1,0 +1,40 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo"
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "FMSInfo": {
+        "open": true
+      },
+      "Posty": {
+        "open": true,
+        "results": {
+          "open": true,
+          "post": {
+            "open": true
+          }
+        }
+      },
+      "posty": {
+        "open": true,
+        "results": {
+          "open": true,
+          "post": {
+            "open": true
+          }
+        }
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "Server": {
+      "Publishers": {
+        "open": true
+      }
+    },
+    "visible": true
+  }
+}
