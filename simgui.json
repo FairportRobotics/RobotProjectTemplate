@@ -1,7 +1,15 @@
 {
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/SendableChooser[0]": "String Chooser"
+    },
+    "windows": {
+      "/SmartDashboard/SendableChooser[0]": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
@@ -17,6 +25,15 @@
             "open": true
           }
         }
+      },
+      "SmartDashboard": {
+        "SendableChooser[0]": {
+          "open": true,
+          "string[]##v_/SmartDashboard/SendableChooser[0]/options": {
+            "open": true
+          }
+        },
+        "open": true
       },
       "posty": {
         "open": true,

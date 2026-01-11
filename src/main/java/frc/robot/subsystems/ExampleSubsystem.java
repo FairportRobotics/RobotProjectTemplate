@@ -62,10 +62,11 @@ public class ExampleSubsystem extends TestableSubsystem {
     assertThat("Hello World!").contains("HA");
   }
 
-  @PostTest(name = "Drive Motors Connected", enabled = false)
+  @PostTest(name = "Drive Motors Connected", enabled = true)
   public void motorsConnected() {
-    assertThat(false).as("Left Motor is not connected").isTrue();
-    assertThat(false).as("Right Motor is not connected").isTrue();
+    assertThat(true).as("Left Motor is not connected").isTrue();
+    assertThat(true).as("Right Motor is not connected").isTrue();
+    assertThat(Math.random()).as("Center Motor is not connected").isGreaterThan(0.5);
   }
 
   @BitTest

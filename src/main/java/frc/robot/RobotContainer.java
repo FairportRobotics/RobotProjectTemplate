@@ -15,6 +15,9 @@ import org.fairportrobotics.frc.robolib.DriveSystems.SwerveDrive.SwerveDriveSubs
 import com.pathplanner.lib.auto.CommandUtil;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -36,69 +39,88 @@ public class RobotContainer {
 
   private final SwerveDriveSubsystem m_SwerveDriveSubsystem;
 
+  private static SendableChooser<Command> autoChooser = new SendableChooser<Command>();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+
+    autoChooser.addOption("Test1", Commands.run(new Runnable() {
+      @Override
+      public void run() {
+        System.out.println("Command 1");
+      }
+      
+    }, m_exampleSubsystem));
+    autoChooser.addOption("Test2", Commands.run(new Runnable() {
+      @Override
+      public void run() {
+        System.out.print("Command 2");
+      }
+      
+    }, m_exampleSubsystem));
+
+    SmartDashboard.putData(autoChooser);
 
     SwerveBuilder swerveBuilder = new SwerveBuilder();
     m_SwerveDriveSubsystem = swerveBuilder
         .withCanbusName("null")
         .withPigeonId(1) 
         .withSwerveModule(swerveBuilder.new SwerveModuleBuilder()
-                          .withDriveMotorId(18)
+                          .withDriveMotorId(2)
                           .withDriveKP(1)
                           .withDriveKI(0)
                           .withDriveKD(0)
-                          .withSteerMotorId(17)
+                          .withSteerMotorId(3)
                           .withSteerKP(1)
                           .withSteerKI(0)
                           .withSteerKD(0)
-                          .withSteerEncoderId(16)
+                          .withSteerEncoderId(1)
                           .withGearRatio(1)
-                          .withModuleLocation(new Translation2d(-1, 1))
+                          .withModuleLocation(new Translation2d(-11.5, 11.5))
                           .withModuleName("Front Left")
                           .build())
         .withSwerveModule(swerveBuilder.new SwerveModuleBuilder()
-                          .withDriveMotorId(18)
+                          .withDriveMotorId(5)
                           .withDriveKP(1)
                           .withDriveKI(0)
                           .withDriveKD(0)
-                          .withSteerMotorId(17)
+                          .withSteerMotorId(6)
                           .withSteerKP(1)
                           .withSteerKI(0)
                           .withSteerKD(0)
-                          .withSteerEncoderId(16)
+                          .withSteerEncoderId(4)
                           .withGearRatio(1)
-                          .withModuleLocation(new Translation2d(1, 1))
+                          .withModuleLocation(new Translation2d(11.5, 11.5))
                           .withModuleName("Front Right")
                           .build())
         .withSwerveModule(swerveBuilder.new SwerveModuleBuilder()
-                          .withDriveMotorId(18)
+                          .withDriveMotorId(11)
                           .withDriveKP(1)
                           .withDriveKI(0)
                           .withDriveKD(0)
-                          .withSteerMotorId(17)
+                          .withSteerMotorId(12)
                           .withSteerKP(1)
                           .withSteerKI(0)
                           .withSteerKD(0)
-                          .withSteerEncoderId(16)
+                          .withSteerEncoderId(10)
                           .withGearRatio(1)
-                          .withModuleLocation(new Translation2d(1, -1))
+                          .withModuleLocation(new Translation2d(11.5, -11.5))
                           .withModuleName("Back Right")
                           .build())
         .withSwerveModule(swerveBuilder.new SwerveModuleBuilder()
-                          .withDriveMotorId(18)
+                          .withDriveMotorId(8)
                           .withDriveKP(1)
                           .withDriveKI(0)
                           .withDriveKD(0)
-                          .withSteerMotorId(17)
+                          .withSteerMotorId(9)
                           .withSteerKP(1)
                           .withSteerKI(0)
                           .withSteerKD(0)
-                          .withSteerEncoderId(16)
+                          .withSteerEncoderId(7)
                           .withGearRatio(1)
-                          .withModuleLocation(new Translation2d(-1, -1))
+                          .withModuleLocation(new Translation2d(-11.5, -11.5))
                           .withModuleName("Back Left")
                           .build())
         .build();
@@ -131,7 +153,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return autoChooser.getSelected();
   }
 
   public Command getDriveCommand() {
