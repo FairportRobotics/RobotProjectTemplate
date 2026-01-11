@@ -4,10 +4,13 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.fairportrobotics.frc.posty.TestableSubsystem;
+import org.fairportrobotics.frc.posty.test.PostTest;
+import static org.fairportrobotics.frc.posty.assertions.Assertions.*;
 
-public class ExampleSubsystem extends SubsystemBase {
+import edu.wpi.first.wpilibj2.command.Command;
+
+public class ExampleSubsystem extends TestableSubsystem {
   /** Creates a new ExampleSubsystem. */
   public ExampleSubsystem() {}
 
@@ -43,5 +46,15 @@ public class ExampleSubsystem extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+  }
+
+  @PostTest(name = "A friendly name", enabled = true)
+  public void myFailingPostTest(){
+    assertThat(true).isFalse();
+  }
+
+  @PostTest(enabled = true)
+  public void myPassingPostTest(){
+    assertThat("Hello World").endWith("World");
   }
 }
